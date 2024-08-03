@@ -1,15 +1,17 @@
-import { Text, View } from "react-native";
+import 'react-native-gesture-handler';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { StatusBar } from 'react-native';
+import MainStackNavigator from './navigation/MainStackNavigator';
 
-export default function Index() {
+const App = () => {
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Edit app/index.tsx to edit this screen.</Text>
-    </View>
+    <>
+      <NavigationContainer independent={true}>
+        <MainStackNavigator />
+      </NavigationContainer>
+    </>
   );
-}
+};
+
+export default App;
