@@ -7,17 +7,11 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
-export default function TabTwoScreen({ navigation}:any) {
+export default function TabEileScreen({ navigation}:any) {
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
       headerImage={<Ionicons size={310} name="code-slash" style={styles.headerImage} />}>
-         <TouchableOpacity
-               onPress={() => navigation.navigate('Notifications')}
-              //  @ts-expect-error
-               style={styles.link}
-            
-            ><Text>Network</Text></TouchableOpacity>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Explore</ThemedText>
       </ThemedView>
@@ -32,6 +26,9 @@ export default function TabTwoScreen({ navigation}:any) {
           The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
           sets up the tab navigator.
         </ThemedText>
+        <TouchableOpacity
+            onPress={() => navigation.navigate('Network')}
+            ><Text>ELSE</Text></TouchableOpacity>
         <ExternalLink href="https://docs.expo.dev/router/introduction">
           <ThemedText type="link">Learn more</ThemedText>
         </ExternalLink>
@@ -104,8 +101,5 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: 'row',
     gap: 8,
-  },
-  link: {
-    color: '#ffffff'
   },
 });

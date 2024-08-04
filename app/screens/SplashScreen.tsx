@@ -10,7 +10,7 @@ const SplashScreen = ({ navigation }:any) => {
 
   return (
     <View style={styles.container}>
-      <Text>Loading...</Text>
+      <Text style={styles.leading}>Loading...</Text>
     </View>
   );
 };
@@ -22,6 +22,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white',
   },
+  leading:{
+    fontWeight: 'black',
+    textTransform: 'uppercase'
+  }
 });
 
 export default SplashScreen;

@@ -6,10 +6,10 @@ export default function OnboardingScreen({ navigation }:any) {
     <SafeAreaView style={styles.safeArea}>
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <Text>Onboarding</Text>
-        <Text>PUT A PICTURE OF A COCK HERE</Text>
+        <Text>PUT A PICTURE OF A THING HERE</Text>
         <Button
           title="Go to Details"
-          onPress={() => navigation.navigate('Main')}
+          onPress={() => navigation.navigate('Settings')}
         />
       </View>
     </SafeAreaView>

@@ -7,7 +7,7 @@ const SignUpScreen = ({ navigation }:any) => {
 
   const signUp = () => {
     // Handle sign-up logic
-    navigation.replace('Main');
+    navigation.replace('Home');
   };
 
   return (

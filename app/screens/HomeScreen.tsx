@@ -1,11 +1,19 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { SafeAreaView, Image, Text, StyleSheet, Button } from 'react-native';
+import ParallaxScrollView from '@/components/ParallaxScrollView';
 
-const HomeScreen = () => {
+const HomeScreen =  ({ route, navigation }:any) => {
+  const { email } = route.params ? route.params : 'test@cock.cc';
+
+ 
+  const navigateToProfile = () => {
+    navigation.navigate('Account', { email })};
+
   return (
-    <View style={styles.container}>
-      <Text>Home Screen</Text>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <Text>Welcome, {email ? email : 'Test'}!</Text>
+      <Button title="To my Account!" onPress={navigateToProfile} />
+    </SafeAreaView>
   );
 };
 
@@ -16,6 +24,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white',
   },
+  reactLogo: {
+    height: 50,
+    width: 50,
+    bottom: 0,
+    left: 0
+  }
 });
 
 export default HomeScreen;

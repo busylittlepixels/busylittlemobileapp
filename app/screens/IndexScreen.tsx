@@ -1,11 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const SettingsScreen = () => {
+const IndexScreen = ({ route }:any) => {
+  const { email } = route.params ? route.params : 'test@cock.cc';
+
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Settings Screen</Text>
-      <Text>Eat a dick you fucking spa hole</Text>
+      <Text>Welcome, {email ? email : 'Cunt'}!</Text>
     </View>
   );
 };
@@ -17,10 +18,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white',
   },
-  header: {
-    fontWeight: 'bold',
-    color: 'red'
-  }
 });
 
-export default SettingsScreen;
+export default IndexScreen;

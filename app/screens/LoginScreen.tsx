@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, TextInput, Button, Text, StyleSheet } from 'react-native';
+
+
+
 
 const LoginScreen = ({ navigation }:any) => {
   const [email, setEmail] = useState('');
@@ -7,11 +10,12 @@ const LoginScreen = ({ navigation }:any) => {
 
   const login = () => {
     // Handle login logic
-    navigation.replace('Main');
+    // alert(`Logging in with username: ${email}`);
+    navigation.navigate('Home', { email });
   };
 
   const signup = () => {
-    // Handle login logic
+    // Handle sign-up logic
     navigation.replace('SignUp');
   };
 
@@ -31,7 +35,8 @@ const LoginScreen = ({ navigation }:any) => {
         secureTextEntry
         onChangeText={setPassword}
       />
-      <Button title="Login" onPress={login} />
+      <TouchableOpacity><Button title="Login" onPress={login} /></TouchableOpacity>
+      
       <Text>Or</Text>
       <Button title="SignUp" onPress={signup} />
     </View>

@@ -4,16 +4,31 @@ import SplashScreen from '../screens/SplashScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import LoginScreen from '../screens/LoginScreen';
 import MainDrawerNavigator from './MainDrawerNavigator';
+import AccountScreen from '../screens/AccountScreen';
 
 const Stack = createStackNavigator();
 
+
+const defaultScreenOptions = {
+  headerShown: true,
+  headerStyle: {
+    backgroundColor: '#f4511e',
+  },
+  headerTintColor: '#fff',
+  headerTitleStyle: {
+    fontWeight: 'bold',
+  },
+};
+
 const MainStackNavigator = () => {
   return (
-    <Stack.Navigator initialRouteName="Splash">
+    // @ts-ignore
+    <Stack.Navigator screenOptions={defaultScreenOptions} initialRouteName="Splash">
       <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }} />
       <Stack.Screen name="SignUp" component={SignUpScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="Main" component={MainDrawerNavigator} options={{ headerShown: false }} />
+      <Stack.Screen name="Home" component={MainDrawerNavigator} options={{ headerShown: false }} />
+      <Stack.Screen name="Account" component={AccountScreen} options={{ headerShown: true }} />
     </Stack.Navigator>
   );
 };

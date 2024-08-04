@@ -50,9 +50,9 @@ const OnboardingStack = () => (
 const OnboardingTabNavigator = () => {
   return (
     <Tab.Navigator>
-      <Tab.Screen name="Boobs" component={OnboardingStack} options={{ headerShown: false }} />
-      <Tab.Screen name="Ass" component={OnboardingStack} options={{ headerShown: false }} />
-      <Tab.Screen name="Snarf" component={TabTwoScreen} options={{ headerShown: false }} />
+      <Tab.Screen name="One" component={ProfileScreen} options={{ headerShown: false }} />
+      <Tab.Screen name="Two" component={SettingsScreen} options={{ headerShown: false }} />
+      <Tab.Screen name="Three" component={TabTwoScreen} options={{ headerShown: false }} />
     </Tab.Navigator>
   );
 };

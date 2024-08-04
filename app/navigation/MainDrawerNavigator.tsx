@@ -6,16 +6,19 @@ import SettingsScreen from '../screens/SettingsScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import OnboardingTabNavigator from './OnboardingTabNavigator';
 
+import { StyleSheet, Image, Platform, TouchableOpacity, Text } from 'react-native';
+
 
 const Drawer = createDrawerNavigator();
 
 const MainDrawerNavigator = () => {
   return (
-    <Drawer.Navigator initialRouteName="Tabs">
-      <Drawer.Screen name="Home" component={MainTabNavigator} />
+    <Drawer.Navigator initialRouteName="Home">
+      <Drawer.Screen name="My Account" component={MainTabNavigator} />
       <Drawer.Screen name="Settings" component={SettingsScreen} />
       <Drawer.Screen name="Onboarding" component={OnboardingTabNavigator} />
     </Drawer.Navigator>
+    
   );
 };
 
