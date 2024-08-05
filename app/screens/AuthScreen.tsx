@@ -45,8 +45,7 @@ const LoginScreen = ({ navigation }: Props) => {
         autoCapitalize={"none"}
       />
       <Button title="Login" onPress={handleLogin} />
-      <Text>No account, head on over here:</Text>
-      <TouchableOpacity onPress={() => navigation.navigate('SignUp')}><Text>Sign Up</Text></TouchableOpacity>
+
     </View>
   );
 };

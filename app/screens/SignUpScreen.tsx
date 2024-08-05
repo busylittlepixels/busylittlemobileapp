@@ -15,7 +15,6 @@ const SignUpScreen = ({ navigation }: Props) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [full_name, setFullName] = useState('');
-  const [username, setUsername] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   const validateEmail = (email: string) => {
@@ -24,19 +23,22 @@ const SignUpScreen = ({ navigation }: Props) => {
   };
 
   const handleSignUp = async () => {
+
+    console.log(email, full_name, password)
     if (!validateEmail(email)) {
       setError('Please enter a valid email address');
       return;
     }
-    if (!password || !full_name || !username) {
+    if (!password || !full_name ) {
       setError('All fields are required');
       return;
     }
     setError(null);
     try {
       // @ts-ignore
-      await signUp(email, password, full_name, username);
-      navigation.replace('Account');
+      await signUp(email, password, full_name);
+      Alert.alert('Success', 'Please check your email to confirm your account.');
+      navigation.navigate('Auth');
     } catch (error: any) {
       Alert.alert('Error', error.message);
       console.error(error);
@@ -46,18 +48,15 @@ const SignUpScreen = ({ navigation }: Props) => {
   return (
     <View style={styles.container}>
       {error && <Text style={styles.error}>{error}</Text>}
+      <Text>FullName</Text>
       <TextInput
         placeholder="Full Name"
         value={full_name}
         onChangeText={setFullName}
         style={styles.input}
       />
-      <TextInput
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
-        style={styles.input}
-      />
+      
+      <Text>Email</Text>
       <TextInput
         placeholder="Email"
         value={email}
@@ -66,6 +65,7 @@ const SignUpScreen = ({ navigation }: Props) => {
         keyboardType="email-address"
         autoCapitalize='none'
       />
+      <Text>Password</Text>
       <TextInput
         placeholder="Password"
         value={password}

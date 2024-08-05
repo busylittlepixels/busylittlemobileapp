@@ -1,35 +1,45 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, Text, Button, FlatList, StyleSheet } from 'react-native';
-import { AuthContext } from '../context/AuthContext';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../navigation';
-import { supabase } from '@/supabase';
+import { View, Text, Button, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { supabase } from '../../supabase'; // Make sure to import your Supabase client
+import { AuthContext } from '../context/AuthContext'; // Make sure to import your AuthContext
 
-type AccountScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Account'>;
-
-interface Props {
-  navigation: AccountScreenNavigationProp;
-}
-
-interface Ticket {
-    id: string;
-    event_name: string;
-    event_description: string;
-// Add other fields as necessary
-}
-
-const AccountScreen = ({ navigation }: Props) => {
+const AccountScreen = ({ navigation }:any) => {
   const { user, signOut } = useContext(AuthContext);
-  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    const getUserDetails = async () => {
+      if (user && user.id) {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        if (error) {
+          // @ts-ignore
+          setError(error.message);
+        } else {
+          setProfile(data);
+        }
+        setLoading(false);
+      }
+    };
+
+    getUserDetails();
+  }, [user]);
 
   useEffect(() => {
     const fetchTickets = async () => {
       const { data, error } = await supabase.from('tickets').select('*');
       if (error) {
+        // @ts-ignore
         setError(error.message);
       } else {
+                // @ts-ignore
         setTickets(data);
       }
       setLoading(false);
@@ -38,78 +48,89 @@ const AccountScreen = ({ navigation }: Props) => {
     fetchTickets();
   }, []);
 
-
   const handleLogout = async () => {
     await signOut();
     navigation.replace('Login');
   };
 
   const letsSee = () => {
-    console.log('tickits', tickets); 
-  }
-
+    console.log('tickets', tickets);
+  };
 
   return (
-    <View style={styles.container}>
-        <View style={styles.innerContainer}>
-            <Text style={styles.title}>Account</Text>
-            {user && (
-                <>
-                <Text>Email: {user.email}</Text>
-                {/* @ts-ignore */}
-                <Text>Username: {user ? user?.username : 'test'}</Text>
-                {/* @ts-ignore */}
-                <Text>Full Name: {user ? user?.full_name : 'tickles'}</Text>
-                {/* Display other user details as necessary */}
-                </>
-            )}
+    <View style={styles.main}>
+      <View style={styles.innerContainer}>
+        <Text style={styles.title}>Account</Text>
+        {user && (
+          <>
+            <Text>Email: {user.email}</Text>
+            {/* @ts-ignore */}
+            {profile && <Text>Full Name: {profile?.full_name}</Text>}
+          </>
+        )}
       </View>
       <View style={styles.container}>
         <Text style={styles.innerContainer}>Events:</Text>
         <FlatList
-            data={tickets}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
+          data={tickets}
+          /* @ts-ignore */
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
             <View style={styles.item}>
-                <Text style={styles.title}>{item.event_name}</Text>
-                <Text>{item.event_description} Teacs</Text>
+               {/*  @ts-ignore  */}
+              <Text style={styles.title}>{item.event_name}</Text>
+                 {/*  @ts-ignore  */}
+              <Text>{item.event_description}</Text>
+              {/* @ts-ignore */}
+              <TouchableOpacity onPress={() => navigation.navigate('Event', { event_id: item.event_id })} style={{ marginLeft: 10 }}><Text>View Event</Text></TouchableOpacity>
             </View>
-            )}
+          )}
         />
-        </View>
-      <Button title="Update Details" onPress={() => navigation.navigate('UpdateDetails')} />
-      <Button title="Make Payment" onPress={() => navigation.navigate('Payment')} />
-      <Button title="Logout" onPress={() => handleLogout()} />
-        <Button title="test" onPress={() => letsSee()} />
+      </View>
+      <View style={styles.buttons}>
+        <Button title="Update Details" onPress={() => navigation.navigate('UpdateDetails')} />
+        <Button title="Make Payment" onPress={() => navigation.navigate('Payment')} />
+        <Button title="Logout" onPress={handleLogout} />
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: 'center',
-      paddingTop: 16,
-      paddingBottom: 16,
-    },
-    innerContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        paddingTop: 16,
-        paddingRight: 16, 
-        paddingLeft: 16,
-        paddingBottom: 0,
-    },    
-    item: {
-      padding: 16,
-      borderBottomWidth: 1,
-      borderBottomColor: '#ccc',
-    },
-    title: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      color: '#000'
-    },
-  });
-  
+  main: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  innerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingRight: 16,
+    paddingLeft: 16,
+    top: 0,
+  },
+  item: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#000',
+  },
+  buttons: {
+    // backgroundColor: 'cornflowerblue',
+    display: 'flex',
+    flexDirection: 'row',
+    margin: 10, 
+    alignItems: 'center',
+    gap: 4,
+    padding: 16
+  },
+});
+
 export default AccountScreen;

@@ -10,13 +10,16 @@ import PaymentScreen from '../screens/PaymentScreen';
 import { AuthContext } from '../context/AuthContext';
 import MainDrawerNavigator from './MainDrawerNavigator';
 import SignUpScreen from '../screens/SignUpScreen';
+import EventScreen from '../screens/EventScreen';
 
 export type RootStackParamList = {
   Splash: undefined;
+  Auth: undefined;
   Login: undefined;
   SignUp: undefined;
   Account: undefined;
   Services: undefined;
+  Event: undefined;
   UpdateDetails: undefined;
   Payment: undefined;
 };
@@ -42,6 +45,7 @@ const AppNavigator = () => {
         {user ? (
           <>
             <Stack.Screen name="Account" component={MainDrawerNavigator} options={{ headerShown: false }} />
+            <Stack.Screen name="Event" component={EventScreen} options={{ headerShown: true }} />
             <Stack.Screen name="Services" component={ServicesScreen} />
             <Stack.Screen name="UpdateDetails" component={UpdateDetailsScreen} />
             <Stack.Screen name="Payment" component={PaymentScreen} />
@@ -49,6 +53,7 @@ const AppNavigator = () => {
         ) : (
           <>
             <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="Auth" component={LoginScreen} options={{ headerShown: false }} />
             <Stack.Screen name="SignUp" component={SignUpScreen} options={{ headerShown: false }} />
           </>
         )}

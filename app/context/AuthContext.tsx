@@ -5,13 +5,14 @@ import { authService } from '../services/authService';
 interface User {
   id: string;
   email: string;
+  full_name?: string;
 }
 
 interface AuthContextProps {
   user: User | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string, full_name: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -50,8 +51,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const signUp = async (email: string, password: string) => {
-    const newUser = await authService.signUp(email, password);
+  const signUp = async (email: string, password: string, full_name: string) => {
+    const newUser = await authService.signUp(email, password, full_name);
     if (newUser) {
       await AsyncStorage.setItem('user', JSON.stringify(newUser));
       setUser(newUser);

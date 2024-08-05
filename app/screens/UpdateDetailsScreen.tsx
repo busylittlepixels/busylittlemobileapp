@@ -10,7 +10,7 @@ export default function UpdateDetailsScreen({ navigation }:any) {
   const handleUpdate = async () => {
     console.log('update action');
     // await signOut();
-    // navigation.replace('Login');
+    navigation.navigate('Services');
   };
 
   const handleLogout = async () => {
@@ -20,7 +20,7 @@ export default function UpdateDetailsScreen({ navigation }:any) {
 
   if(user){
     console.log('user', user);
-    alert(`${user.email}`);
+    // alert(`${user.email}`);
   }
 
   return (
