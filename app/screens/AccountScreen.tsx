@@ -106,11 +106,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   innerContainer: {
-    flex: 1,
+    flexDirection: 'column',
     justifyContent: 'center',
     paddingRight: 16,
     paddingLeft: 16,
-    top: 0,
+    marginTop: 10,
   },
   item: {
     padding: 16,
