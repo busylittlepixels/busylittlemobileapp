@@ -53,6 +53,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const signUp = async (email: string, password: string, full_name: string) => {
     const newUser = await authService.signUp(email, password, full_name);
+    // @ts-ignore
     if (newUser) {
       await AsyncStorage.setItem('user', JSON.stringify(newUser));
       setUser(newUser);
