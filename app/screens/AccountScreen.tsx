@@ -1,61 +1,115 @@
-import React from 'react';
-import { SafeAreaView, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import React, { useContext, useState, useEffect } from 'react';
+import { View, Text, Button, FlatList, StyleSheet } from 'react-native';
+import { AuthContext } from '../context/AuthContext';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../navigation';
+import { supabase } from '@/supabase';
 
-const AccountScreen = ({ route, navigation }:any) => {
-    const { email } = route.params ? route.params : { email: 'test@cock.cc' };
-    
-    return (
-        <SafeAreaView style={styles.container}>
-            <Text style={styles.header}>My Account Screen</Text>
-            <ThemedView style={styles.stepContainer}>
-                <ThemedText type="subtitle">Welcome back { email && email }</ThemedText>
-                <ThemedText>
-                When you're ready, run{' '}
-                <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-                <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-                <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-                <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-                </ThemedText>
-            </ThemedView>
-            <TouchableOpacity><Button title="Edit" onPress={() => navigation.navigate('Home')} /></TouchableOpacity>
-        </SafeAreaView>
-    );
+type AccountScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Account'>;
+
+interface Props {
+  navigation: AccountScreenNavigationProp;
+}
+
+interface Ticket {
+    id: string;
+    event_name: string;
+    event_description: string;
+// Add other fields as necessary
+}
+
+const AccountScreen = ({ navigation }: Props) => {
+  const { user, signOut } = useContext(AuthContext);
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchTickets = async () => {
+      const { data, error } = await supabase.from('tickets').select('*');
+      if (error) {
+        setError(error.message);
+      } else {
+        setTickets(data);
+      }
+      setLoading(false);
+    };
+
+    fetchTickets();
+  }, []);
+
+
+  const handleLogout = async () => {
+    await signOut();
+    navigation.replace('Login');
+  };
+
+  const letsSee = () => {
+    console.log('tickits', tickets); 
+  }
+
+
+  return (
+    <View style={styles.container}>
+        <View style={styles.innerContainer}>
+            <Text style={styles.title}>Account</Text>
+            {user && (
+                <>
+                <Text>Email: {user.email}</Text>
+                {/* @ts-ignore */}
+                <Text>Username: {user ? user?.username : 'test'}</Text>
+                {/* @ts-ignore */}
+                <Text>Full Name: {user ? user?.full_name : 'tickles'}</Text>
+                {/* Display other user details as necessary */}
+                </>
+            )}
+      </View>
+      <View style={styles.container}>
+        <Text style={styles.innerContainer}>Events:</Text>
+        <FlatList
+            data={tickets}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+            <View style={styles.item}>
+                <Text style={styles.title}>{item.event_name}</Text>
+                <Text>{item.event_description} Teacs</Text>
+            </View>
+            )}
+        />
+        </View>
+      <Button title="Update Details" onPress={() => navigation.navigate('UpdateDetails')} />
+      <Button title="Make Payment" onPress={() => navigation.navigate('Payment')} />
+      <Button title="Logout" onPress={() => handleLogout()} />
+        <Button title="test" onPress={() => letsSee()} />
+    </View>
+  );
 };
 
-
 const styles = StyleSheet.create({
-    titleContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 8,
-    },
-    stepContainer: {
-        gap: 8,
-        margin: 8,
-        padding: 8,
-
-    },
-    reactLogo: {
-        height: 178,
-        width: 290,
-        bottom: 0,
-        left: 0,
-        position: 'absolute',
-    },
     container: {
+      flex: 1,
+      justifyContent: 'center',
+      paddingTop: 16,
+      paddingBottom: 16,
+    },
+    innerContainer: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center',
+        paddingTop: 16,
+        paddingRight: 16, 
+        paddingLeft: 16,
+        paddingBottom: 0,
+    },    
+    item: {
+      padding: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: '#ccc',
     },
-    header: {
-        fontWeight: 'black',
+    title: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: '#000'
     },
-    dataContainer: {
-        padding: 10,
-    },
-        
-});
-
+  });
+  
 export default AccountScreen;

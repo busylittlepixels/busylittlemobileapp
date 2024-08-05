@@ -5,7 +5,7 @@ import SignUpScreen from '../screens/SignUpScreen';
 import LoginScreen from '../screens/LoginScreen';
 import MainDrawerNavigator from './MainDrawerNavigator';
 import AccountScreen from '../screens/AccountScreen';
-import ProfileScreen from '../screens/ProfileScreen';
+import ProfileScreen from '../screens/PaymentScreen';
 
 const Stack = createStackNavigator();
 

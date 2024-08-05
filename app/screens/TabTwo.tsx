@@ -13,7 +13,7 @@ export default function TabTwoScreen({ navigation}:any) {
       headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
       headerImage={<Ionicons size={310} name="code-slash" style={styles.headerImage} />}>
          <TouchableOpacity
-               onPress={() => navigation.navigate('Notifications')}
+               onPress={() => navigation.navigate('Settings')}
               //  @ts-expect-error
                style={styles.link}
             

@@ -1,74 +1,51 @@
-import React, { useState } from 'react';
-import { Alert, View, TouchableOpacity, TextInput, Button, Text, AppState, StyleSheet } from 'react-native';
-import { supabase } from '../../supabase'
+import React, { useContext, useState } from 'react';
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { AuthContext } from '../context/AuthContext';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../navigation';
 
+type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
 
-AppState.addEventListener('change', (state) => {
-  if (state === 'active') {
-    supabase.auth.startAutoRefresh()
-  } else {
-    supabase.auth.stopAutoRefresh()
-  }
-})
+interface Props {
+  navigation: LoginScreenNavigationProp;
+}
 
+const LoginScreen = ({ navigation }: Props) => {
+  const { signIn } = useContext(AuthContext);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-const LoginScreen = ({ navigation }:any) => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-
-  async function signInWithEmail() {
-    setLoading(true)
-    // alert(email)
-    const { error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    })
-
-    if (error) {
-      Alert.alert("Login Error", error.message);
-      navigation.navigate('Login'); // Ensure you are on the login screen
-    } else {
-      navigation.navigate('Account', { email });
+  const handleLogin = async () => {
+    try {
+      await signIn(email, password);
+      navigation.navigate('Account');
+    } catch (error) {
+      console.error(error);
     }
-  }
-
-  async function signUpWithEmail() {
-    setLoading(true)
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-    })
-
-    if (error) Alert.alert(error.message)
-    if (!session) Alert.alert('Please check your inbox for email verification!')
-    setLoading(false)
-  }
+  };
 
   return (
     <View style={styles.container}>
-      <Text>Login</Text>
+
+      <Text style={styles.loginTitle}>Sign In</Text>
       <TextInput
-        style={styles.input}
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
+        style={styles.input}
         autoCapitalize={"none"}
       />
       <TextInput
-        style={styles.input}
         placeholder="Password"
         value={password}
-        secureTextEntry
         onChangeText={setPassword}
+        secureTextEntry
+        style={styles.input}
+        autoCapitalize={"none"}
       />
-      <TouchableOpacity><Button title="Sign in" disabled={loading} onPress={() => signInWithEmail()} /></TouchableOpacity>
-      
-      <Text>Or</Text>
-      <TouchableOpacity><Button title="Sign Up" disabled={loading} onPress={() => signUpWithEmail()} /></TouchableOpacity>
+      <Button title="Login" onPress={handleLogin} />
+      <Text>No account, head on over here:</Text>
+      <TouchableOpacity onPress={() => navigation.navigate('SignUp')}><Text>Sign Up</Text></TouchableOpacity>
     </View>
   );
 };
@@ -77,16 +54,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    padding: 20,
-    backgroundColor: 'white',
+    padding: 16,
   },
   input: {
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,
-    marginBottom: 20,
-    paddingHorizontal: 10,
+    marginBottom: 12,
+    padding: 10,
   },
+  loginTitle: {
+    fontSize: 18,
+    fontWeight: 600,
+    textAlign: 'center',
+    padding: 10
+  }
 });
 
 export default LoginScreen;

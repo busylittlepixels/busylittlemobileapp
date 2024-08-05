@@ -1,14 +1,15 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
-import ProfileScreen from '../screens/ProfileScreen';
+import ProfileScreen from '../screens/PaymentScreen';
 import SettingsScreen from '../screens/SettingsScreen';
-import OnboardingScreen from '../screens/OnboardingScreen';
+import OnboardingScreen from '../screens/UpdateDetailsScreen';
 import TabTwoScreen from '../screens/TabTwo';
 import TabEileScreen from '../screens/TabEile';
 import { createStackNavigator } from '@react-navigation/stack';
 import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import AccountScreen from '../screens/AccountScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -58,8 +59,8 @@ const TabsStack = () => (
 const MainTabNavigator = () => {
   return (
     <Tab.Navigator>
-      <Tab.Screen name="Home" component={HomeScreen} options={screenOptions} />
-      <Tab.Screen name="Network" component={SettingStack} options={{ headerShown: false }} />
+      <Tab.Screen name="Settings" component={SettingStack} options={{ headerShown: false }} />
+      {/* <Tab.Screen name="Account" component={AccountScreen} options={{ headerShown: false }} /> */}
       <Tab.Screen name="Notifications" component={TabEileScreen} options={{ headerShown: false }} />
     </Tab.Navigator>
   );

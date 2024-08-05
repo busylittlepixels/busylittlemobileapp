@@ -1,9 +1,9 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
-import ProfileScreen from '../screens/ProfileScreen';
+import ProfileScreen from '../screens/PaymentScreen';
 import SettingsScreen from '../screens/SettingsScreen';
-import OnboardingScreen from '../screens/OnboardingScreen';
+import OnboardingScreen from '../screens/UpdateDetailsScreen';
 import { createStackNavigator } from '@react-navigation/stack';
 import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';

@@ -1,18 +1,23 @@
 import React from 'react';
 import { View, Image, Text, StyleSheet, Button } from 'react-native';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
+import { useRoute } from '@react-navigation/native';
 
-const HomeScreen =  ({ route, navigation }:any) => {
-
-  const { email } = route.params ? route.params : { email: 'test@cock.cc' };
- 
+const HomeScreen =  ({ navigation }:any) => {
+  const route = useRoute(); 
+  console.log('route', route.params)
+  console.log('navigation', navigation)
+  // @ts-ignore
+  const email = route.params?.email && route.params.email; 
   const navigateToProfile = () => {
+    // @ts-ignore
     navigation.navigate('Account', { email })
   };
 
   return (
     <View style={styles.container}>
-      <Text>Welcome, {email ? email : 'Test'}!</Text>
+      {/* @ts-ignore */}
+      <Text>Boooosh! Home screen for { route?.params?.email ? route.params.email : "Guest"}</Text>
       <Button title="To my Account!" onPress={navigateToProfile} />
     </View>
   );

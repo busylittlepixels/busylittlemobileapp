@@ -1,10 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const ProfileScreen = () => {
+const ServicesScreen = () => {
   return (
     <View style={styles.container}>
-      <Text>Profile Screen - ass</Text>
+      <Text style={styles.header}>Settings Screen</Text>
+      <Text>Eat a dick you fucking spa hole</Text>
     </View>
   );
 };
@@ -16,6 +17,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white',
   },
+  header: {
+    fontWeight: 'bold',
+    color: 'red'
+  }
 });
 
-export default ProfileScreen;
+export default ServicesScreen;
