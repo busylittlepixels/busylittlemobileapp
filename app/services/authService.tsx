@@ -27,17 +27,22 @@ export const authService = {
     return null;
   },
 
-  async signUp(email: string, password: string, full_name: string): Promise<void> {
+  async signUp(email: string, password: string, full_name: string, username: string): Promise<void> {
+   
     const { data, error } = await supabase.auth.signUp(
       {
-        email,
-        password,
-      },
-      // @ts-ignore
-      {
-        data: { full_name },
+        email: email,
+        password: password,
+        options: {
+          data: {
+            full_name: full_name,
+            username: username,
+          },
+        },
       }
     );
+
+    console.log('data', data);
     if (error) throw error;
 
     // Do not store user details or session tokens here

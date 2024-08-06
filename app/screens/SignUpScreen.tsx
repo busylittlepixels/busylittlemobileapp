@@ -14,6 +14,7 @@ const SignUpScreen = ({ navigation }: Props) => {
   const { signUp } = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [username, setUserName] = useState('');
   const [full_name, setFullName] = useState('');
   const [error, setError] = useState<string | null>(null);
 
@@ -24,19 +25,19 @@ const SignUpScreen = ({ navigation }: Props) => {
 
   const handleSignUp = async () => {
 
-    console.log(email, full_name, password)
+    console.log(email, username, full_name, password)
     if (!validateEmail(email)) {
       setError('Please enter a valid email address');
       return;
     }
-    if (!password || !full_name ) {
+    if (!password || !full_name || !username ) {
       setError('All fields are required');
       return;
     }
     setError(null);
     try {
       // @ts-ignore
-      await signUp(email, password, full_name);
+      await signUp(email, password, full_name, username);
       Alert.alert('Success', 'Please check your email to confirm your account.');
       navigation.navigate('Auth');
     } catch (error: any) {
@@ -48,6 +49,13 @@ const SignUpScreen = ({ navigation }: Props) => {
   return (
     <View style={styles.container}>
       {error && <Text style={styles.error}>{error}</Text>}
+      <Text>Username</Text>
+      <TextInput
+        placeholder="Username"
+        value={username}
+        onChangeText={setUserName}
+        style={styles.input}
+      />
       <Text>FullName</Text>
       <TextInput
         placeholder="Full Name"

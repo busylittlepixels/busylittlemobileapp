@@ -5,7 +5,7 @@ const SettingsScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Settings Screen</Text>
-      <Text>Eat a dick you fucking spa hole</Text>
+      <Text>Mongrels in a mess forever.</Text>
     </View>
   );
 };

@@ -1,11 +1,12 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, Text, Button, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { Alert, View, TextInput, Text, Button, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { supabase } from '../../supabase'; // Make sure to import your Supabase client
 import { AuthContext } from '../context/AuthContext'; // Make sure to import your AuthContext
 
 const AccountScreen = ({ navigation }:any) => {
   const { user, signOut } = useContext(AuthContext);
   const [tickets, setTickets] = useState([]);
+  const [username, setUsername] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -13,8 +14,7 @@ const AccountScreen = ({ navigation }:any) => {
   useEffect(() => {
     const getUserDetails = async () => {
       if (user && user.id) {
-        const { data, error } = await supabase
-          .from('profiles')
+        const { data, error } = await supabase.from('profiles')
           .select('*')
           .eq('id', user.id)
           .single();
@@ -30,7 +30,8 @@ const AccountScreen = ({ navigation }:any) => {
     };
 
     getUserDetails();
-  }, [user]);
+
+  }, [profile]);
 
   useEffect(() => {
     const fetchTickets = async () => {
@@ -48,14 +49,36 @@ const AccountScreen = ({ navigation }:any) => {
     fetchTickets();
   }, []);
 
+
   const handleLogout = async () => {
     await signOut();
     navigation.replace('Login');
   };
 
-  const letsSee = () => {
-    console.log('tickets', tickets);
+
+  const handleUpdate = async () => {
+    
+    // @ts-ignore
+    const updatedProfile = {...profile, username};
+    console.log(updatedProfile);
+    const { error } = await supabase
+      .from('profiles')
+      .update({ username })
+      .eq('id', user?.id)
+  
+    if (error) {
+      console.error('Error updating profile:', error.message);
+      Alert.alert('Error updating profile', error.message);
+    } else {
+      // console.log('Profile updated successfully:');
+      setProfile(updatedProfile);
+      Alert.alert('Profile updated successfully');
+    }
+    // @ts-ignore
+    setUsername('');
+
   };
+
 
   return (
     <View style={styles.main}>
@@ -64,10 +87,25 @@ const AccountScreen = ({ navigation }:any) => {
         {user && (
           <>
             <Text>Email: {user.email}</Text>
+            <View>
             {/* @ts-ignore */}
             {profile && <Text>Full Name: {profile?.full_name}</Text>}
+             {/* @ts-ignore */}
+            {profile && <Text>Username: {profile?.username}</Text>}
+            </View>
           </>
         )}
+        <>
+        {/* @ts-ignore */}
+          <TextInput
+            placeholder={'Email'}
+            value={username}
+            // @ts-ignore
+            onChangeText={setUsername}
+            autoCapitalize={"none"}
+          />
+        <Button title="Update" onPress={handleUpdate} />
+        </>
       </View>
       <View style={styles.container}>
         <Text style={styles.innerContainer}>Events:</Text>

@@ -14,7 +14,7 @@ const EventScreen = ({ navigation, route }:any) => {
     const { event_id } = route.params; // Get eventId from route params
 
     useEffect(() => {
-        console.log('event id?', event_id);
+        // console.log('event id?', event_id);
         const fetchTicket = async () => {
         const { data, error } = await supabase
             .from('tickets')
@@ -36,7 +36,7 @@ const EventScreen = ({ navigation, route }:any) => {
       }, [event_id]);
 
 
-    console.log('ticket', ticket);
+    // console.log('ticket', ticket);
 
   const handleLogout = async () => {
     await signOut();

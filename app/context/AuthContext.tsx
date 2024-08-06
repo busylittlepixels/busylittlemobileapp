@@ -6,13 +6,14 @@ interface User {
   id: string;
   email: string;
   full_name?: string;
+  username?: string;
 }
 
 interface AuthContextProps {
   user: User | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, full_name: string) => Promise<void>;
+  signUp: (email: string, password: string, full_name: string, username: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -51,8 +52,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const signUp = async (email: string, password: string, full_name: string) => {
-    const newUser = await authService.signUp(email, password, full_name);
+  const signUp = async (email: string, password: string, full_name: string, username: string) => {
+    const newUser = await authService.signUp(email, password, full_name, username);
     // @ts-ignore
     if (newUser) {
       await AsyncStorage.setItem('user', JSON.stringify(newUser));
@@ -67,6 +68,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   return (
+    // @ts-ignore
     <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
