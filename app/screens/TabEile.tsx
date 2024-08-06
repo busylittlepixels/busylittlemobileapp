@@ -27,7 +27,7 @@ export default function TabEileScreen({ navigation}:any) {
           sets up the tab navigator.
         </ThemedText>
         <TouchableOpacity
-            onPress={() => navigation.navigate('Account')}
+            onPress={() => navigation.navigate('Settings')}
             ><Text>Back to profile</Text></TouchableOpacity>
         <ExternalLink href="https://docs.expo.dev/router/introduction">
           <ThemedText type="link">Learn more</ThemedText>

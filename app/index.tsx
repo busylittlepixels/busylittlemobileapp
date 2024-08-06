@@ -3,7 +3,7 @@ import AppNavigator from './navigation';
 import { AuthProvider } from './context/AuthContext';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar, StyleSheet, View } from 'react-native';
-
+import Toast from 'react-native-toast-message';
 const App = () => {
   return (
     <SafeAreaProvider>
@@ -13,6 +13,7 @@ const App = () => {
           <AppNavigator />
         </AuthProvider>
       </SafeAreaView>
+      <Toast />
     </SafeAreaProvider>
   );
 };

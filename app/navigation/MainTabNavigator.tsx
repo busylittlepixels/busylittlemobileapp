@@ -60,7 +60,7 @@ const MainTabNavigator = () => {
   return (
     <Tab.Navigator>
       <Tab.Screen name="Settings" component={SettingStack} options={{ headerShown: false }} />
-      {/* <Tab.Screen name="Account" component={AccountScreen} options={{ headerShown: false }} /> */}
+      <Tab.Screen name="Account" component={TabsStack} options={{ headerShown: false }} />
       <Tab.Screen name="Notifications" component={TabEileScreen} options={{ headerShown: false }} />
     </Tab.Navigator>
   );

@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { Alert, View, TextInput, Text, Button, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { supabase } from '../../supabase'; // Make sure to import your Supabase client
 import { AuthContext } from '../context/AuthContext'; // Make sure to import your AuthContext
+import Toast from 'react-native-toast-message';
 
 const AccountScreen = ({ navigation }:any) => {
   const { user, signOut } = useContext(AuthContext);
@@ -31,7 +32,7 @@ const AccountScreen = ({ navigation }:any) => {
 
     getUserDetails();
 
-  }, [profile]);
+  }, [user]);
 
   useEffect(() => {
     const fetchTickets = async () => {
@@ -67,15 +68,22 @@ const AccountScreen = ({ navigation }:any) => {
       .eq('id', user?.id)
   
     if (error) {
-      console.error('Error updating profile:', error.message);
-      Alert.alert('Error updating profile', error.message);
+      Toast.show({
+        type: 'error',
+        text1: 'FUCK',
+        text2: 'Something done gone fucked up.' + error.message
+      });
+      
     } else {
       // console.log('Profile updated successfully:');
       setProfile(updatedProfile);
-      Alert.alert('Profile updated successfully');
+      Toast.show({
+        type: 'success',
+        text1: 'FUCK YEAH! Updated Yo!',
+      });
     }
     // @ts-ignore
-    setUsername('');
+    // setUsername('');
 
   };
 
@@ -89,9 +97,9 @@ const AccountScreen = ({ navigation }:any) => {
             <Text>Email: {user.email}</Text>
             <View>
             {/* @ts-ignore */}
-            {profile && <Text>Full Name: {profile?.full_name}</Text>}
+            <Text>Full Name: {profile?.full_name}</Text>
              {/* @ts-ignore */}
-            {profile && <Text>Username: {profile?.username}</Text>}
+            <Text>Username: {profile?.username}</Text>
             </View>
           </>
         )}

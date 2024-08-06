@@ -11,6 +11,7 @@ import { AuthContext } from '../context/AuthContext';
 import MainDrawerNavigator from './MainDrawerNavigator';
 import SignUpScreen from '../screens/SignUpScreen';
 import EventScreen from '../screens/EventScreen';
+import TabEileScreen from '../screens/TabEile';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -22,6 +23,7 @@ export type RootStackParamList = {
   Event: undefined;
   UpdateDetails: undefined;
   Payment: undefined;
+  TabEile: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -49,6 +51,7 @@ const AppNavigator = () => {
             <Stack.Screen name="Services" component={ServicesScreen} />
             <Stack.Screen name="UpdateDetails" component={UpdateDetailsScreen} />
             <Stack.Screen name="Payment" component={PaymentScreen} />
+            <Stack.Screen name="TabEile" component={TabEileScreen} />
           </>
         ) : (
           <>
