@@ -8,6 +8,7 @@ const AccountScreen = ({ navigation }:any) => {
   const { user, signOut } = useContext(AuthContext);
   const [tickets, setTickets] = useState([]);
   const [username, setUsername] = useState([]);
+  const [website, setWebsite] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -59,19 +60,29 @@ const AccountScreen = ({ navigation }:any) => {
 
   const handleUpdate = async () => {
     
+    if(!username){
+      Toast.show({
+        type: 'error',
+        text1: 'Derp',
+        text2: 'You can\`t have an emptry username',
+        
+      });
+    }
     // @ts-ignore
     const updatedProfile = {...profile, username};
-    console.log(updatedProfile);
+    console.log('updated profile', updatedProfile);
     const { error } = await supabase
       .from('profiles')
       .update({ username })
-      .eq('id', user?.id)
+      // @ts-ignore
+      .eq('id', user.id)
   
     if (error) {
       Toast.show({
         type: 'error',
         text1: 'FUCK',
-        text2: 'Something done gone fucked up.' + error.message
+        text2: 'Something done gone fucked up.' + error.message,
+        
       });
       
     } else {
@@ -98,6 +109,8 @@ const AccountScreen = ({ navigation }:any) => {
             <View>
             {/* @ts-ignore */}
             <Text>Full Name: {profile?.full_name}</Text>
+             {/* @ts-ignore */}
+             {profile?.website ? <Text>Website: {profile?.website}</Text> : null}
              {/* @ts-ignore */}
             <Text>Username: {profile?.username}</Text>
             </View>
