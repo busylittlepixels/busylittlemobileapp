@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet, Image, Platform, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, Image, Platform, Pressable, Text } from 'react-native';
 
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
@@ -26,9 +26,9 @@ export default function TabEileScreen({ navigation}:any) {
           The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
           sets up the tab navigator.
         </ThemedText>
-        <TouchableOpacity
+        <Pressable
             onPress={() => navigation.navigate('Settings')}
-            ><Text>Back to profile</Text></TouchableOpacity>
+            ><Text>Back to profile</Text></Pressable>
         <ExternalLink href="https://docs.expo.dev/router/introduction">
           <ThemedText type="link">Learn more</ThemedText>
         </ExternalLink>

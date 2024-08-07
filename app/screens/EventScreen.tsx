@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { View, Text, Button, FlatList, StyleSheet } from 'react-native';
 import { supabase } from '../../supabase'; // Make sure to import your Supabase client
 import { AuthContext } from '../context/AuthContext'; // Make sure to import your AuthContext
-import { TouchableOpacity } from 'react-native-gesture-handler';
+// import { Pressable } from 'react-native-gesture-handler';
 
 const EventScreen = ({ navigation, route }:any) => {
     const { user, signOut } = useContext(AuthContext);
@@ -52,15 +52,17 @@ const EventScreen = ({ navigation, route }:any) => {
             <Text>Email: {user.email}</Text>
             {/* @ts-ignore */}
             {profile && <Text>Full Name: {profile?.full_name}</Text>}
-            <View>
+           
+            <Text style={styles.title}>Event:</Text>
+            <View style={styles.item}>
                 {/* @ts-ignore */}
                 <Text>Event ID: {ticket.event_id}</Text>
                 {/* @ts-ignore */}
                 <Text>Event Name: {ticket.event_name}</Text>
                 {/* @ts-ignore */}
                 <Text>Event Description: {ticket.event_description}</Text>
-                 {/* @ts-ignore */}
-                 <Text>Event Description: <Button title="Buy Ticket" href={ticket.purchase_link} /></Text>
+                {/* @ts-ignore */}
+                <Button title="Buy Ticket" href={ticket.purchase_link} />
             </View>
           </>
         )}
@@ -91,14 +93,15 @@ const styles = StyleSheet.create({
     top: 0,
   },
   item: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    // borderBottomWidth: 1,
+    // borderBottomColor: '#ccc',
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#000',
+    paddingTop: 12,
+    paddingBottom: 12,
   },
   buttons: {
     // backgroundColor: 'cornflowerblue',

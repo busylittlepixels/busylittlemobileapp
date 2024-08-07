@@ -7,7 +7,7 @@ import OnboardingScreen from '../screens/UpdateDetailsScreen';
 import TabTwoScreen from '../screens/TabTwo';
 import TabEileScreen from '../screens/TabEile';
 import { createStackNavigator } from '@react-navigation/stack';
-import { TouchableOpacity } from 'react-native';
+import { Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AccountScreen from '../screens/AccountScreen';
 
@@ -15,9 +15,9 @@ const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 const DrawerToggle = ({ navigation }:any) => (
-  <TouchableOpacity onPress={() => navigation.openDrawer()} style={{ marginLeft: 10 }}>
+  <Pressable onPress={() => navigation.openDrawer()} style={{ marginLeft: 10 }}>
     <Ionicons name="menu" size={24} color="black" />
-  </TouchableOpacity>
+  </Pressable>
 );
 
 const screenOptions = ({ navigation }:any) => ({
@@ -25,17 +25,17 @@ const screenOptions = ({ navigation }:any) => ({
   headerShown: false
 });
 
-const HomeStack = () => (
-  <Stack.Navigator>
-    <Stack.Screen name="Home" component={HomeScreen} options={screenOptions} />
-  </Stack.Navigator>
-);
+// const HomeStack = () => (
+//   <Stack.Navigator>
+//     <Stack.Screen name="Home" component={HomeScreen} options={screenOptions} />
+//   </Stack.Navigator>
+// );
 
-const ProfileStack = () => (
-  <Stack.Navigator>
-    <Stack.Screen name="Profile" component={ProfileScreen} options={screenOptions} />
-  </Stack.Navigator>
-);
+// const ProfileStack = () => (
+//   <Stack.Navigator>
+//     <Stack.Screen name="Profile" component={ProfileScreen} options={screenOptions} />
+//   </Stack.Navigator>
+// );
 
 const SettingStack = () => (
   <Stack.Navigator>
@@ -43,11 +43,11 @@ const SettingStack = () => (
   </Stack.Navigator>
 );
 
-const OnboardingStack = () => (
-  <Stack.Navigator>
-    <Stack.Screen name="Onboarding Stack" component={OnboardingScreen} options={screenOptions} />
-  </Stack.Navigator>
-);
+// const OnboardingStack = () => (
+//   <Stack.Navigator>
+//     <Stack.Screen name="Onboarding Stack" component={OnboardingScreen} options={screenOptions} />
+//   </Stack.Navigator>
+// );
 
 const TabsStack = () => (
   <Stack.Navigator>
@@ -59,9 +59,9 @@ const TabsStack = () => (
 const MainTabNavigator = () => {
   return (
     <Tab.Navigator>
-      <Tab.Screen name="Settings" component={SettingStack} options={{ headerShown: false }} />
+      <Tab.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
       <Tab.Screen name="Account" component={TabsStack} options={{ headerShown: false }} />
-      <Tab.Screen name="Notifications" component={TabEileScreen} options={{ headerShown: false }} />
+      <Tab.Screen name="Notifications" component={TabEileScreen} options={{ headerShown: false, tabBarBadge: 2 }} />
     </Tab.Navigator>
   );
 };

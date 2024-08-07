@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { Alert, View, TextInput, Text, Button, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { Alert, View, TextInput, Text, Button, FlatList, StyleSheet, Pressable } from 'react-native';
 import { supabase } from '../../supabase'; // Make sure to import your Supabase client
 import { AuthContext } from '../context/AuthContext'; // Make sure to import your AuthContext
 import Toast from 'react-native-toast-message';
@@ -108,25 +108,14 @@ const AccountScreen = ({ navigation }:any) => {
             <Text>Email: {user.email}</Text>
             <View>
             {/* @ts-ignore */}
-            <Text>Full Name: {profile?.full_name}</Text>
+            {/* <Text>Full Name: {profile?.full_name}</Text> */}
              {/* @ts-ignore */}
-             {profile?.website ? <Text>Website: {profile?.website}</Text> : null}
+             {/* {profile?.website ? <Text>Website: {profile?.website}</Text> : null} */}
              {/* @ts-ignore */}
             <Text>Username: {profile?.username}</Text>
             </View>
           </>
         )}
-        <>
-        {/* @ts-ignore */}
-          <TextInput
-            placeholder={'Email'}
-            value={username}
-            // @ts-ignore
-            onChangeText={setUsername}
-            autoCapitalize={"none"}
-          />
-        <Button title="Update" onPress={handleUpdate} />
-        </>
       </View>
       <View style={styles.container}>
         <Text style={styles.innerContainer}>Events:</Text>
@@ -136,12 +125,14 @@ const AccountScreen = ({ navigation }:any) => {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <View style={styles.item}>
+              <View>
                {/*  @ts-ignore  */}
               <Text style={styles.title}>{item.event_name}</Text>
                  {/*  @ts-ignore  */}
               <Text>{item.event_description}</Text>
+              </View>
               {/* @ts-ignore */}
-              <TouchableOpacity onPress={() => navigation.navigate('Event', { event_id: item.event_id })} style={{ marginLeft: 10 }}><Text>View Event</Text></TouchableOpacity>
+              <Pressable onPress={() => navigation.navigate('Event', { event_id: item.event_id })} style={{ marginLeft: 10 }}><Text>View Event</Text></Pressable>
             </View>
           )}
         />
@@ -173,6 +164,10 @@ const styles = StyleSheet.create({
   },
   item: {
     padding: 16,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
@@ -190,6 +185,13 @@ const styles = StyleSheet.create({
     gap: 4,
     padding: 16
   },
+  inputStyle: {
+    marginTop: 10,
+    backgroundColor: 'lightgray',
+    borderWidth: 1,
+    color: '#000',
+    padding: 10
+  }
 });
 
 export default AccountScreen;

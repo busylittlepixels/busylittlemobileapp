@@ -5,7 +5,7 @@ import ProfileScreen from '../screens/PaymentScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import OnboardingScreen from '../screens/UpdateDetailsScreen';
 import { createStackNavigator } from '@react-navigation/stack';
-import { TouchableOpacity } from 'react-native';
+import { Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import TabTwoScreen from '../screens/TabTwo';
 
@@ -13,9 +13,9 @@ const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 const DrawerToggle = ({ navigation }:any) => (
-  <TouchableOpacity onPress={() => navigation.openDrawer()} style={{ marginLeft: 10 }}>
+  <Pressable onPress={() => navigation.openDrawer()} style={{ marginLeft: 10 }}>
     <Ionicons name="menu" size={24} color="black" />
-  </TouchableOpacity>
+  </Pressable>
 );
 
 const screenOptions = ({ navigation }:any) => ({

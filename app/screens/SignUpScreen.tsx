@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Text, Alert, TouchableOpacity } from 'react-native';
+import { View, TextInput, Button, StyleSheet, Text, Alert, Pressable } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation';
@@ -83,7 +83,7 @@ const SignUpScreen = ({ navigation }: Props) => {
         autoCapitalize='none'
       />
       <Button title="Sign Up" onPress={handleSignUp} />
-      <TouchableOpacity onPress={() => navigation.navigate('Login')}><Text>Have an account? Log In</Text></TouchableOpacity>
+      <Pressable onPress={() => navigation.navigate('Login')}><Text>Have an account? Log In</Text></Pressable>
     </View>
   );
 };

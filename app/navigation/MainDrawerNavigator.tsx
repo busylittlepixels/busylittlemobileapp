@@ -6,8 +6,7 @@ import SettingsScreen from '../screens/SettingsScreen';
 import OnboardingScreen from '../screens/UpdateDetailsScreen';
 import OnboardingTabNavigator from './OnboardingTabNavigator';
 
-import { StyleSheet, Image, Platform, TouchableOpacity, Text } from 'react-native';
-import HomeScreen from '@/app-example/(tabs)';
+import { StyleSheet, Image, Platform, Pressable, Text } from 'react-native';
 import AccountScreen from '../screens/AccountScreen';
 
 

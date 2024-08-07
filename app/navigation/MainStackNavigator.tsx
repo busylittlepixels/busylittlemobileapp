@@ -15,7 +15,7 @@ const defaultScreenOptions = {
   headerStyle: {
     backgroundColor: '#f4511e',
   },
-  headerTintColor: '#fff',
+  headerTintColor: '#000',
   headerTitleStyle: {
     fontWeight: 'bold',
   },

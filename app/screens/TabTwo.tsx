@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet, Image, Platform, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, Image, Platform, Pressable, Text } from 'react-native';
 
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
@@ -12,12 +12,6 @@ export default function TabTwoScreen({ navigation}:any) {
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
       headerImage={<Ionicons size={310} name="code-slash" style={styles.headerImage} />}>
-         <TouchableOpacity
-               onPress={() => navigation.navigate('Settings')}
-              //  @ts-expect-error
-               style={styles.link}
-            
-            ><Text>Network</Text></TouchableOpacity>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Explore</ThemedText>
       </ThemedView>
@@ -32,9 +26,11 @@ export default function TabTwoScreen({ navigation}:any) {
           The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
           sets up the tab navigator.
         </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
+        <Pressable
+          onPress={() => navigation.navigate('Settings')}
+          //  @ts-expect-error
+          style={styles.link}
+          ><Text>Network</Text></Pressable>
       </Collapsible>
       <Collapsible title="Android, iOS, and web support">
         <ThemedText>

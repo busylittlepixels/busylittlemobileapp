@@ -5,7 +5,7 @@ const SettingsScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Settings Screen</Text>
-      <Text>Mongrels in a mess forever.</Text>
+      <Text>Welcome to the Church of Noise!</Text>
     </View>
   );
 };
