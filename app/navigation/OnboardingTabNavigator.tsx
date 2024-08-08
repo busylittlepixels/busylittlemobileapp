@@ -41,11 +41,6 @@ const SettingStack = () => (
   </Stack.Navigator>
 );
 
-const OnboardingStack = () => (
-  <Stack.Navigator>
-    <Stack.Screen name="Onboarding" component={OnboardingScreen} options={screenOptions} />
-  </Stack.Navigator>
-);
 
 const OnboardingTabNavigator = () => {
   return (

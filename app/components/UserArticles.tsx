@@ -14,7 +14,7 @@ const UserArticles = ({ navigation, filters }:any) => {
   const fetchArticles = async () => {
     setLoading(true);
     try {
-      const response = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=5');
+      const response = await fetch('https://blpwp.frb.io/wp-json/wp/v2/news');
       const data = await response.json();
       
       // Apply filters if any
@@ -47,7 +47,7 @@ const UserArticles = ({ navigation, filters }:any) => {
           renderItem={({ item }) => (
             <View style={styles.item}>
               <Pressable onPress={() => navigation.navigate('Article', { item })}>
-                <Text style={styles.title}>{item.title}</Text>
+                <Text style={styles.title}>{item.title.rendered}</Text>
               </Pressable>
             </View>
           )}
@@ -75,7 +75,8 @@ const styles = StyleSheet.create({
   innerContainer: {
     paddingRight: 16,
     paddingLeft: 16,
-    marginTop: 10,
+    marginTop: 20,
+    paddingBottom: 10,
     fontWeight: 'bold',
     fontSize: 24
   },

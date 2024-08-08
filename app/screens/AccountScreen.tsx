@@ -171,6 +171,7 @@ const styles = StyleSheet.create({
     paddingRight: 16,
     paddingLeft: 16,
     marginTop: 10,
+    paddingBottom: 10,
     fontWeight: 'bold',
     fontSize: 24
   },

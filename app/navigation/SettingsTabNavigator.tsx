@@ -42,6 +42,7 @@ const SettingStack = () => (
 
 const OnboardingStack = () => (
   <Stack.Navigator>
+    {/* @ts-ignore */}
     <Stack.Screen name="Onboarding" component={OnboardingScreen} options={screenOptions} />
   </Stack.Navigator>
 );

@@ -48,39 +48,50 @@ const SignUpScreen = ({ navigation }: Props) => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.logoTitle}>busylittlemobileapp.</Text>
       {error && <Text style={styles.error}>{error}</Text>}
       <Text>Username</Text>
       <TextInput
         placeholder="Username"
+        placeholderTextColor='#000'
         value={username}
         onChangeText={setUserName}
         style={styles.input}
+        autoCapitalize='none'
+        clearTextOnFocus={true}
       />
       <Text>FullName</Text>
       <TextInput
         placeholder="Full Name"
+        placeholderTextColor='#000'
         value={full_name}
         onChangeText={setFullName}
         style={styles.input}
+        autoCapitalize='none'
+        clearTextOnFocus={true}
       />
       
       <Text>Email</Text>
       <TextInput
-        placeholder="Email"
+        placeholder="you@example.com"
+        placeholderTextColor='#000'
         value={email}
         onChangeText={setEmail}
         style={styles.input}
         keyboardType="email-address"
         autoCapitalize='none'
+        clearTextOnFocus={true}
       />
       <Text>Password</Text>
       <TextInput
         placeholder="Password"
+        placeholderTextColor='#000'
         value={password}
         onChangeText={setPassword}
         secureTextEntry
         style={styles.input}
         autoCapitalize='none'
+        clearTextOnFocus={true}
       />
       <Button title="Sign Up" onPress={handleSignUp} />
       <Pressable onPress={() => navigation.navigate('Login')}><Text>Have an account? Log In</Text></Pressable>
@@ -105,6 +116,13 @@ const styles = StyleSheet.create({
     color: 'red',
     marginBottom: 10,
   },
+  logoTitle: {
+    fontSize: 20,
+    fontWeight: 700,
+    textAlign: 'center',
+    padding: 10,
+    color: '#000'
+  }
 });
 
 export default SignUpScreen;

@@ -59,5 +59,16 @@ export const authService = {
   async getUser(): Promise<User | null> {
     const user = await AsyncStorage.getItem('user');
     return user ? JSON.parse(user) : null;
-  }
+  },
+
+
+
+  async resetPassword(email: string): Promise<User | null> {
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: 'https://busylittleplatform.vercel.app/reset-password/new-password',
+    })
+    
+    return null;
+  },
+
 };
