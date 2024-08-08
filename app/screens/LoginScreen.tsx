@@ -30,23 +30,29 @@ const LoginScreen = ({ navigation }: Props) => {
       <Text style={styles.logoTitle}>busylittlemobileapp.</Text>
       <Text style={styles.loginTitle}>Sign In</Text>
       <TextInput
-        placeholder="Email"
+        placeholder="your@email.com"
+        placeholderTextColor='#000'
         value={email}
         onChangeText={setEmail}
         style={styles.input}
         autoCapitalize={"none"}
+        clearTextOnFocus={true}
+        
       />
       <TextInput
         placeholder="Password"
+        placeholderTextColor='#000'
         value={password}
         onChangeText={setPassword}
         secureTextEntry
         style={styles.input}
         autoCapitalize={"none"}
+        clearTextOnFocus={true}
       />
       <Button title="Login" onPress={handleLogin} />
-      <Text>No account, head on over here:</Text>
-      <Pressable onPress={() => navigation.navigate('SignUp')}><Text>Sign Up</Text></Pressable>
+      <Pressable onPress={() => navigation.navigate('SignUp')}><Text>No account? Sign Up</Text></Pressable>
+      <View>{''}</View>
+      <Pressable onPress={() => navigation.navigate('ResetPass')}><Text>Forgot Password?</Text></Pressable>
     </View>
   );
 };

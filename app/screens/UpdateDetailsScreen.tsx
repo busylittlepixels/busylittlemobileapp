@@ -1,10 +1,28 @@
+// @ts-nocheck
 import React, { useContext, useState, useEffect } from 'react';
 import { Alert, View, TextInput, Text, Button, FlatList, StyleSheet, Pressable } from 'react-native';
 import { supabase } from '../../supabase'; // Make sure to import your Supabase client
 import { AuthContext } from '../context/AuthContext'; // Make sure to import your AuthContext
 import Toast from 'react-native-toast-message';
 
-const UpdateDetailsScreen = ({ navigation }:any) => {
+export interface Profile {
+  id: string;
+  username?: string;
+  full_name?: string;
+  website?: string;
+}
+
+export interface User {
+  id: string;
+}
+
+interface UpdateProfileFormProps {
+  navigation: any;
+  profile: Profile;
+  user: User;
+}
+
+const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
   const { user, signOut } = useContext(AuthContext);
   const [username, setUsername] = useState([]);
   const [website, setWebsite] = useState([]);
@@ -35,48 +53,56 @@ const UpdateDetailsScreen = ({ navigation }:any) => {
 
   }, [user]);
 
-  
-  const handleUpdate = async () => {
+  useEffect(() => {
+    setUsername(profile?.username || '');
+    setFullname(profile.full_name || '');
+    setWebsite(profile.website || '');
+  }, [profile]);
 
-    if (!full_name || !website || !username) {
-      setError('All fields are required');
+  const handleUpdate = async () => {
+    const updates: Partial<Profile> = {};
+
+    if (username && username !== profile.username) {
+      updates.username = username;
+    }
+
+    if (full_name && full_name !== profile.full_name) {
+      updates.full_name = full_name;
+    }
+
+    if (website && website !== profile.website) {
+      updates.website = website;
+    }
+
+    if (Object.keys(updates).length === 0) {
+      setError('At least one field must be updated');
       return;
     }
-    
-    const updatedProfile = {...profile, username, full_name, website};
+
+    const updatedProfile: Profile = { ...profile, ...updates };
     console.log('updated profile', updatedProfile);
+
     const { error } = await supabase
       .from('profiles')
-      .update({ 
-        full_name: full_name,
-        website: website,
-        username: username 
-      })
-      // @ts-ignore
-      .eq('id', user.id)
-  
+      .update(updates)
+      .eq('id', user.id);
+
     if (error) {
       Toast.show({
         type: 'error',
-        text1: 'FUCK',
-        text2: 'Something done gone fucked up.' + error.message,
-        
+        text1: 'Error',
+        text2: 'Something went wrong: ' + error.message,
       });
-      
     } else {
-      // console.log('Profile updated successfully:');
-      // console.log(updatedProfile);
       setProfile(updatedProfile);
       Toast.show({
         type: 'success',
-        text1: 'FUCK YEAH! Updated Yo!',
+        text1: 'Profile Updated',
       });
     }
-    // @ts-ignore
-    setUsername('');
-
   };
 
+  
 
   return (
     <View style={styles.main}>
@@ -95,8 +121,9 @@ const UpdateDetailsScreen = ({ navigation }:any) => {
             </View>
           </>
         )}
-        <>
+        <View style={styles.formContainer}>
           {/* @ts-ignore */}
+          <Text style={styles.label}>Username:</Text>
           <TextInput
             // @ts-ignore
             placeholder={profile?.username}
@@ -110,7 +137,8 @@ const UpdateDetailsScreen = ({ navigation }:any) => {
             style={styles.inputStyle}
             
           />
-          {/* @ts-ignore  */}
+          <View></View>
+          <Text style={styles.label}>Website:</Text>
           <TextInput
            // @ts-ignore
             placeholder={profile?.website}
@@ -124,6 +152,7 @@ const UpdateDetailsScreen = ({ navigation }:any) => {
             style={styles.inputStyle}
             
           />
+          <Text style={styles.label}>Full Name:</Text>
           {/* @ts-ignore  */}
            <TextInput
            // @ts-ignore
@@ -140,7 +169,7 @@ const UpdateDetailsScreen = ({ navigation }:any) => {
           />
           <Button title="Update" onPress={handleUpdate} />
           <Pressable onPress={() => navigation.navigate('Account', { user })}><Text>Back to profile</Text></Pressable>
-        </>
+        </View>
       </View>
     </View>
   );
@@ -155,11 +184,16 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
   },
+  label:{
+    paddingTop: 10,
+    fontWeight: 'bold'
+  },
   formContainer:{
-    flex: 2,
-    marginTop: 10
+    flex: 3,
+    marginTop: 20
   },
   innerContainer: {
+    flex: 1, 
     flexDirection: 'column',
     justifyContent: 'center',
     paddingRight: 16,
@@ -196,6 +230,7 @@ const styles = StyleSheet.create({
     padding: 16
   },
   inputStyle: {
+    marginTop: 10,
     marginTop: 10,
     backgroundColor: 'lightgray',
     borderWidth: 1,

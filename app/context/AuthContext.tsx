@@ -15,6 +15,8 @@ interface AuthContextProps {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, full_name: string, username: string) => Promise<void>;
   signOut: () => Promise<void>;
+  completeOnboarding: () => Promise<void>;
+  isFirstLaunch: boolean;
 }
 
 export const AuthContext = createContext<AuthContextProps>({
@@ -23,6 +25,8 @@ export const AuthContext = createContext<AuthContextProps>({
   signIn: async () => {},
   signUp: async () => {},
   signOut: async () => {},
+  completeOnboarding: async () => {},
+  isFirstLaunch: false,
 });
 
 interface AuthProviderProps {
@@ -32,6 +36,7 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isFirstLaunch, setIsFirstLaunch] = useState<boolean>(false);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -39,9 +44,21 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       if (storedUser) {
         setUser(JSON.parse(storedUser));
       }
-      setLoading(false); // Ensure loading is set to false after checking the stored user
+      setLoading(false);
     };
+
+    const checkFirstLaunch = async () => {
+      const hasLaunched = await AsyncStorage.getItem('hasLaunched');
+      if (hasLaunched === null) {
+        setIsFirstLaunch(true);
+        await AsyncStorage.setItem('hasLaunched', 'true');
+      } else {
+        setIsFirstLaunch(false);
+      }
+    };
+
     loadUser();
+    checkFirstLaunch();
   }, []);
 
   const signIn = async (email: string, password: string) => {
@@ -67,9 +84,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser(null);
   };
 
+  const completeOnboarding = async () => {
+    setIsFirstLaunch(false);
+  };
+
   return (
     // @ts-ignore
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, completeOnboarding, isFirstLaunch }}>
       {children}
     </AuthContext.Provider>
   );
