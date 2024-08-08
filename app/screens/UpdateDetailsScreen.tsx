@@ -10,8 +10,8 @@ const UpdateDetailsScreen = ({ navigation }:any) => {
   const [website, setWebsite] = useState([]);
   const [full_name, setFullname] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [profile, setProfile] = useState(null);
+  const [error, setError] = useState<any>([]);
+  const [profile, setProfile] = useState([]);
 
   useEffect(() => {
     const getUserDetails = async () => {
@@ -39,15 +39,10 @@ const UpdateDetailsScreen = ({ navigation }:any) => {
   const handleUpdate = async () => {
 
     if (!full_name || !website || !username) {
-      // @ts-ignore
       setError('All fields are required');
       return;
     }
     
-    // console.log('fullname', fullname); 
-    // console.log('website', website); 
-    // console.log('username', username); 
-    // @ts-ignore
     const updatedProfile = {...profile, username, full_name, website};
     console.log('updated profile', updatedProfile);
     const { error } = await supabase
@@ -111,6 +106,7 @@ const UpdateDetailsScreen = ({ navigation }:any) => {
             // @ts-ignore
             onChangeText={setUsername}
             autoCapitalize={"none"}
+            clearTextOnFocus={true}
             style={styles.inputStyle}
             
           />
@@ -120,6 +116,7 @@ const UpdateDetailsScreen = ({ navigation }:any) => {
             placeholder={profile?.website}
             placeholderTextColor='#000'
             placeholderPadding="5px"
+            clearTextOnFocus={true}
             value={website}
             // @ts-ignore
             onChangeText={setWebsite}
@@ -134,6 +131,7 @@ const UpdateDetailsScreen = ({ navigation }:any) => {
             placeholderTextColor='#000'
             placeholderPadding="5px"
             value={full_name}
+            clearTextOnFocus={true}
             // @ts-ignore
             onChangeText={setFullname}
             autoCapitalize={"none"}

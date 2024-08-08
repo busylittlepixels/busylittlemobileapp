@@ -12,10 +12,12 @@ import MainDrawerNavigator from './MainDrawerNavigator';
 import SignUpScreen from '../screens/SignUpScreen';
 import EventScreen from '../screens/EventScreen';
 import TabEileScreen from '../screens/TabEile';
+import ArticleScreen from '../screens/ArticleScreen';
 
 export type RootStackParamList = {
   Splash: undefined;
   Auth: undefined;
+  Article: undefined;
   Login: undefined;
   SignUp: undefined;
   Account: undefined;
@@ -48,6 +50,7 @@ const AppNavigator = () => {
           <>
             <Stack.Screen name="Account" component={MainDrawerNavigator} options={{ headerShown: false }} />
             <Stack.Screen name="Event" component={EventScreen} options={{ headerShown: true }} />
+            <Stack.Screen name="Article" component={ArticleScreen} options={{ headerShown: true }} />
             <Stack.Screen name="Services" component={ServicesScreen} />
             <Stack.Screen name="UpdateDetails" component={UpdateDetailsScreen} />
             <Stack.Screen name="Payment" component={PaymentScreen} />

@@ -1,8 +1,10 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { Alert, View, TextInput, Text, Button, FlatList, StyleSheet, Pressable } from 'react-native';
 import { supabase } from '../../supabase'; // Make sure to import your Supabase client
 import { AuthContext } from '../context/AuthContext'; // Make sure to import your AuthContext
 import Toast from 'react-native-toast-message';
+import { useFocusEffect } from '@react-navigation/native';
+import UserArticles from '../components/UserArticles';
 
 const AccountScreen = ({ navigation }:any) => {
   const { user, signOut } = useContext(AuthContext);
@@ -13,26 +15,25 @@ const AccountScreen = ({ navigation }:any) => {
   const [error, setError] = useState(null);
   const [profile, setProfile] = useState(null);
 
-  useEffect(() => {
-    const getUserDetails = async () => {
-      if (user && user.id) {
-        const { data, error } = await supabase.from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single();
+  const getUserDetails = async () => {
+    if (user && user.id) {
+      const { data, error } = await supabase.from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
 
-        if (error) {
-          // @ts-ignore
-          setError(error.message);
-        } else {
-          setProfile(data);
-        }
-        setLoading(false);
+      if (error) {
+        // @ts-ignore
+        setError(error.message);
+      } else {
+        setProfile(data);
       }
-    };
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     getUserDetails();
-
   }, [user]);
 
   useEffect(() => {
@@ -98,6 +99,11 @@ const AccountScreen = ({ navigation }:any) => {
 
   };
 
+    useFocusEffect(
+      useCallback(() => {
+        getUserDetails();
+      }, [user])
+  );
 
   return (
     <View style={styles.main}>
@@ -132,10 +138,13 @@ const AccountScreen = ({ navigation }:any) => {
               <Text>{item.event_description}</Text>
               </View>
               {/* @ts-ignore */}
-              <Pressable onPress={() => navigation.navigate('Event', { event_id: item.event_id })} style={{ marginLeft: 10 }}><Text>View Event</Text></Pressable>
+              <Pressable onPress={() => navigation.navigate('Event', { item })} style={{ marginLeft: 10 }}><Text>View Event</Text></Pressable>
             </View>
           )}
         />
+      </View>
+      <View style={styles.container}>
+        <UserArticles navigation={navigation} />
       </View>
       <View style={styles.buttons}>
         <Button title="Update Details" onPress={() => navigation.navigate('UpdateDetails')} />
@@ -154,6 +163,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
+    marginBottom: 10,
   },
   innerContainer: {
     flexDirection: 'column',
@@ -161,6 +171,8 @@ const styles = StyleSheet.create({
     paddingRight: 16,
     paddingLeft: 16,
     marginTop: 10,
+    fontWeight: 'bold',
+    fontSize: 24
   },
   item: {
     padding: 16,
@@ -195,3 +207,4 @@ const styles = StyleSheet.create({
 });
 
 export default AccountScreen;
+

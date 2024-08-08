@@ -1,17 +1,14 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useEffect } from 'react';
 import { StyleSheet, Image, Platform, Pressable, Text, View, Button } from 'react-native';
-
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
-export default function EventScreen({ navigation, route }:any) {
+export default function ArticleScreen({ navigation, route }:any) {
 
     useEffect(() => {
-      navigation.setOptions({ title: route.params.item.event_name });
+        navigation.setOptions({ title: route.params.item.title });
     }, [navigation]);
     
   return (
@@ -19,13 +16,15 @@ export default function EventScreen({ navigation, route }:any) {
       headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
       headerImage={<Ionicons size={310} name="code-slash" style={styles.headerImage} />}>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">{route.params ? route.params.item.event_name : 'Title'}</ThemedText>
+        <ThemedText type="title">{route.params ? route.params.item.title : 'Title'}</ThemedText>
       </ThemedView>
         <ThemedText>
-            {route.params ? route.params.item.event_description : 'Body'}
+            {route.params ? route.params.item.body : 'Body'}
+            <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
+            <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
         </ThemedText>
         <View>
-            <Button title="Back to List" onPress={() => navigation.navigate('Account')} />
+            <Button title="Back to Articles" onPress={() => navigation.navigate('Account')} />
         </View>
       {/* <Collapsible title="File-based routing">
         <ThemedText>
@@ -122,83 +121,29 @@ const styles = StyleSheet.create({
 });
 
 
-
 // import React, { useContext, useState, useEffect } from 'react';
 // import { View, Text, Button, FlatList, StyleSheet } from 'react-native';
 // import { supabase } from '../../supabase'; // Make sure to import your Supabase client
 // import { AuthContext } from '../context/AuthContext'; // Make sure to import your AuthContext
 // // import { Pressable } from 'react-native-gesture-handler';
 
-// const EventScreen = ({ navigation, route }:any) => {
-//     const { user, signOut } = useContext(AuthContext);
-//     const [ticket, setTicket] = useState([]);
-//     const [loading, setLoading] = useState(true);
-//     const [error, setError] = useState(null);
-//     const [profile, setProfile] = useState(null);
-
-//     const { event_id } = route.params; // Get eventId from route params
-
-//     useEffect(() => {
-//         // console.log('event id?', event_id);
-//         const fetchTicket = async () => {
-//         const { data, error } = await supabase
-//             .from('tickets')
-//             .select('*')
-//             .eq('event_id', event_id)
-//             .single();
-
-//           if (error) {
-//             // @ts-ignore
-//             setError(error.message);
-//           } else {
-//             // @ts-ignore
-//             setTicket(data);
-//           }
-//           setLoading(false);
-//         };
-    
-//         fetchTicket();
-//       }, [event_id]);
+// const ArticleScreen = ({ navigation, route }:any) => {
+   
+//     console.log('article navifation', navigation);
+//     console.log('route', route);
 
 
-//     // console.log('ticket', ticket);
-
-//   const handleLogout = async () => {
-//     await signOut();
-//     navigation.replace('Login');
-//   };
-
-//   return (
-//     <View style={styles.main}>
-//       <View style={styles.innerContainer}>
-//         <Text style={styles.title}>Account</Text>
-//         {user && (
-//           <>
-//             <Text>Email: {user.email}</Text>
-//             {/* @ts-ignore */}
-//             {profile && <Text>Full Name: {profile?.full_name}</Text>}
-           
-//             <Text style={styles.title}>Event:</Text>
-//             <View style={styles.item}>
-//                 {/* @ts-ignore */}
-//                 <Text>Event ID: {ticket.event_id}</Text>
-//                 {/* @ts-ignore */}
-//                 <Text>Event Name: {ticket.event_name}</Text>
-//                 {/* @ts-ignore */}
-//                 <Text>Event Description: {ticket.event_description}</Text>
-//                 {/* @ts-ignore */}
-//                 <Button title="Buy Ticket" href={ticket.purchase_link} />
+//     return (
+//         <View style={styles.main}>
+//             <View style={styles.innerContainer}>
+//                 <Text style={styles.title}>{route.params ? route.params.item.title : 'Title'}</Text>
+//                 <View><Text>{route.params ? route.params.item.body : 'Body'}</Text></View>
 //             </View>
-//           </>
-//         )}
-//       </View>
-//       <View style={styles.buttons}>
-//         <Button title="Update Details" onPress={() => navigation.navigate('UpdateDetails')} />
-//         <Button title="Make Payment" onPress={() => navigation.navigate('Payment')} />
-//         <Button title="Logout" onPress={handleLogout} />
-//       </View>
-//     </View>
-//   );
+//             <View style={styles.buttons}>
+//                 <Button title="Articles" onPress={() => navigation.navigate('Account')} />
+//             </View>
+//         </View>
+//     );
 // };
 
 // const styles = StyleSheet.create({
@@ -239,4 +184,4 @@ const styles = StyleSheet.create({
 //   },
 // });
 
-// export default EventScreen;
+// export default ArticleScreen;
