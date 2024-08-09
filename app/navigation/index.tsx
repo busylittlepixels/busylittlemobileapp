@@ -18,6 +18,7 @@ import TabEileScreen from '../screens/TabEile';
 import ArticleScreen from '../screens/ArticleScreen';
 import ResetPassScreen from '../screens/ResetPassScreen';
 import Onboarding from 'react-native-onboarding-swiper';
+import FavoritesScreen from '../screens/FavoritesScreen';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -28,6 +29,7 @@ export type RootStackParamList = {
   Account: undefined;
   Services: undefined;
   Event: undefined;
+  FavoriteArticles: undefined;
   UpdateDetails: undefined;
   Payment: undefined;
   ResetPass: undefined;
@@ -102,6 +104,7 @@ const AppNavigator = () => {
                 <Stack.Screen name="Article" component={ArticleScreen} options={{ headerShown: true }} />
                 <Stack.Screen name="Services" component={ServicesScreen} />
                 <Stack.Screen name="UpdateDetails" component={UpdateDetailsScreen} options={{ headerShown: true }} />
+                <Stack.Screen name="FavoriteArticles" component={FavoritesScreen} />
                 <Stack.Screen name="Payment" component={PaymentScreen} />
                 <Stack.Screen name="TabEile" component={TabEileScreen} />
               </>
@@ -122,4 +125,4 @@ const AppNavigator = () => {
 
 export default AppNavigator;
 
-clearOnboardingFlag();
+// clearOnboardingFlag();

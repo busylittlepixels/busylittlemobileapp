@@ -102,7 +102,7 @@ const AccountScreen = ({ navigation }:any) => {
     useFocusEffect(
       useCallback(() => {
         getUserDetails();
-      }, [user])
+      }, [user, profile])
   );
 
   return (
@@ -144,11 +144,12 @@ const AccountScreen = ({ navigation }:any) => {
         />
       </View>
       <View style={styles.container}>
-        <UserArticles navigation={navigation} />
+        {/* @ts-ignore */}
+        <UserArticles navigation={navigation} userId={profile?.id}/>
       </View>
       <View style={styles.buttons}>
         <Button title="Update Details" onPress={() => navigation.navigate('UpdateDetails')} />
-        <Button title="Make Payment" onPress={() => navigation.navigate('Payment')} />
+        <Button title="Favorites" onPress={() => navigation.navigate('FavoriteArticles')} />
         <Button title="Logout" onPress={handleLogout} />
       </View>
     </View>
