@@ -19,6 +19,7 @@ import ArticleScreen from '../screens/ArticleScreen';
 import ResetPassScreen from '../screens/ResetPassScreen';
 import Onboarding from 'react-native-onboarding-swiper';
 import FavoritesScreen from '../screens/FavoritesScreen';
+import FavoriteSingleScreen from '../screens/FavoriteSingleScreen';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -30,6 +31,7 @@ export type RootStackParamList = {
   Services: undefined;
   Event: undefined;
   FavoriteArticles: undefined;
+  FavoriteSingle: undefined;
   UpdateDetails: undefined;
   Payment: undefined;
   ResetPass: undefined;
@@ -45,7 +47,7 @@ const OnboardingScreen = ({ onDone }) => (
     onDone={onDone}
     pages={[
       {
-        backgroundColor: '#fff',
+        backgroundColor: '#000',
         image: <Text>🎉</Text>,
         title: 'Onboarding Step 1',
         subtitle: 'Description of Step 1',
@@ -105,6 +107,7 @@ const AppNavigator = () => {
                 <Stack.Screen name="Services" component={ServicesScreen} />
                 <Stack.Screen name="UpdateDetails" component={UpdateDetailsScreen} options={{ headerShown: true }} />
                 <Stack.Screen name="FavoriteArticles" component={FavoritesScreen} />
+                <Stack.Screen name="FavoriteSingle" component={FavoriteSingleScreen} />
                 <Stack.Screen name="Payment" component={PaymentScreen} />
                 <Stack.Screen name="TabEile" component={TabEileScreen} />
               </>

@@ -3,13 +3,15 @@ import { View, Text, FlatList, StyleSheet, Button, Pressable, ActivityIndicator 
 import { toggleFavorite as toggleFavoriteService } from '../services/favouriteService';
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
-const UserArticles = ({ navigation, filters, userId }: any) => {
+
+const UserArticles = ({ filters, userId }: any) => {
   const [articles, setArticles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [favorites, setFavorites] = useState<{ [key: string]: boolean }>({});
+  const navigation = useNavigation(); 
 
   useEffect(() => {
     fetchFavorites(); // Fetch favorites from storage
@@ -42,6 +44,8 @@ const UserArticles = ({ navigation, filters, userId }: any) => {
 
       setArticles(filteredData);
 
+      // console.log('filtered', filteredData);
+
       // Initialize favorites state if not already loaded
       if (Object.keys(favorites).length === 0) {
         const initialFavorites = filteredData.reduce((acc: any, article: any) => {
@@ -57,9 +61,9 @@ const UserArticles = ({ navigation, filters, userId }: any) => {
     setLoading(false);
   };
 
-  const handleToggleFavorite = async (articleId: any) => {
+  const handleToggleFavorite = async (articleId: any, title: any, slug: any) => {
     const isFavorite = favorites[articleId];
-    const result = await toggleFavoriteService(userId, articleId);
+    const result = await toggleFavoriteService(userId, articleId, title, slug);
 
     if (result.error) {
       Toast.show({
@@ -110,14 +114,15 @@ const UserArticles = ({ navigation, filters, userId }: any) => {
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
               <View style={styles.item}>
+                {/* @ts-ignore */}
                 <Pressable onPress={() => navigation.navigate('Article', { item })}>
                   <Text style={styles.title}>
-                    {item.title.rendered} {item.id}
+                    {item.title.rendered} {/*{{item.id} {item.slug}*/}
                   </Text>
                 </Pressable>
 
                 <Button
-                  onPress={() => handleToggleFavorite(item.id)}
+                  onPress={() => handleToggleFavorite(item.id, item.title.rendered, item.slug)}
                   title={favorites[item.id] ? '✓' : '-'}
                 />
               </View>

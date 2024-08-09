@@ -16,6 +16,7 @@ const baseStyles = {
 
 export default function ArticleScreen({ navigation, route }:any) {
 
+    
     useEffect(() => {
         navigation.setOptions({ title: route.params.item.title.rendered });
     }, [navigation]);

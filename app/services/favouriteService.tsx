@@ -1,11 +1,11 @@
 import { supabase } from '../../supabase';
 
-const addFavorite = async (userId: any, articleId: any) => {
+const addFavorite = async (userId: any, articleId: any, title: any, slug:any) => {
     try {
         const { data, error } = await supabase
             .from('favorites')
             .insert([
-                { user_id: userId, article_id: articleId },
+                { user_id: userId, article_id: articleId, article_title: title, article_slug: slug },
             ])
             .select();  // Explicitly request the inserted data to be returned
         
@@ -28,7 +28,7 @@ const addFavorite = async (userId: any, articleId: any) => {
     }
 };
 
-const removeFavorite = async (userId: any, articleId: any) => {
+const removeFavorite = async (userId: any, articleId: any, title: any, slug:any) => {
     try {
         const { data, error } = await supabase
             .from('favorites')
@@ -68,7 +68,7 @@ const getFavorites = async (userId: any) => {
     }
 };
 
-const toggleFavorite = async (userId: any, articleId: any) => {
+const toggleFavorite = async (userId: any, articleId: any, title: any, slug: any) => {
     try {
         console.log('inside toggle fave method (userid)', userId);
         console.log('inside toggle fave method (articleid)', articleId);
@@ -83,11 +83,11 @@ const toggleFavorite = async (userId: any, articleId: any) => {
         if (data) {
             // Article is already favorited, remove it
             console.log('already here, removing');
-            return await removeFavorite(userId, articleId);
+            return await removeFavorite(userId, articleId, title, slug);
         } else {
             // Article is not favorited, add it
             console.log('not already here, adding');
-            return await addFavorite(userId, articleId);
+            return await addFavorite(userId, articleId, title, slug);
         }
     } catch (error) {
         console.error('Unexpected error:', error);
