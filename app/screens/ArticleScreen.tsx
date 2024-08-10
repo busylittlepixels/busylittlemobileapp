@@ -16,9 +16,16 @@ const baseStyles = {
 
 export default function ArticleScreen({ navigation, route }:any) {
 
+    console.log(route.params.item.title);
+
+    const { title, content } = route.params.item;
+
+    // Normalize the title and content
+    const normalizedTitle = title?.rendered || title;
+    const normalizedContent = content?.rendered || JSON.parse(content);
     
     useEffect(() => {
-        navigation.setOptions({ title: route.params.item.title.rendered });
+        navigation.setOptions({ title: normalizedTitle });
     }, [navigation]);
     
 
@@ -29,11 +36,11 @@ export default function ArticleScreen({ navigation, route }:any) {
         headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
         headerImage={<Ionicons size={310} name="code-slash" style={styles.headerImage} />}>
         <ThemedView style={styles.titleContainer}>
-            <ThemedText type="title">{route.params ? route.params.item.title.rendered : 'Title'}</ThemedText>
+            <ThemedText type="title">{normalizedTitle}</ThemedText>
         </ThemedView>
             <RenderHTML
             contentWidth={width}
-            source={{ html: route.params.item.content.rendered }}
+            source={{ html: normalizedContent }}
             // @ts-ignore
             tagsStyles={baseStyles}
         />

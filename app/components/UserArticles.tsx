@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, FlatList, StyleSheet, Button, Pressable, ActivityIndicator } from 'react-native';
 import { toggleFavorite as toggleFavoriteService } from '../services/favouriteService';
-import Toast from 'react-native-toast-message';
+import Toast, { ErrorToast } from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
@@ -61,9 +61,11 @@ const UserArticles = ({ filters, userId }: any) => {
     setLoading(false);
   };
 
-  const handleToggleFavorite = async (articleId: any, title: any, slug: any) => {
+  const handleToggleFavorite = async (articleId: any, title: any, slug: any, content: any) => {
     const isFavorite = favorites[articleId];
-    const result = await toggleFavoriteService(userId, articleId, title, slug);
+    const serialisedContent = JSON.stringify(content);
+    // console.log('serialised', serialisedContent)
+    const result = await toggleFavoriteService(userId, articleId, title, slug, serialisedContent);
 
     if (result.error) {
       Toast.show({
@@ -122,7 +124,7 @@ const UserArticles = ({ filters, userId }: any) => {
                 </Pressable>
 
                 <Button
-                  onPress={() => handleToggleFavorite(item.id, item.title.rendered, item.slug)}
+                  onPress={() => handleToggleFavorite(item.id, item.title.rendered, item.slug, item.content.rendered)}
                   title={favorites[item.id] ? '✓' : '-'}
                 />
               </View>
