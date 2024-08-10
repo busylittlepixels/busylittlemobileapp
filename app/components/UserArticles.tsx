@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, FlatList, StyleSheet, Button, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, Image, FlatList, StyleSheet, Button, Pressable, ActivityIndicator } from 'react-native';
 import { toggleFavorite as toggleFavoriteService } from '../services/favouriteService';
 import Toast, { ErrorToast } from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -16,9 +16,10 @@ const UserArticles = ({ filters, userId }: any) => {
   useEffect(() => {
     fetchFavorites(); // Fetch favorites from storage
     fetchArticles(); // Fetch articles from API
-  }, [filters]);
+  }, []);
 
   const fetchFavorites = async () => {
+    
     try {
       const savedFavorites = await AsyncStorage.getItem(`favorites_${userId}`);
       if (savedFavorites) {
@@ -98,7 +99,7 @@ const UserArticles = ({ filters, userId }: any) => {
   useFocusEffect(
     useCallback(() => {
       fetchFavorites();
-    }, [favorites])
+    }, [filters])
 );
 
 
@@ -117,7 +118,11 @@ const UserArticles = ({ filters, userId }: any) => {
             renderItem={({ item }) => (
               <View style={styles.item}>
                 {/* @ts-ignore */}
-                <Pressable onPress={() => navigation.navigate('Article', { item })}>
+                <Pressable onPress={() => navigation.navigate('Article', { item })} style={styles.articlePressable}>
+                  <Image
+                    style={styles.tinyLogo}
+                    source={require('@/assets/images/react-logo.png')}
+                  /> 
                   <Text style={styles.title}>
                     {item.title.rendered} {/*{{item.id} {item.slug}*/}
                   </Text>
@@ -186,6 +191,16 @@ const styles = StyleSheet.create({
     color: '#000',
     padding: 10,
   },
+  tinyLogo: {
+    width: 50,
+    height: 50,
+  },
+  articlePressable: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 5
+  }
 });
 
 export default UserArticles;
