@@ -26,8 +26,8 @@ const App = () => {
  
   return (
     <SafeAreaProvider>
+      <StatusBar style="dark" />
       <SafeAreaView style={styles.safeArea}>
-        <StatusBar style="dark" />
         <AuthProvider>
           <AppNavigator />
         </AuthProvider>
