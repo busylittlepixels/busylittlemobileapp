@@ -1,6 +1,7 @@
 // @ts-nocheck
 import React, { useContext, useEffect, useState } from 'react';
-import { Text } from 'react-native';
+import { Text, View, Button } from 'react-native';
+import {Picker} from '@react-native-picker/picker';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -19,11 +20,15 @@ import ArticleScreen from '../screens/ArticleScreen';
 import ResetPassScreen from '../screens/ResetPassScreen';
 import Onboarding from 'react-native-onboarding-swiper';
 import FavoritesScreen from '../screens/FavoritesScreen';
+import CityScreen from '../screens/CityScreen';
+import CitiesScreen from '../screens/CitiesScreen';
 
 export type RootStackParamList = {
   Splash: undefined;
   Auth: undefined;
   Article: undefined;
+  Cities: undefined;
+  City: undefined;
   Login: undefined;
   SignUp: undefined;
   Account: undefined;
@@ -39,32 +44,82 @@ export type RootStackParamList = {
 
 const Stack = createStackNavigator<RootStackParamList>();
 
-const OnboardingScreen = ({ onDone }) => (
-  <Onboarding
-    onSkip={onDone}
-    onDone={onDone}
-    pages={[
-      {
-        backgroundColor: '#000',
-        image: <Text>🎉</Text>,
-        title: 'Onboarding Step 1',
-        subtitle: 'Description of Step 1',
-      },
-      {
-        backgroundColor: '#fe6e58',
-        image: <Text>🚀</Text>,
-        title: 'Onboarding Step 2',
-        subtitle: 'Description of Step 2',
-      },
-      {
-        backgroundColor: '#999',
-        image: <Text>✨</Text>,
-        title: 'Onboarding Step 3',
-        subtitle: 'Description of Step 3',
-      },
-    ]}
-  />
-);
+
+const OnboardingScreen = ({ onDone, user }) => {
+
+  const [userId, setUserId] = useState([]);
+  const [selectedCities, setSelectedCities] = useState([]);
+
+  const handleCityChange = (city) => {
+    setSelectedCities((prevCities) => {
+      if (prevCities.includes(city)) {
+        return prevCities.filter((item) => item !== city);
+      } else {
+        return [...prevCities, city];
+      }
+    });
+  };
+
+  const handleOnDone = () => {
+    console.log('Onboarding Cities:', selectedCities);
+    console.log('Onboarding User:', userId);
+    onDone(user, selectedCities);
+  };
+
+  useEffect(() => {
+    if(user){
+      setUserId(user.id)
+    }
+  }, [user]);
+
+  return (
+    <Onboarding
+      onSkip={handleOnDone}
+      onDone={handleOnDone}
+      pages={[
+        {
+          backgroundColor: '#000',
+          image: <Text>🎉</Text>,
+          title: 'Onboarding Step 1',
+          subtitle: 'Description of Step 1',
+        },
+        {
+          backgroundColor: '#fe6e58',
+          image: <Text>🚀</Text>,
+          title: 'Onboarding Step 2',
+          subtitle: 'Description of Step 2',
+        },
+        {
+          backgroundColor: '#999',
+          image: <Text>✨{user ? user.id : 'WELCOME!'}</Text>,
+          title: (
+            <View style={{ alignItems: 'center' }}>
+              <Text>Select Your City</Text>
+            </View>
+          ),
+          subtitle: (
+            <View>
+              <Picker
+                selectedValue={selectedCities}
+                onValueChange={(itemValue) => handleCityChange(itemValue)}
+              >
+                <Picker.Item label="Amsterdam" value="Amsterdam" />
+                <Picker.Item label="London" value="London" />
+                <Picker.Item label="Hamburg" value="Hamburg" />
+                <Picker.Item label="Vienna" value="Vienna" />
+                <Picker.Item label="Bogota" value="Bogota" />
+                <Picker.Item label="New York" value="New York" />
+                <Picker.Item label="Dublin" value="Dublin" />
+                {/* Add more cities as needed */}
+              </Picker>
+              <Button title="Finish Onboarding" onPress={handleOnDone} />
+              </View>
+          ),
+        },
+      ]}
+    />
+  );
+};
 
 const clearOnboardingFlag = async () => {
   try {
@@ -95,13 +150,15 @@ const AppNavigator = () => {
           <>
             {isFirstLaunch ? (
               <Stack.Screen name="Onboarding">
-                {() => <OnboardingScreen onDone={completeOnboarding} />}
+                {() => <OnboardingScreen onDone={completeOnboarding} user={user} />}
               </Stack.Screen>
             ) : (
               <>
                 <Stack.Screen name="Account" component={MainDrawerNavigator} options={{ headerShown: false }} />
                 <Stack.Screen name="Event" component={EventScreen} options={{ headerShown: true }} />
                 <Stack.Screen name="Article" component={ArticleScreen} options={{ headerShown: true }} />
+                <Stack.Screen name="Cities" component={CitiesScreen} options={{ headerShown: true }} />
+                <Stack.Screen name="City" component={CityScreen} options={{ headerShown: true }} />
                 <Stack.Screen name="Services" component={ServicesScreen} />
                 <Stack.Screen name="UpdateDetails" component={UpdateDetailsScreen} options={{ headerShown: true }} />
                 <Stack.Screen name="FavoriteArticles" component={FavoritesScreen} options={{ headerTitle: "Favorite Articles" }} />

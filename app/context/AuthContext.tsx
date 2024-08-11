@@ -1,12 +1,14 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { authService } from '../services/authService';
+import { complete } from '../services/completeOnboardingService';
 
 interface User {
   id: string;
   email: string;
   full_name?: string;
   username?: string;
+  cities?: [], // or null if you prefer
 }
 
 interface AuthContextProps {
@@ -84,8 +86,26 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser(null);
   };
 
-  const completeOnboarding = async () => {
-    setIsFirstLaunch(false);
+
+  const completeOnboarding = async (userId: any, selectedCities:any) => {
+
+    try {
+      const onBoarded = await complete(userId, selectedCities);
+      console.log('onboarded', onBoarded);
+      if (onBoarded) {
+          // Store the updated user profile in AsyncStorage
+          await AsyncStorage.setItem('user', JSON.stringify(onBoarded));
+          // Update the user in the AuthContext
+        //  console.log('something worked')
+          setIsFirstLaunch(false);
+      } else {
+          console.error('Failed to complete onboarding');
+      }
+    } catch (error) {
+        console.error('Error during onboarding:', error);
+    }
+
+    
   };
 
   return (
@@ -95,3 +115,5 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     </AuthContext.Provider>
   );
 };
+
+

@@ -6,6 +6,8 @@ import AccountScreen from '../screens/AccountScreen';
 import UpdateDetailsScreen from '../screens/UpdateDetailsScreen';
 import { AuthContext } from '../context/AuthContext';
 import FavoritesScreen from '../screens/FavoritesScreen';
+import CityScreen from '../screens/CityScreen';
+import CitiesScreen from '../screens/CitiesScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -18,6 +20,7 @@ const MainDrawerNavigator = () => {
       <Drawer.Screen name="Home" component={AccountScreen} />
       <Drawer.Screen name="Profile" component={UpdateDetailsScreen} />
       <Drawer.Screen name="Favorites" component={FavoritesScreen} />
+      <Drawer.Screen name="Cities" component={CitiesScreen} />
       <Drawer.Screen
         name="Logout"
         component={AccountScreen} // Or any dummy component

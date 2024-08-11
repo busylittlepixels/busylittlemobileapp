@@ -8,6 +8,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import HorizontalScroller from '../components/HorizontalScroller';
 import UserArticles from '../components/UserArticles';
 import Spacer from '../components/Spacer';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AccountScreen = ({ navigation }:any) => {
     const { user, signOut } = useContext(AuthContext);
@@ -17,6 +18,7 @@ const AccountScreen = ({ navigation }:any) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [profile, setProfile] = useState(null);
+    const [cities, setCities] = useState([]);;
   
     const getUserDetails = async () => {
       if (user && user.id) {
@@ -38,6 +40,34 @@ const AccountScreen = ({ navigation }:any) => {
     useEffect(() => {
       getUserDetails();
     }, [user]);
+
+   
+    useEffect(() => {
+      const fetchCities = async () => {
+       
+        const { data, error } = await supabase.from('profiles')
+          .select('cities')
+          .eq('id', user.id)
+          .single();
+          
+        // console.log('yep', data);
+        if (error) {
+            // @ts-ignore
+          setError(error.message);
+        } else {
+                  // @ts-ignore
+          setCities(data);
+        }
+        setLoading(false);
+      };
+  
+      fetchCities();
+    }, []);
+
+
+    // useEffect(() => {
+    //   console.log('fuckhead, here are your cities:', typeof cities);
+    // },[])
   
     useEffect(() => {
       const fetchTickets = async () => {
@@ -97,9 +127,6 @@ const AccountScreen = ({ navigation }:any) => {
           text1: 'FUCK YEAH! Updated Yo!',
         });
       }
-      // @ts-ignore
-      // setUsername('');
-  
     };
   
       useFocusEffect(
@@ -107,6 +134,10 @@ const AccountScreen = ({ navigation }:any) => {
           getUserDetails();
         }, [user, profile])
     );
+
+    const handleCityPress = (city) => {
+      navigation.navigate('City', { city });
+    };
 
     return (
         <ScrollView
@@ -123,15 +154,37 @@ const AccountScreen = ({ navigation }:any) => {
             {/* @ts-ignore */}
             <Text>Hey {profile?.username}</Text>
             <Text>Email: {user.email}</Text>
+            
+          
+            <View>
+              <Text>
+                {Object.values(cities.cities).length > 1 ? 'Your cities: ' : 'Your city: '}
+                {Object.values(cities.cities).join(', ')}
+              </Text>
             </View>
+           
+          </View>
           </>
         )}
         </View>
+
+
 
         {/* Section 2 */}
         <View style={styles.section}>
             <Text style={styles.sectionTitle}>Latest:</Text>
             <HorizontalScroller />
+        </View>
+
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Your Selected Cities:</Text>
+
+          {Object.values(cities).map((city, index) => (
+            <Text style={{ color: 'blue', textDecorationLine: 'underline', marginBottom: 8 }}>
+             {Object.values(cities)}
+           </Text>
+          ))}
         </View>
 
         {/* Section 3 */}
@@ -153,7 +206,7 @@ const AccountScreen = ({ navigation }:any) => {
                     </View>
                     {/* @ts-ignore */}
                     <Pressable onPress={() => navigation.navigate('Event', { item })} style={{ marginLeft: 10 }}><Text>View Event</Text></Pressable>
-                    </View>
+                  </View>
                 )}
                 />
         </View>

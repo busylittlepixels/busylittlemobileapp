@@ -11,14 +11,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // const STYLES = ['dark-content', 'light-content', 'default'] as const;
 // const TRANSITIONS = ['fade', 'slide', 'none'] as const;
 
-// const clearAsyncStorage = async () => {
-//   try {
-//     await AsyncStorage.clear();
-//     console.log('AsyncStorage successfully cleared!');
-//   } catch (error) {
-//     console.error('Failed to clear the AsyncStorage:', error);
-//   }
-// };
+const clearAsyncStorage = async () => {
+  try {
+    await AsyncStorage.clear();
+    console.log('AsyncStorage successfully cleared!');
+  } catch (error) {
+    console.error('Failed to clear the AsyncStorage:', error);
+  }
+};
 
 // clearAsyncStorage();
 
