@@ -2,7 +2,7 @@
 import React from 'react';
 import {
   StyleSheet,
-  ScrollView,
+  FlatList,
   Image,
   StatusBar,
   View,
@@ -23,17 +23,21 @@ const HorizontalScroller = () => {
   ];
 
   return (
-    <ScrollView style={styles.scrollView} horizontal showsHorizontalScrollIndicator={false}>
-      {images.map(image => (
+    <FlatList
+      data={images}
+      renderItem={({ item }) => (
         <Pressable
-          key={image.id}
-          onPress={() => navigation.navigate('TabEile')} // Navigate to "Tab Two" on press
+          onPress={() => navigation.navigate('TabEile')}
           style={styles.imageContainer}
         >
-          <Image source={{ uri: image.url }} style={styles.image} />
+          <Image source={{ uri: item.url }} style={styles.image} />
         </Pressable>
-      ))}
-    </ScrollView>
+      )}
+      keyExtractor={(item) => item.id}
+      horizontal={true}
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.scrollView}
+    />
   );
 };
 

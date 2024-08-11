@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, Image, FlatList, StyleSheet, Button, Pressable, ActivityIndicator } from 'react-native';
 import { toggleFavorite as toggleFavoriteService } from '../services/favouriteService';
-import Toast, { ErrorToast } from 'react-native-toast-message';
+import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
