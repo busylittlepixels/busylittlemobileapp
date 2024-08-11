@@ -90,7 +90,9 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     gap: 8,
-    color: 'white'
+    color: 'white',
+    paddingTop: 20,
+    paddingHorizontal: 16
   },
   faveTitle: {
     color: 'white', 

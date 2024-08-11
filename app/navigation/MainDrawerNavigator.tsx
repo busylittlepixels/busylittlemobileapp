@@ -1,23 +1,34 @@
-import React from 'react';
+// @ts-nocheck
+import { useContext } from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import MainTabNavigator from './MainTabNavigator';
-import SettingsTabNavigator from './SettingsTabNavigator';
-import SettingsScreen from '../screens/SettingsScreen';
-import OnboardingScreen from '../screens/UpdateDetailsScreen';
-import OnboardingTabNavigator from './OnboardingTabNavigator';
-
-import { StyleSheet, Image, Platform, Pressable, Text } from 'react-native';
 import AccountScreen from '../screens/AccountScreen';
-
+import UpdateDetailsScreen from '../screens/UpdateDetailsScreen';
+import { AuthContext } from '../context/AuthContext';
+import FavoritesScreen from '../screens/FavoritesScreen';
 
 const Drawer = createDrawerNavigator();
 
 const MainDrawerNavigator = () => {
+
+  const { signOut } = useContext(AuthContext);
+
   return (
     <Drawer.Navigator initialRouteName="Home">
       <Drawer.Screen name="Home" component={AccountScreen} />
-      <Drawer.Screen name="Settings" component={MainTabNavigator} />
-      <Drawer.Screen name="Onboarding" component={OnboardingTabNavigator} />
+      <Drawer.Screen name="Profile" component={UpdateDetailsScreen} />
+      <Drawer.Screen name="Favorites" component={FavoritesScreen} />
+      <Drawer.Screen
+        name="Logout"
+        component={AccountScreen} // Or any dummy component
+        options={{ drawerLabel: 'Logout' }}
+        listeners={({ navigation }) => ({
+          drawerItemPress: () => {
+            signOut();  // Call the logout function
+            navigation.push('Login')
+          },
+        })}
+      />
     </Drawer.Navigator>
     
   );

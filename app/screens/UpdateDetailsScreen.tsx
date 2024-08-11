@@ -4,6 +4,7 @@ import { Alert, View, TextInput, Text, Button, FlatList, StyleSheet, Pressable }
 import { supabase } from '../../supabase'; // Make sure to import your Supabase client
 import { AuthContext } from '../context/AuthContext'; // Make sure to import your AuthContext
 import Toast from 'react-native-toast-message';
+import Spacer from '../components/Spacer';
 
 export interface Profile {
   id: string;
@@ -108,6 +109,7 @@ const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
     <View style={styles.main}>
       <View style={styles.innerContainer}>
         <Text style={styles.title}>Update Profile Details</Text>
+        <Spacer space={20} />
         {user && (
           <>
             <Text>Email: {user.email}</Text>
@@ -121,6 +123,7 @@ const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
             </View>
           </>
         )}
+        
         <View style={styles.formContainer}>
           {/* @ts-ignore */}
           <Text style={styles.label}>Username:</Text>
@@ -167,8 +170,10 @@ const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
             style={styles.inputStyle}
           
           />
+         
           <Button title="Update" onPress={handleUpdate} />
-          <Pressable onPress={() => navigation.navigate('Account', { user })}><Text>Back to profile</Text></Pressable>
+          <Pressable style={{ paddingVertical: 10, zIndex: 1 }}  onPress={() => navigation.replace('Account', { user })}><Text>Back to profile</Text></Pressable>
+          
         </View>
       </View>
     </View>
@@ -211,6 +216,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
+    paddingTop: 20,
     fontWeight: 'bold',
     color: '#000',
   },

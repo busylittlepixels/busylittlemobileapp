@@ -19,16 +19,16 @@ const UserArticles = ({ filters, userId }: any) => {
   }, []);
 
   const fetchFavorites = async () => {
-    
     try {
       const savedFavorites = await AsyncStorage.getItem(`favorites_${userId}`);
-      if (savedFavorites) {
-        setFavorites(JSON.parse(savedFavorites));
+      const parsedFavorites = savedFavorites ? JSON.parse(savedFavorites) : {};
+      if (JSON.stringify(parsedFavorites) !== JSON.stringify(favorites)) {
+        setFavorites(parsedFavorites);
       }
     } catch (err) {
       console.error('Failed to load favorites:', err);
     }
-  };
+  }; 
 
   const fetchArticles = async () => {
     setLoading(true);
@@ -96,12 +96,15 @@ const UserArticles = ({ filters, userId }: any) => {
     }
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchFavorites();
-    }, [filters])
-);
+  const placeHolderImage = { uri: 'https://via.placeholder.com/50/800080/FFFFFF'};
 
+  useEffect(() => {
+    console.log('Screen focused, fetching favorites');
+    fetchFavorites();
+    // No dependencies to prevent unnecessary loops
+
+   
+  },[favorites]);
 
   return (
     <View style={styles.articleList}>
@@ -111,8 +114,7 @@ const UserArticles = ({ filters, userId }: any) => {
         <Text>Error: {error}</Text>
       ) : (
         <>
-          <Text style={styles.innerContainer}>Articles:</Text>
-            <FlatList
+          <FlatList
             data={articles}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
@@ -121,11 +123,14 @@ const UserArticles = ({ filters, userId }: any) => {
                 <Pressable onPress={() => navigation.navigate('Article', { item })} style={styles.articlePressable}>
                   <Image
                     style={styles.tinyLogo}
-                    source={require('@/assets/images/react-logo.png')}
+                    source={placeHolderImage}
                   /> 
-                  <Text style={styles.title}>
-                    {item.title.rendered} {/*{{item.id} {item.slug}*/}
-                  </Text>
+                  <View>
+                    <Text style={styles.title}>
+                      {item.title.rendered} {/*{{item.id} {item.slug}*/}
+                    </Text>
+                    <Text>Here's some bullshit to go with it...</Text>
+                  </View>
                 </Pressable>
 
                 <Button
@@ -153,6 +158,7 @@ const styles = StyleSheet.create({
   },
   articleList: {
     marginTop: 10,
+    justifyContent: 'space-between'
   },
   innerContainer: {
     paddingRight: 16,
@@ -163,7 +169,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   item: {
-    padding: 16,
+    paddingVertical: 10,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -172,9 +178,10 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
   },
   title: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#000',
+    alignSelf: 'flex-start',
   },
   buttons: {
     display: 'flex',

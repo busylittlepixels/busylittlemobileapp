@@ -42,7 +42,7 @@ export const authService = {
       }
     );
 
-    console.log('data', data);
+    // console.log('data', data);
     if (error) throw error;
 
     // Do not store user details or session tokens here

@@ -5,8 +5,8 @@ import { useRoute } from '@react-navigation/native';
 
 const HomeScreen =  ({ navigation }:any) => {
   const route = useRoute(); 
-  console.log('route', route.params)
-  console.log('navigation', navigation)
+  // console.log('route', route.params)
+  // console.log('navigation', navigation)
   // @ts-ignore
   const email = route.params?.email && route.params.email; 
   const navigateToProfile = () => {
