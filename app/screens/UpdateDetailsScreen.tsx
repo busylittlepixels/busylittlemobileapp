@@ -63,8 +63,8 @@ const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
 
   useEffect(() => {
     setUsername(profile?.username || '');
-    setFullname(profile.full_name || '');
-    setWebsite(profile.website || '');
+    setFullname(profile?.full_name || '');
+    setWebsite(profile?.website || '');
     // setSelectedCities(profile?.cities || '');
   }, [profile]);
 
@@ -78,15 +78,15 @@ const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
 
     const updates: Partial<Profile> = {};
 
-    if (username && username !== profile.username) {
+    if (username && username !== profile?.username) {
       updates.username = username;
     }
 
-    if (full_name && full_name !== profile.full_name) {
+    if (full_name && full_name !== profile?.full_name) {
       updates.full_name = full_name;
     }
 
-    if (website && website !== profile.website) {
+    if (website && website !== profile?.website) {
       updates.website = website;
     }
 
@@ -143,7 +143,7 @@ const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
             <Text><Text style={{ fontWeight: 'bold'}}>Email:</Text> {user.email}</Text>
             <View>
             {/* @ts-ignore */}
-            <Text><Text style={{ fontWeight: 'bold'}}>Username:</Text> : {profile?.username}</Text>
+            <Text><Text style={{ fontWeight: 'bold'}}>Username:</Text> {profile?.username}</Text>
             {/* @ts-ignore */}
             <Text><Text style={{ fontWeight: 'bold'}}>Full Name:</Text> {profile?.full_name}</Text>
              {/* @ts-ignore */}

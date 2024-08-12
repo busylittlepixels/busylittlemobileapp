@@ -47,7 +47,6 @@ const AccountScreen = ({ navigation }:any) => {
    
     useEffect(() => {
       const fetchCities = async () => {
-       
         const { data, error } = await supabase.from('profiles')
           .select('cities')
           .eq('id', user.id)

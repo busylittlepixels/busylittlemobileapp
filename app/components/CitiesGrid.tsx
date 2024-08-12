@@ -9,7 +9,6 @@ import {
   Text, 
   Pressable,
 } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 
 const CitiesGrid = ({ cities }:any) => {
@@ -24,22 +23,25 @@ const CitiesGrid = ({ cities }:any) => {
   ];
 
   return (
-    <FlatList
-        data={cities}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item, index }) => (
+    <ScrollView
+      horizontal={true}
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.scrollView}
+    >
+      {cities?.map((item, index) => (
         <Pressable
-            key={index}
-            onPress={() => navigation.navigate('City', { city: item })}
-            style={styles.imageContainer}
+          key={index}
+          onPress={() => navigation.navigate('City', { city: item })}
+          style={styles.imageContainer}
         >
-            <Text>{item}</Text>
-            <Image source={{ uri: images[index % images.length].url }} style={styles.image} />
+          <Text>{item}</Text>
+          <Image
+            source={{ uri: images[index % images.length].url }}
+            style={styles.image}
+          />
         </Pressable>
-        )}
-    />
+      ))}
+    </ScrollView>
   );
 };
 
