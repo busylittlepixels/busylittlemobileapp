@@ -1,6 +1,7 @@
 // @ts-nocheck
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { Alert, View, TextInput, Text, Button, FlatList, StyleSheet, Pressable } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase'; // Make sure to import your Supabase client
 import { AuthContext } from '../context/AuthContext'; // Make sure to import your AuthContext
 import Toast from 'react-native-toast-message';
@@ -31,20 +32,26 @@ const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<any>([]);
   const [profile, setProfile] = useState([]);
+  const [selectedCities, setSelectedCities] = useState([]);
+  const [citySearch, setCitySearch] = useState('');
 
   useEffect(() => {
     const getUserDetails = async () => {
       if (user && user.id) {
-        const { data, error } = await supabase.from('profiles')
+        const { data, error, status } = await supabase.from('profiles')
           .select('*')
           .eq('id', user.id)
           .single();
 
-        if (error) {
-          // @ts-ignore
-          setError(error.message);
-        } else {
+          if (error && status !== 406) {
+            console.log(error)
+            // @ts-ignore
+            setError(error.message);
+            throw error
+          }
+           else {
           setProfile(data);
+          // setSelectedCities(data?.cities || []); // Load cities from profile
         }
         setLoading(false);
       }
@@ -58,9 +65,17 @@ const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
     setUsername(profile?.username || '');
     setFullname(profile.full_name || '');
     setWebsite(profile.website || '');
+    // setSelectedCities(profile?.cities || '');
   }, [profile]);
 
+  useEffect(() => {
+    console.log('profile', profile)
+  }, [profile]);
+
+
+
   const handleUpdate = async () => {
+
     const updates: Partial<Profile> = {};
 
     if (username && username !== profile.username) {
@@ -75,13 +90,15 @@ const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
       updates.website = website;
     }
 
+    console.log('updates', updates);
+    
     if (Object.keys(updates).length === 0) {
       setError('At least one field must be updated');
       return;
     }
 
     const updatedProfile: Profile = { ...profile, ...updates };
-    console.log('updated profile', updatedProfile);
+    console.log('updates', updates);
 
     const { error } = await supabase
       .from('profiles')
@@ -103,6 +120,17 @@ const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
     }
   };
 
+  const addCity = (city) => {
+    if (!selectedCities.includes(city)) {
+      setSelectedCities([...selectedCities, city]);
+    }
+  };
+
+  const removeCity = (city) => {
+    setSelectedCities(selectedCities.filter(c => c !== city));
+  };
+
+  const filteredCities = selectedCities && selectedCities.filter(city => city.toLowerCase().includes(citySearch.toLowerCase()));
   
 
   return (
@@ -112,14 +140,23 @@ const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
         <Spacer space={20} />
         {user && (
           <>
-            <Text>Email: {user.email}</Text>
+            <Text><Text style={{ fontWeight: 'bold'}}>Email:</Text> {user.email}</Text>
             <View>
             {/* @ts-ignore */}
-            <Text>Full Name: {profile?.full_name}</Text>
+            <Text><Text style={{ fontWeight: 'bold'}}>Username:</Text> : {profile?.username}</Text>
+            {/* @ts-ignore */}
+            <Text><Text style={{ fontWeight: 'bold'}}>Full Name:</Text> {profile?.full_name}</Text>
              {/* @ts-ignore */}
-             {profile?.website ? <Text>Website: {profile?.website}</Text> : null}
-             {/* @ts-ignore */}
-            <Text>Username: {profile?.username}</Text>
+             {profile?.website ? <Text><Text style={{ fontWeight: 'bold'}}>Website:</Text>  {profile?.website}</Text> : null}
+            
+            {/* <Text style={{ fontWeight: 'bold', paddingBottom: 2 }}>Selected city/cities:</Text>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                {selectedCities.length > 0 ? (
+                  <Text>{selectedCities.join(', ')}</Text>
+                ) : (
+                  <Text>No cities selected</Text>
+                )}
+              </View> */}
             </View>
           </>
         )}
@@ -170,10 +207,18 @@ const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
             style={styles.inputStyle}
           
           />
-         
+
+          {/* <Text style={styles.label}>Manage cities:</Text>
+          <View style={styles.inputStyle}>
+            {filteredCities.length > 0 ? filteredCities.map((city) => (
+              <View key={city} style={styles.selectedCity}>
+                <Text>{city}</Text>
+                <Button title="Remove" onPress={() => removeCity(city)} />
+              </View>
+            )): <Text>No cities selected.</Text>}
+          </View> */}
           <Button title="Update" onPress={handleUpdate} />
           <Pressable style={{ paddingVertical: 10, zIndex: 1 }}  onPress={() => navigation.replace('Account', { user })}><Text>Back to profile</Text></Pressable>
-          
         </View>
       </View>
     </View>
@@ -183,11 +228,6 @@ const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
 const styles = StyleSheet.create({
   main: {
     flex: 1,
-    // justifyContent: 'center',
-  },
-  container: {
-    flex: 1,
-    justifyContent: 'flex-start',
   },
   label:{
     paddingTop: 10,
@@ -205,44 +245,28 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
     marginTop: 10,
   },
-  item: {
-    padding: 16,
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-  },
-  title: {
-    fontSize: 18,
-    paddingTop: 20,
-    fontWeight: 'bold',
-    color: '#000',
-  },
-  buttons: {
-    // backgroundColor: 'cornflowerblue',
-    display: 'flex',
-    flexDirection: 'row',
-    margin: 10, 
-    alignItems: 'center',
-    gap: 4,
-    padding: 16
-  },
-  updateButton: {
-    display: 'flex',
-    margin: 10, 
-    alignSelf: 'center',
-    padding: 16
-  },
   inputStyle: {
-    marginTop: 10,
     marginTop: 10,
     backgroundColor: 'lightgray',
     borderWidth: 1,
     color: '#000',
     padding: 10
+  },
+  selectedCity: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 10,
+    backgroundColor: '#f0f0f0',
+    padding: 10,
+    borderRadius: 5,
+  }, 
+  title: {
+    fontWeight: 'bold',
+    marginVertical: 5,
+    fontSize: 18
   }
 });
+
 
 export default UpdateDetailsScreen;

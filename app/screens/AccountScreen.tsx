@@ -9,6 +9,7 @@ import HorizontalScroller from '../components/HorizontalScroller';
 import UserArticles from '../components/UserArticles';
 import Spacer from '../components/Spacer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CitiesGrid from '../components/CitiesGrid';
 
 const AccountScreen = ({ navigation }:any) => {
     const { user, signOut } = useContext(AuthContext);
@@ -91,49 +92,18 @@ const AccountScreen = ({ navigation }:any) => {
       navigation.replace('Login');
     };
   
-  
-    const handleUpdate = async () => {
-      
-      if(!username){
-        Toast.show({
-          type: 'error',
-          text1: 'Derp',
-          text2: 'You can\`t have an emptry username',
-          
-        });
-      }
-      // @ts-ignore
-      const updatedProfile = {...profile, username};
-      console.log('updated profile', updatedProfile);
-      const { error } = await supabase
-        .from('profiles')
-        .update({ username })
-        // @ts-ignore
-        .eq('id', user.id)
+
+    // useFocusEffect(
+    //   useCallback(() => {
+    //     console.log('username:', profile?.username);
+    //     console.log('cities:', profile?.cities);
     
-      if (error) {
-        Toast.show({
-          type: 'error',
-          text1: 'FUCK',
-          text2: 'Something done gone fucked up.' + error.message,
-          
-        });
-        
-      } else {
-        // console.log('Profile updated successfully:');
-        setProfile(updatedProfile);
-        Toast.show({
-          type: 'success',
-          text1: 'FUCK YEAH! Updated Yo!',
-        });
-      }
-    };
-  
-      useFocusEffect(
-        useCallback(() => {
-          getUserDetails();
-        }, [user, profile])
-    );
+    //     // Optionally, you can return a cleanup function if needed
+    //     return () => {
+    //       console.log('Cleanup if necessary');
+    //     };
+    //   }, [])
+    // );
 
     const handleCityPress = (city) => {
       navigation.navigate('City', { city });
@@ -156,13 +126,13 @@ const AccountScreen = ({ navigation }:any) => {
             <Text>Email: {user.email}</Text>
             
           
-            <View>
+            {/* <View>
               <Text>
                 {Object.values(cities.cities).length > 1 ? 'Your cities: ' : 'Your city: '}
                 {Object.values(cities.cities).join(', ')}
               </Text>
             </View>
-           
+            */}
           </View>
           </>
         )}
@@ -179,12 +149,12 @@ const AccountScreen = ({ navigation }:any) => {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Your Selected Cities:</Text>
-
-          {Object.values(cities).map((city, index) => (
+          <CitiesGrid cities={cities.cities} />
+          {/* {Object.values(cities).map((city, index) => (
             <Text style={{ color: 'blue', textDecorationLine: 'underline', marginBottom: 8 }}>
              {Object.values(cities)}
            </Text>
-          ))}
+          ))} */}
         </View>
 
         {/* Section 3 */}
