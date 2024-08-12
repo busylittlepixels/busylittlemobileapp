@@ -2,13 +2,14 @@
 import React from 'react';
 import {
   StyleSheet,
-  FlatList,
   Image,
   StatusBar,
   View,
   Pressable,
+  ScrollView
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { FlatList } from 'react-native-gesture-handler';
 
 const HorizontalScroller = () => {
   const navigation = useNavigation(); // Get the navigation object
@@ -23,21 +24,21 @@ const HorizontalScroller = () => {
   ];
 
   return (
-    <FlatList
-      data={images}
-      renderItem={({ item }) => (
+    <ScrollView
+      horizontal={true}
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.scrollView}
+    >
+      {images.map((item) => (
         <Pressable
+          key={item.id}
           onPress={() => navigation.navigate('TabEile')}
           style={styles.imageContainer}
         >
           <Image source={{ uri: item.url }} style={styles.image} />
         </Pressable>
-      )}
-      keyExtractor={(item) => item.id}
-      horizontal={true}
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.scrollView}
-    />
+      ))}
+    </ScrollView>
   );
 };
 

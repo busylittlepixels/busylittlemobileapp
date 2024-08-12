@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, Image, FlatList, StyleSheet, Button, Pressable, ActivityIndicator } from 'react-native';
+import { View, ScrollView, Text, Image, StyleSheet, Button, Pressable, ActivityIndicator } from 'react-native';
 import { toggleFavorite as toggleFavoriteService } from '../services/favouriteService';
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-
+import { FlatList } from 'react-native-gesture-handler';
 
 const UserArticles = ({ filters, userId }: any) => {
   const [articles, setArticles] = useState<any[]>([]);
@@ -102,8 +102,6 @@ const UserArticles = ({ filters, userId }: any) => {
     console.log('Screen focused, fetching favorites');
     fetchFavorites();
     // No dependencies to prevent unnecessary loops
-
-   
   },[favorites]);
 
   return (
@@ -114,11 +112,12 @@ const UserArticles = ({ filters, userId }: any) => {
         <Text>Error: {error}</Text>
       ) : (
         <>
-          <FlatList
-            data={articles}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <View style={styles.item}>
+          <ScrollView
+            horizontal={false}
+            showsHorizontalScrollIndicator={false}
+          >
+            {articles.map((item) => (
+              <View key={item.id.toString()} style={styles.item}>
                 {/* @ts-ignore */}
                 <Pressable onPress={() => navigation.navigate('Article', { item })} style={styles.articlePressable}>
                   <Image
@@ -127,7 +126,7 @@ const UserArticles = ({ filters, userId }: any) => {
                   /> 
                   <View>
                     <Text style={styles.title}>
-                      {item.title.rendered} {/*{{item.id} {item.slug}*/}
+                      {item.title.rendered} 
                     </Text>
                     <Text>Here's some bullshit to go with it...</Text>
                   </View>
@@ -138,9 +137,8 @@ const UserArticles = ({ filters, userId }: any) => {
                   title={favorites[item.id] ? '✓' : '-'}
                 />
               </View>
-            )}
-            extraData={favorites}
-          />
+            ))}
+          </ScrollView>
         </>
       )}
     </View>

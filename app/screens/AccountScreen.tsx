@@ -1,6 +1,7 @@
 // @ts-nocheck
 import React, { useContext, useState, useEffect, useCallback } from 'react';
-import { Alert, View, TextInput, Text, Button, FlatList, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { Alert, View, TextInput, Text, Button, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 import { supabase } from '../../supabase'; // Make sure to import your Supabase client
 import { AuthContext } from '../context/AuthContext'; // Make sure to import your AuthContext
 import Toast from 'react-native-toast-message';
@@ -10,6 +11,7 @@ import UserArticles from '../components/UserArticles';
 import Spacer from '../components/Spacer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CitiesGrid from '../components/CitiesGrid';
+import EventsGrid from '../components/EventsGrid';
 
 const AccountScreen = ({ navigation }:any) => {
     const { user, signOut } = useContext(AuthContext);
@@ -125,14 +127,6 @@ const AccountScreen = ({ navigation }:any) => {
             <Text>Hey {profile?.username}</Text>
             <Text>Email: {user.email}</Text>
             
-          
-            {/* <View>
-              <Text>
-                {Object.values(cities.cities).length > 1 ? 'Your cities: ' : 'Your city: '}
-                {Object.values(cities.cities).join(', ')}
-              </Text>
-            </View>
-            */}
           </View>
           </>
         )}
@@ -149,36 +143,13 @@ const AccountScreen = ({ navigation }:any) => {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Your Selected Cities:</Text>
-          <CitiesGrid cities={cities.cities} />
-          {/* {Object.values(cities).map((city, index) => (
-            <Text style={{ color: 'blue', textDecorationLine: 'underline', marginBottom: 8 }}>
-             {Object.values(cities)}
-           </Text>
-          ))} */}
+          <CitiesGrid cities={profile?.cities ? profile.cities : cities.cities} />
         </View>
 
         {/* Section 3 */}
         <View style={styles.section}>
             <Text style={styles.sectionTitle}>Events:</Text>
-            <FlatList
-                data={tickets}
-                style={styles.eventsSection}
-                /* @ts-ignore */
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                
-                    <View style={styles.item}>
-                    <View>
-                    {/*  @ts-ignore  */}
-                    <Text style={styles.title}>{item.event_name}</Text>
-                        {/*  @ts-ignore  */}
-                    <Text>{item.event_description}</Text>
-                    </View>
-                    {/* @ts-ignore */}
-                    <Pressable onPress={() => navigation.navigate('Event', { item })} style={{ marginLeft: 10 }}><Text>View Event</Text></Pressable>
-                  </View>
-                )}
-                />
+            <EventsGrid tickets={tickets} />
         </View>
 
         {/* Section 4 */}
@@ -251,11 +222,7 @@ buttons: {
   gap: 4,
   padding: 16
 },
-eventsSectionTitle: {
-  fontSize: 20,
-  fontWeight: 'bold',
-  marginBottom: 10,
-},
+
 articleSectionTitle: {
   fontSize: 20,
   fontWeight: 'bold',

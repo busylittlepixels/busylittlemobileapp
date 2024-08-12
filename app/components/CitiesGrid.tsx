@@ -2,18 +2,18 @@
 import React from 'react';
 import {
   StyleSheet,
-  FlatList,
   Image,
   StatusBar,
+  ScrollView,
   View,
   Text, 
   Pressable,
 } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 
 const CitiesGrid = ({ cities }:any) => {
 
-    // console.log('city grid', cities)
 
   const navigation = useNavigation(); // Get the navigation object
 
@@ -24,24 +24,22 @@ const CitiesGrid = ({ cities }:any) => {
   ];
 
   return (
-    <View style={[styles.scrollView, { flexDirection: 'row' }]}>
-    
-    {cities && cities.cities && cities.cities.length > 0 ? (
-        cities.cities.map((city, index) => (
-            <Pressable 
-            key={index} 
-            onPress={() => handleCityPress(city)} 
-            style={{ marginBottom: 8 }}
-            >
-            <Text style={{ color: 'blue', textDecorationLine: 'underline' }}>
-                {city}
-            </Text>
-            </Pressable>
-        ))
-        ) : (
-        <Text>No cities selected.</Text>  
+    <FlatList
+        data={cities}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item, index }) => (
+        <Pressable
+            key={index}
+            onPress={() => navigation.navigate('City', { city: item })}
+            style={styles.imageContainer}
+        >
+            <Text>{item}</Text>
+            <Image source={{ uri: images[index % images.length].url }} style={styles.image} />
+        </Pressable>
         )}
-    </View>
+    />
   );
 };
 
