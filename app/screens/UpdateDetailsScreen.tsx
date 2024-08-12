@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useContext, useState, useEffect, useCallback } from 'react';
-import { Alert, View, TextInput, Text, Button, FlatList, StyleSheet, Pressable } from 'react-native';
+import { Alert, ScrollView, View, TextInput, Text, Button, FlatList, StyleSheet, Pressable } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase'; // Make sure to import your Supabase client
 import { AuthContext } from '../context/AuthContext'; // Make sure to import your AuthContext
@@ -65,7 +65,7 @@ const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
     setUsername(profile?.username || '');
     setFullname(profile?.full_name || '');
     setWebsite(profile?.website || '');
-    // setSelectedCities(profile?.cities || '');
+    setSelectedCities(profile?.cities || '');
   }, [profile]);
 
   useEffect(() => {
@@ -88,6 +88,10 @@ const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
 
     if (website && website !== profile?.website) {
       updates.website = website;
+    }
+
+    if (selectedCities && selectedCities !== profile?.cities.cities) {
+      updates.cities = selectedCities;
     }
 
     console.log('updates', updates);
@@ -134,7 +138,7 @@ const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
   
 
   return (
-    <View style={styles.main}>
+    <ScrollView style={styles.main}>
       <View style={styles.innerContainer}>
         <Text style={styles.title}>Update Profile Details</Text>
         <Spacer space={20} />
@@ -149,14 +153,14 @@ const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
              {/* @ts-ignore */}
              {profile?.website ? <Text><Text style={{ fontWeight: 'bold'}}>Website:</Text>  {profile?.website}</Text> : null}
             
-            {/* <Text style={{ fontWeight: 'bold', paddingBottom: 2 }}>Selected city/cities:</Text>
+            <Text style={{ fontWeight: 'bold', paddingBottom: 2 }}>Selected city/cities:</Text>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
                 {selectedCities.length > 0 ? (
                   <Text>{selectedCities.join(', ')}</Text>
                 ) : (
                   <Text>No cities selected</Text>
                 )}
-              </View> */}
+              </View>
             </View>
           </>
         )}
@@ -208,7 +212,7 @@ const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
           
           />
 
-          {/* <Text style={styles.label}>Manage cities:</Text>
+          <Text style={styles.label}>Manage cities:</Text>
           <View style={styles.inputStyle}>
             {filteredCities.length > 0 ? filteredCities.map((city) => (
               <View key={city} style={styles.selectedCity}>
@@ -216,12 +220,12 @@ const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
                 <Button title="Remove" onPress={() => removeCity(city)} />
               </View>
             )): <Text>No cities selected.</Text>}
-          </View> */}
+          </View>
           <Button title="Update" onPress={handleUpdate} />
           <Pressable style={{ paddingVertical: 10, zIndex: 1 }}  onPress={() => navigation.replace('Account', { user })}><Text>Back to profile</Text></Pressable>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

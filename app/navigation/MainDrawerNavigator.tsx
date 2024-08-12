@@ -28,7 +28,7 @@ const MainDrawerNavigator = () => {
         listeners={({ navigation }) => ({
           drawerItemPress: () => {
             signOut();  // Call the logout function
-            navigation.push('Login')
+            navigation.navigate('Login')
           },
         })}
       />

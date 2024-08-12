@@ -98,11 +98,13 @@ const UserArticles = ({ filters, userId }: any) => {
 
   const placeHolderImage = { uri: 'https://via.placeholder.com/50/800080/FFFFFF'};
 
-  useEffect(() => {
-    console.log('Screen focused, fetching favorites');
-    fetchFavorites();
-    // No dependencies to prevent unnecessary loops
-  },[favorites]);
+
+  useFocusEffect(
+    useCallback(() => {
+      console.log('fetch faves', favorites);
+      fetchFavorites();
+    }, [])
+  );
 
   return (
     <View style={styles.articleList}>

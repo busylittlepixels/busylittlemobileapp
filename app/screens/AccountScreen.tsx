@@ -42,7 +42,7 @@ const AccountScreen = ({ navigation }:any) => {
   
     useEffect(() => {
       getUserDetails();
-    }, [user]);
+    }, [user, profile]);
 
    
     useEffect(() => {
@@ -51,13 +51,12 @@ const AccountScreen = ({ navigation }:any) => {
           .select('cities')
           .eq('id', user.id)
           .single();
-          
-        // console.log('yep', data);
-        if (error) {
-            // @ts-ignore
+        
+          if (error) {
+          // @ts-ignore
           setError(error.message);
         } else {
-                  // @ts-ignore
+          // @ts-ignore
           setCities(data);
         }
         setLoading(false);
@@ -67,10 +66,6 @@ const AccountScreen = ({ navigation }:any) => {
     }, []);
 
 
-    // useEffect(() => {
-    //   console.log('fuckhead, here are your cities:', typeof cities);
-    // },[])
-  
     useEffect(() => {
       const fetchTickets = async () => {
         const { data, error } = await supabase.from('tickets').select('*');
@@ -83,7 +78,6 @@ const AccountScreen = ({ navigation }:any) => {
         }
         setLoading(false);
       };
-  
       fetchTickets();
     }, []);
   
@@ -94,17 +88,11 @@ const AccountScreen = ({ navigation }:any) => {
     };
   
 
-    // useFocusEffect(
-    //   useCallback(() => {
-    //     console.log('username:', profile?.username);
-    //     console.log('cities:', profile?.cities);
-    
-    //     // Optionally, you can return a cleanup function if needed
-    //     return () => {
-    //       console.log('Cleanup if necessary');
-    //     };
-    //   }, [])
-    // );
+    useFocusEffect(
+      useCallback(() => {
+        getUserDetails();
+      }, [getUserDetails])
+    );
 
     const handleCityPress = (city) => {
       navigation.navigate('City', { city });
