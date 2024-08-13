@@ -98,22 +98,14 @@ const UserArticles = ({ filters, userId }: any) => {
 
   const placeHolderImage = { uri: 'https://via.placeholder.com/50/800080/FFFFFF'};
 
-
-  useFocusEffect(
-    useCallback(() => {
-      console.log('fetch faves', favorites);
-      fetchFavorites();
-    }, [])
-  );
+  useEffect(() => {
+    console.log('Screen focused, fetching favorites');
+    fetchFavorites();
+    // No dependencies to prevent unnecessary loops
+  },[]);
 
   return (
-    <View style={styles.articleList}>
-      {loading ? (
-        <ActivityIndicator />
-      ) : error ? (
-        <Text>Error: {error}</Text>
-      ) : (
-        <>
+    
           <ScrollView
             horizontal={false}
             showsHorizontalScrollIndicator={false}
@@ -141,9 +133,7 @@ const UserArticles = ({ filters, userId }: any) => {
               </View>
             ))}
           </ScrollView>
-        </>
-      )}
-    </View>
+
   );
 };
 

@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useContext, useState, useEffect, useCallback } from 'react';
-import { Alert, View, TextInput, Text, Button, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { Alert, View, TextInput, Text, Button, StyleSheet, ScrollView, Pressable, RefreshControl } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { supabase } from '../../supabase'; // Make sure to import your Supabase client
 import { AuthContext } from '../context/AuthContext'; // Make sure to import your AuthContext
@@ -15,6 +15,7 @@ import EventsGrid from '../components/EventsGrid';
 
 const AccountScreen = ({ navigation }:any) => {
     const { user, signOut } = useContext(AuthContext);
+    const [refreshing, setRefreshing] = useState(false);
     const [tickets, setTickets] = useState([]);
     const [username, setUsername] = useState([]);
     const [website, setWebsite] = useState([]);
@@ -23,6 +24,14 @@ const AccountScreen = ({ navigation }:any) => {
     const [profile, setProfile] = useState(null);
     const [cities, setCities] = useState([]);;
   
+
+    const onRefresh = useCallback(() => {
+      setRefreshing(true);
+      setTimeout(() => {
+        setRefreshing(false);
+      }, 2000);
+    }, []);
+
     const getUserDetails = async () => {
       if (user && user.id) {
         const { data, error } = await supabase.from('profiles')
@@ -87,22 +96,24 @@ const AccountScreen = ({ navigation }:any) => {
       navigation.replace('Login');
     };
   
-
-    useFocusEffect(
-      useCallback(() => {
-        getUserDetails();
-      }, [getUserDetails])
-    );
-
     const handleCityPress = (city) => {
       navigation.navigate('City', { city });
     };
+
+    // useFocusEffect(
+    //   useCallback(() => {
+    //     getUserDetails();
+    //   }, [user, profile])
+    // );
 
     return (
         <ScrollView
           style={{ "flex": 1}}
           contentContainerStyle={styles.contentContainer}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         >
         {/* Section 1 */}
         <View style={styles.accountDetails}>

@@ -52,8 +52,6 @@ const FavoritesScreen = ({ navigation, route }: Props) => {
     }, [])
   );
 
-  // console.log('faves on list', favorites);
-
   return (
     <ThemedView style={styles.titleContainer}>
       {user && <Text style={{"color": "red","fontSize": 20}}>Favorite Articles for user: {user?.email}</Text>}
