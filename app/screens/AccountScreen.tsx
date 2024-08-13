@@ -10,6 +10,7 @@ import Spacer from '../components/Spacer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CitiesGrid from '../components/CitiesGrid';
 import EventsGrid from '../components/EventsGrid';
+import { toggleFavorite as toggleFavoriteService } from '../services/favouriteService';
 
 const AccountScreen = ({ navigation, route }: any) => {
     const { user, signOut } = useContext(AuthContext);
@@ -201,7 +202,7 @@ const AccountScreen = ({ navigation, route }: any) => {
                             </View>
                         </Pressable>
                         <Button
-                            onPress={() => handleToggleFavorite(item.id, item.title.rendered, item.slug, item.content.rendered)}
+                            onPress={() => handleToggleFavorite(item.id, item.title?.rendered, item.slug, item.content?.rendered)}
                             title={favorites[item.id] ? '✓' : '-'}
                         />
                     </View>

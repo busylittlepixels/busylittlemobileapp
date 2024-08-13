@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     color: 'white'
   },
   noCont: {
-    color: '#000', // '#000'
+    color: '#fff', // '#000'
   },
   titleContainer: {
     flex: 1,
@@ -88,13 +88,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16
   },
   faveTitle: {
-    color: 'black', 
+    color: '#fff', 
     marginBottom: 20,
     fontSize: 18,
     fontWeight: 'bold' 
   },
   faveLinks: {
-    color: 'black', 
+    color: '#fff', 
     paddingTop: 10,
     fontSize: 14,
     fontWeight: 'bold' 
