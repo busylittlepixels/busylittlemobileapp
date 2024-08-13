@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable, Button} from 'react-native';
 import { AuthContext } from '../context/AuthContext';

@@ -4,6 +4,7 @@ import { Alert, ScrollView, View, TextInput, Text, Button, FlatList, StyleSheet,
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase'; // Make sure to import your Supabase client
 import { AuthContext } from '../context/AuthContext'; // Make sure to import your AuthContext
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import Spacer from '../components/Spacer';
 
@@ -34,14 +35,38 @@ const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
   const [error, setError] = useState<any>([]);
   const [profile, setProfile] = useState([]);
   const [selectedCities, setSelectedCities] = useState([]);
-  const [citySearch, setCitySearch] = useState('');
+  const [data, setData] = useState(null);
 
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 2000);
-  }, []);
+  const loadDataFromStorage = async () => {
+      
+      console.log('starting')
+
+      try {
+          console.log('try')
+        const keys = await AsyncStorage.getAllKeys();
+        if (keys.length > 0) {
+          const result = await AsyncStorage.multiGet(keys);
+          const storedData = result.map(([key, value]) => ({ [key]: value }));
+          
+          // If you expect JSON values, you might need to parse them individually
+          const parsedData = storedData.map(item => {
+            const key = Object.keys(item)[0];
+            try {
+              return { [key]: JSON.parse(item[key]) };
+            } catch (e) {
+              // Handle case where data isn't JSON
+              return { [key]: item[key] };
+            }
+          });
+          console.log('set parsedData', parsedData)
+          setData(parsedData);
+        } else {
+          console.log('No data found in storage');
+        }
+      } catch (error) {
+        console.error('Error loading data from AsyncStorage', error);
+      }
+  };
   
   useEffect(() => {
     const getUserDetails = async () => {
@@ -142,7 +167,18 @@ const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
     setSelectedCities(selectedCities.filter(c => c !== city));
   };
 
-  const filteredCities = selectedCities && selectedCities.filter(city => city.toLowerCase().includes(citySearch.toLowerCase()));
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    // Sync data from AsyncStorage
+    loadDataFromStorage().then(() => setRefreshing(false));
+    
+    setTimeout(() => {
+        setRefreshing(false);
+        console.log('should refresh user details');
+    }, 2000);
+}, []);
+
+  const filteredCities = selectedCities && selectedCities.filter(city => city.toLowerCase());
   
 
   return (
