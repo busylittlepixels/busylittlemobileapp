@@ -12,7 +12,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+   
     "ios": {
+      "jsEngine": "jsc",
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.busylittlemobileapp"
     },

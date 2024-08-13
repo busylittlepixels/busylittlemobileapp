@@ -25,12 +25,7 @@ const AccountScreen = ({ navigation }:any) => {
     const [cities, setCities] = useState([]);;
   
 
-    const onRefresh = useCallback(() => {
-      setRefreshing(true);
-      setTimeout(() => {
-        setRefreshing(false);
-      }, 2000);
-    }, []);
+   
 
     const getUserDetails = async () => {
       if (user && user.id) {
@@ -53,6 +48,14 @@ const AccountScreen = ({ navigation }:any) => {
       getUserDetails();
     }, [user, profile]);
 
+    const onRefresh = useCallback(() => {
+      setRefreshing(true);
+      getUserDetails();
+      console.log('mmmm refreshing...')
+      setTimeout(() => {
+        setRefreshing(false);
+      }, 2000);
+    }, []);
    
     useEffect(() => {
       const fetchCities = async () => {
@@ -91,20 +94,15 @@ const AccountScreen = ({ navigation }:any) => {
     }, []);
   
   
-    const handleLogout = async () => {
-      await signOut();
-      navigation.replace('Login');
-    };
-  
     const handleCityPress = (city) => {
       navigation.navigate('City', { city });
     };
 
-    // useFocusEffect(
-    //   useCallback(() => {
-    //     getUserDetails();
-    //   }, [user, profile])
-    // );
+    useFocusEffect(
+      useCallback(() => {
+        getUserDetails();
+      }, [])
+    );
 
     return (
         <ScrollView
@@ -153,7 +151,7 @@ const AccountScreen = ({ navigation }:any) => {
         {/* Section 4 */}
         <View style={styles.section}>
             <Text style={styles.articleSectionTitle}>Articles:</Text>
-            <UserArticles navigation={navigation} userId={profile?.id}/>
+            <UserArticles userId={profile?.id}/>
         </View>
 
         </ScrollView>

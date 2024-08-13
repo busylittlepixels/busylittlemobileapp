@@ -22,11 +22,11 @@ const FavoritesScreen = ({ navigation, route }: Props) => {
     try {
       const { data: favoriteData, error: favoriteError } = await supabase
         .from('favorites')  // Ensure you use the correct table name, "favorites" or "favourites"
-        .select('article_id, title, article_slug, content')  // Fetch the necessary fields
+        .select('*')  // Fetch the necessary fields
         .eq('user_id', user?.id);
   
       if (favoriteError) {
-        console.error('Error fetching favorites:', favoriteError);
+        console.error('Error fetching faves:', favoriteError);
         return;
       }
       
@@ -42,15 +42,15 @@ const FavoritesScreen = ({ navigation, route }: Props) => {
     }
   };
 
-  useEffect(() => {
-    fetchFavorites();
-  }, []);
-
   useFocusEffect(
     useCallback(() => {
       fetchFavorites();
     }, [])
   );
+  
+  useEffect(() => {
+    fetchFavorites();
+  }, []);
 
   return (
     <ThemedView style={styles.titleContainer}>
@@ -60,6 +60,7 @@ const FavoritesScreen = ({ navigation, route }: Props) => {
         {favorites.length > 0 ? (
           favorites.map((item, index) => (
             <View key={index}>
+              {/* @ts-ignore */}
               <Pressable onPress={() => navigation.navigate("Article", { item })}>
                 <Text style={styles.faveLinks}>{item.title}</Text>
               </Pressable>
@@ -82,7 +83,7 @@ const styles = StyleSheet.create({
     color: 'white'
   },
   noCont: {
-    color: 'white',
+    color: '#000', // '#000'
   },
   titleContainer: {
     flex: 1,
@@ -93,13 +94,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16
   },
   faveTitle: {
-    color: 'white', 
+    color: 'black', 
     marginBottom: 20,
     fontSize: 18,
     fontWeight: 'bold' 
   },
   faveLinks: {
-    color: 'white', 
+    color: 'black', 
     paddingTop: 10,
     fontSize: 14,
     fontWeight: 'bold' 

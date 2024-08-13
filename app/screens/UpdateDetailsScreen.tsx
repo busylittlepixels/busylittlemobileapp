@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useContext, useState, useEffect, useCallback } from 'react';
-import { Alert, ScrollView, View, TextInput, Text, Button, FlatList, StyleSheet, Pressable } from 'react-native';
+import { Alert, ScrollView, View, TextInput, Text, Button, FlatList, StyleSheet, Pressable, RefreshControl } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase'; // Make sure to import your Supabase client
 import { AuthContext } from '../context/AuthContext'; // Make sure to import your AuthContext
@@ -26,6 +26,7 @@ interface UpdateProfileFormProps {
 
 const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
   const { user, signOut } = useContext(AuthContext);
+  const [refreshing, setRefreshing] = useState(false);
   const [username, setUsername] = useState([]);
   const [website, setWebsite] = useState([]);
   const [full_name, setFullname] = useState([]);
@@ -35,6 +36,13 @@ const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
   const [selectedCities, setSelectedCities] = useState([]);
   const [citySearch, setCitySearch] = useState('');
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+  
   useEffect(() => {
     const getUserDetails = async () => {
       if (user && user.id) {
@@ -138,7 +146,14 @@ const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
   
 
   return (
-    <ScrollView style={styles.main}>
+    <ScrollView
+          style={{ "flex": 1}}
+          contentContainerStyle={styles.contentContainer}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
       <View style={styles.innerContainer}>
         <Text style={styles.title}>Update Profile Details</Text>
         <Spacer space={20} />

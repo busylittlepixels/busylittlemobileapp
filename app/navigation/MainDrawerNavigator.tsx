@@ -8,11 +8,11 @@ import { AuthContext } from '../context/AuthContext';
 import FavoritesScreen from '../screens/FavoritesScreen';
 import CityScreen from '../screens/CityScreen';
 import CitiesScreen from '../screens/CitiesScreen';
+import { useNavigation } from 'expo-router';
 
 const Drawer = createDrawerNavigator();
 
 const MainDrawerNavigator = () => {
-
   const { signOut } = useContext(AuthContext);
 
   return (
@@ -28,7 +28,6 @@ const MainDrawerNavigator = () => {
         listeners={({ navigation }) => ({
           drawerItemPress: () => {
             signOut();  // Call the logout function
-            navigation.navigate('Login')
           },
         })}
       />

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, ScrollView, Text, Image, StyleSheet, Button, Pressable, ActivityIndicator } from 'react-native';
+import { View, ScrollView, Text, Image, StyleSheet, Button, Pressable } from 'react-native';
 import { toggleFavorite as toggleFavoriteService } from '../services/favouriteService';
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -14,60 +14,67 @@ const UserArticles = ({ filters, userId }: any) => {
   const navigation = useNavigation(); 
 
   useEffect(() => {
-    fetchFavorites(); // Fetch favorites from storage
-    fetchArticles(); // Fetch articles from API
+    fetchFavorites().then(() => fetchArticles()); // Ensure favorites are loaded firstge
   }, []);
 
   const fetchFavorites = async () => {
     try {
-      const savedFavorites = await AsyncStorage.getItem(`favorites_${userId}`);
-      const parsedFavorites = savedFavorites ? JSON.parse(savedFavorites) : {};
-      if (JSON.stringify(parsedFavorites) !== JSON.stringify(favorites)) {
-        setFavorites(parsedFavorites);
-      }
+        const savedFavorites = await AsyncStorage.getItem(`favorites_${userId}`);
+        const parsedFavorites = savedFavorites ? JSON.parse(savedFavorites) : {};
+
+        // Update the state only if the fetched favorites are different
+        if (JSON.stringify(parsedFavorites) !== JSON.stringify(favorites)) {
+            setFavorites(parsedFavorites);
+        }
     } catch (err) {
-      console.error('Failed to load favorites:', err);
+        console.error('Failed to load favorites:', err);
     }
-  }; 
+  };
 
   const fetchArticles = async () => {
     setLoading(true);
     try {
-      const response = await fetch('https://blpwp.frb.io/wp-json/wp/v2/news');
-      const data = await response.json();
+        const response = await fetch('https://blpwp.frb.io/wp-json/wp/v2/news');
+        const data = await response.json();
 
-      // Apply filters if any
-      const filteredData = filters
-        ? data.filter((article: { [x: string]: any }) => {
-            return Object.keys(filters).every((key) => article[key] === filters[key]);
-          })
-        : data;
+        // Apply filters if any
+        const filteredData = filters
+            ? data.filter((article: { [x: string]: any }) => {
+                return Object.keys(filters).every((key) => article[key] === filters[key]);
+            })
+            : data;
 
-      setArticles(filteredData);
+        setArticles(filteredData);
 
-      // console.log('filtered', filteredData);
-
-      // Initialize favorites state if not already loaded
-      if (Object.keys(favorites).length === 0) {
-        const initialFavorites = filteredData.reduce((acc: any, article: any) => {
-          acc[article.id] = false; // Set all to false initially
-          return acc;
+        // Set favorites based on fetched articles and stored favorites
+        const updatedFavorites = filteredData.reduce((acc: any, article: any) => {
+            acc[article.id] = favorites[article.id] || false; // Use stored favorites if available
+            return acc;
         }, {});
-        setFavorites(initialFavorites);
-      }
+        
+        setFavorites(updatedFavorites);
+
     } catch (err) {
-      // @ts-ignore
-      setError(err.message);
+        // @ts-ignore 
+        setError(err.message);
     }
     setLoading(false);
-  };
+};
+
+
+
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchFavorites(); // Fetch favorites from storage
+    }, [])
+  );
 
   const handleToggleFavorite = async (articleId: any, title: any, slug: any, content: any) => {
     const isFavorite = favorites[articleId];
     const serialisedContent = JSON.stringify(content);
-    // console.log('serialised', serialisedContent)
     const result = await toggleFavoriteService(userId, articleId, title, slug, serialisedContent);
-
+  
     if (result.error) {
       Toast.show({
         type: 'error',
@@ -80,14 +87,15 @@ const UserArticles = ({ filters, userId }: any) => {
         [articleId]: !isFavorite,
       };
       setFavorites(updatedFavorites);
-
+  
       // Save updated favorites to AsyncStorage
       try {
         await AsyncStorage.setItem(`favorites_${userId}`, JSON.stringify(updatedFavorites));
+        fetchFavorites(); // Immediately refetch favorites to ensure state is in sync
       } catch (err) {
         console.error('Failed to save favorites:', err);
       }
-
+  
       Toast.show({
         type: 'success',
         text1: 'Success!',
@@ -95,18 +103,14 @@ const UserArticles = ({ filters, userId }: any) => {
       });
     }
   };
+  
+  
+  
 
   const placeHolderImage = { uri: 'https://via.placeholder.com/50/800080/FFFFFF'};
 
-  useEffect(() => {
-    console.log('Screen focused, fetching favorites');
-    fetchFavorites();
-    // No dependencies to prevent unnecessary loops
-  },[]);
-
-  return (
-    
-          <ScrollView
+    return (
+        <ScrollView
             horizontal={false}
             showsHorizontalScrollIndicator={false}
           >

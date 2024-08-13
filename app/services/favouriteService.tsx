@@ -9,9 +9,9 @@ const addFavorite = async (userId: any, articleId: any, title: any, slug:any, co
             ])
             .select();  // Explicitly request the inserted data to be returned
         
-        if (error && error.code === '23505') {
+        if (error) {
             // Handle the unique constraint violation
-            console.log('Favorite already exists.');
+            console.log('Favorite already exists.', error);
             return { message: 'Favorite already exists', data: null };
         }
 

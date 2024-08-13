@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import AppNavigator from './navigation';
 import { AuthProvider } from './context/AuthContext';
@@ -22,12 +23,24 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // clearAsyncStorage();
 
+const checkAsyncStorage = async () => {
+  try {
+    const keys = await AsyncStorage.getAllKeys();
+    const result = await AsyncStorage.multiGet(keys);
+    console.log(result); // Logs all keys and their values
+  } catch (error) {
+    console.error('Failed to load AsyncStorage data:', error);
+  }
+};
+
+checkAsyncStorage();
+
 const App = () => {
  
   return (
     <SafeAreaProvider>
-      <StatusBar style="dark" />
       <SafeAreaView style={styles.safeArea}>
+        <StatusBar style="dark" />
         <AuthProvider>
           <AppNavigator />
         </AuthProvider>
