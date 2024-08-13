@@ -122,14 +122,14 @@ const OnboardingScreen = ({ onDone, user }) => {
   );
 };
 
-const clearOnboardingFlag = async () => {
-  try {
-    await AsyncStorage.removeItem('hasLaunched');
-    console.log('Onboarding flag cleared');
-  } catch (error) {
-    console.error('Error clearing onboarding flag:', error);
-  }
-};
+// const clearOnboardingFlag = async () => {
+//   try {
+//     await AsyncStorage.removeItem('hasLaunched');
+//     console.log('Onboarding flag cleared');
+//   } catch (error) {
+//     console.error('Error clearing onboarding flag:', error);
+//   }
+// };
 
 const AppNavigator = () => {
   const { user, loading, isFirstLaunch, completeOnboarding } = useContext(AuthContext);
@@ -156,6 +156,7 @@ const AppNavigator = () => {
             ) : (
               <>
                 <Stack.Screen name="Account" component={MainDrawerNavigator} options={{ headerShown: false }} />
+                <Stack.Screen name="Profile" component={UpdateDetailsScreen} options={{ headerShown: true }} />
                 <Stack.Screen name="Event" component={EventScreen} options={{ headerShown: true }} />
                 <Stack.Screen name="Article" component={ArticleScreen} options={{ headerShown: true }} />
                 <Stack.Screen name="Cities" component={CitiesScreen} options={{ headerShown: true }} />

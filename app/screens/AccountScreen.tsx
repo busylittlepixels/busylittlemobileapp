@@ -51,7 +51,11 @@ const AccountScreen = ({ navigation }:any) => {
             const savedFavorites = await AsyncStorage.getItem(`favorites_${user.id}`);
             setFavorites(savedFavorites ? JSON.parse(savedFavorites) : {});
 
-            const response = await fetch('https://blpwp.frb.io/wp-json/wp/v2/news');
+            const response = await fetch('https://blpwp.frb.io/wp-json/wp/v2/news',{
+                headers: {
+                  'Content-Type': 'application/json',
+                }
+              });
             const articlesData = await response.json();
             setArticles(articlesData);
 
@@ -69,6 +73,7 @@ const AccountScreen = ({ navigation }:any) => {
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);
+        console.log('supposedly refreshing')
         fetchData().finally(() => setRefreshing(false));
     }, []);
 
@@ -146,6 +151,21 @@ const styles = StyleSheet.create({
     contentContainer: { },
     accountDetails: { padding: 20, backgroundColor: '#e1e1e1', elevation: 5 },
     section: { padding: 20, backgroundColor: '#ffffff', elevation: 5 },
+    eventsSectionTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 10,
+      },
+      articleSectionTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 2,
+      },
+      sectionTitle: {
+          fontSize: 20,
+          fontWeight: 'bold',
+          marginBottom: 10,
+        },
     item: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -165,6 +185,7 @@ const styles = StyleSheet.create({
     },
     textContainer: {
         flex: 1, // Ensure text container takes up available space
+        alignItems: 'flex-start'
     },
     title: {
         fontWeight: 'bold',

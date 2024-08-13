@@ -1,5 +1,8 @@
 // @ts-nocheck
 import { useContext } from 'react';
+import { Pressable } from 'react-native';
+import { Ionicons } from '@expo/vector-icons'; // or any other icon library you are using
+import { useNavigation } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import MainTabNavigator from './MainTabNavigator';
 import AccountScreen from '../screens/AccountScreen';
@@ -8,17 +11,28 @@ import { AuthContext } from '../context/AuthContext';
 import FavoritesScreen from '../screens/FavoritesScreen';
 import CityScreen from '../screens/CityScreen';
 import CitiesScreen from '../screens/CitiesScreen';
-import { useNavigation } from 'expo-router';
 
 const Drawer = createDrawerNavigator();
 
 const MainDrawerNavigator = () => {
   const { signOut } = useContext(AuthContext);
+  const navigation = useNavigation();
 
   return (
-    <Drawer.Navigator initialRouteName="Home">
+    <Drawer.Navigator
+      initialRouteName="Home"
+      screenOptions={{
+        headerRight: () => (
+          <Pressable
+            onPress={() => navigation.navigate('Profile')} // Replace 'Settings' with the route name of your settings screen
+            style={{ marginRight: 15 }}
+          >
+            <Ionicons name="settings-outline" size={24} color="lightblue" />
+          </Pressable>
+        ),
+      }}
+    >
       <Drawer.Screen name="Home" component={AccountScreen} />
-      <Drawer.Screen name="Profile" component={UpdateDetailsScreen} />
       <Drawer.Screen name="Favorites" component={FavoritesScreen} />
       <Drawer.Screen name="Cities" component={CitiesScreen} />
       <Drawer.Screen

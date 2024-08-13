@@ -1,12 +1,11 @@
 // @ts-nocheck
-import React, { useState } from 'react';
+import React from 'react';
 import AppNavigator from './navigation';
 import { AuthProvider } from './context/AuthContext';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { StyleSheet, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-// import type { StatusBarStyle } from 'react-native';
 import Toast from 'react-native-toast-message';
+import { StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // const STYLES = ['dark-content', 'light-content', 'default'] as const;
@@ -39,8 +38,9 @@ const App = () => {
  
   return (
     <SafeAreaProvider>
-      <StatusBar style="dark" />
+      <StatusBar style="dark" backgroundColor="light" />
       <SafeAreaView style={styles.safeArea}>
+        
         <AuthProvider>
           <AppNavigator />
         </AuthProvider>
@@ -49,11 +49,10 @@ const App = () => {
     </SafeAreaProvider>
   );
 };
-
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: 'white', // Ensure the background color is set to contrast with the StatusBar
+    backgroundColor: 'white',
   },
 });
 

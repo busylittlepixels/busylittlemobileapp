@@ -168,15 +168,15 @@ const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
   };
 
   const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    // Sync data from AsyncStorage
-    loadDataFromStorage().then(() => setRefreshing(false));
-    
-    setTimeout(() => {
-        setRefreshing(false);
-        console.log('should refresh user details');
-    }, 2000);
-}, []);
+      setRefreshing(true);
+      // Sync data from AsyncStorage
+      loadDataFromStorage().then(() => setRefreshing(false));
+      
+      setTimeout(() => {
+          setRefreshing(false);
+          console.log('should refresh user details');
+      }, 2000);
+  }, []);
 
   const filteredCities = selectedCities && selectedCities.filter(city => city.toLowerCase());
   
@@ -264,6 +264,7 @@ const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
           />
 
           <Text style={styles.label}>Manage cities:</Text>
+          
           <View style={styles.inputStyle}>
             {filteredCities.length > 0 ? filteredCities.map((city) => (
               <View key={city} style={styles.selectedCity}>
