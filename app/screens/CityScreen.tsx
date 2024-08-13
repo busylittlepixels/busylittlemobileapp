@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     left: 0,
   },
   content: {
-    color: '#000',
+    color: '#fff',
     paddingVertical:10
   }
 });

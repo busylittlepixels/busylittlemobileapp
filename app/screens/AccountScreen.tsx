@@ -121,18 +121,22 @@ const AccountScreen = ({ navigation }:any) => {
 
             <View style={styles.section}>
                 <Text style={styles.articleSectionTitle}>Articles:</Text>
+                <View>
                 {articles.map(item => (
                     <View key={item.id} style={styles.item}>
                         <Pressable onPress={() => navigation.navigate('Article', { item })} style={styles.articlePressable}>
                             <Image style={styles.tinyLogo} source={{ uri: 'https://via.placeholder.com/50/800080/FFFFFF' }} />
-                            <View>
-                                <Text style={styles.title}>{item.title.rendered}</Text>
-                                <Text>Here's some description...</Text>
+                            <View style={styles.textContainer}>
+                                <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
+                                    {item.title.rendered}
+                                </Text>
+                                <Text style={styles.description}>Here's some description...</Text>
                             </View>
                         </Pressable>
                         <Button onPress={() => handleToggleFavorite(item.id, item.title?.rendered, item.slug, item.content?.rendered)} title={favorites[item.id] ? '✓' : '-'} />
                     </View>
                 ))}
+                </View>
             </View>
         </ScrollView>
     );
@@ -142,12 +146,36 @@ const styles = StyleSheet.create({
     contentContainer: { },
     accountDetails: { padding: 20, backgroundColor: '#e1e1e1', elevation: 5 },
     section: { padding: 20, backgroundColor: '#ffffff', elevation: 5 },
-    item: { paddingVertical: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#ccc' },
-    title: { fontSize: 18, fontWeight: 'bold', color: '#000' },
-    tinyLogo: { width: 50, height: 50 },
-    articlePressable: { flexDirection: 'row', alignItems: 'flex-start', gap: 5 },
-    sectionTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 10 },
-    articleSectionTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 2 }
+    item: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 10,
+        borderBottomWidth: 1,
+        borderColor: '#ccc',
+    },
+    articlePressable: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1, // Ensure Pressable takes up available space
+    },
+    tinyLogo: {
+        width: 50,
+        height: 50,
+        marginRight: 10,
+    },
+    textContainer: {
+        flex: 1, // Ensure text container takes up available space
+    },
+    title: {
+        fontWeight: 'bold',
+        fontSize: 16,
+        maxWidth: '100%', // Ensure title doesn't overflow
+    },
+    description: {
+        fontSize: 14,
+        color: '#666',
+    }
 });
+  
 
 export default AccountScreen;

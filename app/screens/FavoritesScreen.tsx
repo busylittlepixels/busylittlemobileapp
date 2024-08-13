@@ -74,8 +74,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'black',
-    color: 'white'
+    backgroundColor: 'white',
+    color: 'black'
   },
   noCont: {
     color: '#fff', // '#000'
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     gap: 8,
-    color: 'white',
+    color: '#fff',
     paddingTop: 20,
     paddingHorizontal: 16
   },
