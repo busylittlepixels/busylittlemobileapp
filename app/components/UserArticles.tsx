@@ -1,10 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, ScrollView, Text, Image, StyleSheet, Button, Pressable } from 'react-native';
+import { View, Text, Image, StyleSheet, Button, Pressable } from 'react-native';
 import { toggleFavorite as toggleFavoriteService } from '../services/favouriteService';
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { FlatList } from 'react-native-gesture-handler';
 
 const UserArticles = ({ filters, userId }: any) => {
   const [articles, setArticles] = useState<any[]>([]);
@@ -13,68 +12,51 @@ const UserArticles = ({ filters, userId }: any) => {
   const [favorites, setFavorites] = useState<{ [key: string]: boolean }>({});
   const navigation = useNavigation(); 
 
-  useEffect(() => {
-    fetchFavorites().then(() => fetchArticles()); // Ensure favorites are loaded firstge
-  }, []);
-
-  const fetchFavorites = async () => {
-    try {
-        const savedFavorites = await AsyncStorage.getItem(`favorites_${userId}`);
-        const parsedFavorites = savedFavorites ? JSON.parse(savedFavorites) : {};
-
-        // Update the state only if the fetched favorites are different
-        if (JSON.stringify(parsedFavorites) !== JSON.stringify(favorites)) {
-            setFavorites(parsedFavorites);
-        }
-    } catch (err) {
-        console.error('Failed to load favorites:', err);
-    }
-  };
-
-  const fetchArticles = async () => {
+  const fetchData = async () => {
     setLoading(true);
     try {
-        const response = await fetch('https://blpwp.frb.io/wp-json/wp/v2/news');
+        // Fetch favorites first
+        const savedFavorites = await AsyncStorage.getItem(`favorites_${userId}`);
+        const parsedFavorites = savedFavorites ? JSON.parse(savedFavorites) : {};
+        setFavorites(parsedFavorites);
+
+        // Then fetch articles
+        const response = await fetch('https://blpwp.frb.io/wp-json/wp/v2/news',{
+          headers: {
+            'Content-Type': 'application/json',
+            // Add other headers if needed
+          }
+        });
         const data = await response.json();
 
-        // Apply filters if any
         const filteredData = filters
-            ? data.filter((article: { [x: string]: any }) => {
-                return Object.keys(filters).every((key) => article[key] === filters[key]);
-            })
+            ? data.filter((article:any) => Object.keys(filters).every((key) => article[key] === filters[key]))
             : data;
 
         setArticles(filteredData);
-
-        // Set favorites based on fetched articles and stored favorites
-        const updatedFavorites = filteredData.reduce((acc: any, article: any) => {
-            acc[article.id] = favorites[article.id] || false; // Use stored favorites if available
-            return acc;
-        }, {});
-        
-        setFavorites(updatedFavorites);
-
     } catch (err) {
-        // @ts-ignore 
+      // @ts-ignore
         setError(err.message);
     }
     setLoading(false);
-};
+  };
 
+  useEffect(() => {
+      fetchData();
+  }, []);
 
-
-
+    
   useFocusEffect(
     useCallback(() => {
-      fetchFavorites(); // Fetch favorites from storage
+      fetchData(); // Fetch favorites from storage
     }, [])
   );
 
-  const handleToggleFavorite = async (articleId: any, title: any, slug: any, content: any) => {
+  const handleToggleFavorite = async (articleId: string | number, title: any, slug: any, content: any) => {
     const isFavorite = favorites[articleId];
-    const serialisedContent = JSON.stringify(content);
-    const result = await toggleFavoriteService(userId, articleId, title, slug, serialisedContent);
-  
+    const serializedContent = JSON.stringify(content);
+    const result = await toggleFavoriteService(userId, articleId, title, slug, serializedContent);
+
     if (result.error) {
       Toast.show({
         type: 'error',
@@ -87,15 +69,13 @@ const UserArticles = ({ filters, userId }: any) => {
         [articleId]: !isFavorite,
       };
       setFavorites(updatedFavorites);
-  
-      // Save updated favorites to AsyncStorage
+
       try {
         await AsyncStorage.setItem(`favorites_${userId}`, JSON.stringify(updatedFavorites));
-        fetchFavorites(); // Immediately refetch favorites to ensure state is in sync
       } catch (err) {
         console.error('Failed to save favorites:', err);
       }
-  
+
       Toast.show({
         type: 'success',
         text1: 'Success!',
@@ -103,64 +83,36 @@ const UserArticles = ({ filters, userId }: any) => {
       });
     }
   };
-  
-  
-  
 
-  const placeHolderImage = { uri: 'https://via.placeholder.com/50/800080/FFFFFF'};
-
-    return (
-        <ScrollView
-            horizontal={false}
-            showsHorizontalScrollIndicator={false}
-          >
-            {articles.map((item) => (
-              <View key={item.id.toString()} style={styles.item}>
-                {/* @ts-ignore */}
-                <Pressable onPress={() => navigation.navigate('Article', { item })} style={styles.articlePressable}>
-                  <Image
-                    style={styles.tinyLogo}
-                    source={placeHolderImage}
-                  /> 
-                  <View>
-                    <Text style={styles.title}>
-                      {item.title.rendered} 
-                    </Text>
-                    <Text>Here's some bullshit to go with it...</Text>
-                  </View>
-                </Pressable>
-
-                <Button
-                  onPress={() => handleToggleFavorite(item.id, item.title.rendered, item.slug, item.content.rendered)}
-                  title={favorites[item.id] ? '✓' : '-'}
-                />
+  return (
+    <View style={styles.container}>
+      {articles && articles.length > 0 ? (
+        articles.map((item: any) => (
+          <View key={item.id.toString()} style={styles.item}>
+            {/* @ts-ignore */}
+            <Pressable onPress={() => navigation.navigate('Article', { item })} style={styles.articlePressable}>
+              <Image style={styles.tinyLogo} source={{ uri: 'https://via.placeholder.com/50/800080/FFFFFF' }} />
+              <View>
+                <Text style={styles.title}>{item.title.rendered}</Text>
+                <Text>Here's some bullshit to go with it...</Text>
               </View>
-            ))}
-          </ScrollView>
-
+            </Pressable>
+            <Button
+              onPress={() => handleToggleFavorite(item.id, item.title.rendered, item.slug, item.content.rendered)}
+              title={favorites[item.id] ? '✓' : '-'}
+            />
+          </View>
+        ))
+      ) : (
+        <Text>No articles found.</Text>
+      )}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  main: {
-    flex: 1,
-    justifyContent: 'center',
-  },
   container: {
     flex: 1,
-    justifyContent: 'center',
-  },
-  articleList: {
-    marginTop: 10,
-    justifyContent: 'space-between'
-  },
-  innerContainer: {
-    paddingRight: 16,
-    paddingLeft: 16,
-    marginTop: 20,
-    paddingBottom: 10,
-    fontWeight: 'bold',
-    fontSize: 24,
   },
   item: {
     paddingVertical: 10,
@@ -177,21 +129,6 @@ const styles = StyleSheet.create({
     color: '#000',
     alignSelf: 'flex-start',
   },
-  buttons: {
-    display: 'flex',
-    flexDirection: 'row',
-    margin: 10,
-    alignItems: 'center',
-    gap: 4,
-    padding: 16,
-  },
-  inputStyle: {
-    marginTop: 10,
-    backgroundColor: 'lightgray',
-    borderWidth: 1,
-    color: '#000',
-    padding: 10,
-  },
   tinyLogo: {
     width: 50,
     height: 50,
@@ -200,8 +137,8 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 5
-  }
+    gap: 5,
+  },
 });
 
 export default UserArticles;

@@ -13,7 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import CitiesGrid from '../components/CitiesGrid';
 import EventsGrid from '../components/EventsGrid';
 
-const AccountScreen = ({ navigation }:any) => {
+const AccountScreen = ({ navigation, route }:any) => {
     const { user, signOut } = useContext(AuthContext);
     const [refreshing, setRefreshing] = useState(false);
     const [tickets, setTickets] = useState([]);
@@ -24,8 +24,6 @@ const AccountScreen = ({ navigation }:any) => {
     const [profile, setProfile] = useState(null);
     const [cities, setCities] = useState([]);;
   
-
-   
 
     const getUserDetails = async () => {
       if (user && user.id) {
@@ -98,11 +96,11 @@ const AccountScreen = ({ navigation }:any) => {
       navigation.navigate('City', { city });
     };
 
-    useFocusEffect(
-      useCallback(() => {
-        getUserDetails();
-      }, [])
-    );
+    // useFocusEffect(
+    //   useCallback(() => {
+    //     getUserDetails();
+    //   }, [])
+    // );
 
     return (
         <ScrollView

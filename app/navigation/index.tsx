@@ -102,6 +102,7 @@ const OnboardingScreen = ({ onDone, user }) => {
               <Picker
                 selectedValue={selectedCities}
                 onValueChange={(itemValue) => handleCityChange(itemValue)}
+                multiple={true}
               >
                 <Picker.Item label="Amsterdam" value="Amsterdam" />
                 <Picker.Item label="London" value="London" />

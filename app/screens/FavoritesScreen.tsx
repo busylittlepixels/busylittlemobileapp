@@ -1,14 +1,8 @@
 import React, { useContext, useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Button} from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 import { supabase } from '../../supabase'; // Ensure your Supabase client is correctly imported
 import { useFocusEffect } from '@react-navigation/native';
-
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
 // @ts-ignore
@@ -69,7 +63,7 @@ const FavoritesScreen = ({ navigation, route }: Props) => {
         ) : (
           <Text style={styles.noCont}>No favorites as of yet</Text>
         )}
-      </View>
+        </View>
     </ThemedView>
   );
 };

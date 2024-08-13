@@ -16,9 +16,9 @@ const baseStyles = {
 
 export default function ArticleScreen({ navigation, route }:any) {
 
-    // console.log(route.params.item.title);
+    console.log(route.params.item);
 
-    const { title, content } = route.params.item;
+    const { title, content } = route.params?.item;
 
     // Normalize the title and content
     const normalizedTitle = title?.rendered || title;
