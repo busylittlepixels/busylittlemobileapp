@@ -31,9 +31,9 @@ const EventsGrid = ({ tickets }:any) => {
           </View>
           <Pressable
             onPress={() => navigation.navigate('Event', { item })}
-            style={{ marginLeft: 10 }}
+            style={styles.eventButton}
           >
-            <Text>View Event</Text>
+            <Text style={styles.eventButtonText}>View Event</Text>
           </Pressable>
         </View>
       ))}
@@ -73,6 +73,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     padding: 0,
   },
+  eventButton: {
+    marginLeft: 10, 
+    border: 1, 
+    borderRadius: 5, 
+    backgroundColor: 'green', 
+    padding: 10,
+  }, 
+  eventButtonText: {
+    color: '#fff'
+  }
 });
 
 export default EventsGrid;

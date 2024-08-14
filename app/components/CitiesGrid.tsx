@@ -29,9 +29,13 @@ const CitiesGrid = ({ cities }:any) => {
             return require('../../assets/images/hamburg.png');
         case 'bogota':
             return require('../../assets/images/bogota.png');
+        case 'new york':
+            return require('../../assets/images/newyork.png');
+        case 'copenhagen':
+            return require('../../assets/images/copenhagen.png');
         // Add more cities as needed
         default:
-            return require('../../assets/images/dublin.png'); // Fallback image
+            return require('../../assets/images/newyork.png'); // Fallback image
         }
     };
 

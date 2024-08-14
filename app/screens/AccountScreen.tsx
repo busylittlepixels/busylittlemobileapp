@@ -73,7 +73,7 @@ const AccountScreen = ({ navigation }:any) => {
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);
-        console.log('supposedly refreshing')
+        console.log('refreshing, please standby')
         fetchData().finally(() => setRefreshing(false));
     }, []);
 
