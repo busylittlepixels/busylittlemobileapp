@@ -1,9 +1,10 @@
 // @ts-nocheck
+import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useContext, useEffect, useState } from 'react';
-import { Text, View, Button } from 'react-native';
+import { Text, View, Button, Pressable} from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SplashScreen from '../screens/SplashScreen';
 import LoginScreen from '../screens/LoginScreen';
@@ -22,6 +23,7 @@ import Onboarding from 'react-native-onboarding-swiper';
 import FavoritesScreen from '../screens/FavoritesScreen';
 import CityScreen from '../screens/CityScreen';
 import CitiesScreen from '../screens/CitiesScreen';
+import SearchScreen from '../screens/SearchScreen';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -32,7 +34,7 @@ export type RootStackParamList = {
   Login: undefined;
   SignUp: undefined;
   Account: undefined;
-  Services: undefined;
+  Search: undefined;
   Event: undefined;
   FavoriteArticles: undefined;
   UpdateDetails: undefined;
@@ -49,6 +51,7 @@ const OnboardingScreen = ({ onDone, user }) => {
 
   const [userId, setUserId] = useState([]);
   const [selectedCities, setSelectedCities] = useState([]);
+
 
   const handleCityChange = (city) => {
     setSelectedCities((prevCities) => {
@@ -133,6 +136,7 @@ const OnboardingScreen = ({ onDone, user }) => {
 
 const AppNavigator = () => {
   const { user, loading, isFirstLaunch, completeOnboarding } = useContext(AuthContext);
+  // const navigation = useNavigation(); 
 
   if (loading) {
     return (
@@ -143,10 +147,12 @@ const AppNavigator = () => {
       </NavigationContainer>
     );
   }
-
+ 
   return (
     <NavigationContainer independent>
-      <Stack.Navigator>
+      <Stack.Navigator screenOptions={{
+          headerShown: true,
+        }}>
         {user ? (
           <>
             {isFirstLaunch ? (
@@ -161,7 +167,18 @@ const AppNavigator = () => {
                 <Stack.Screen name="Article" component={ArticleScreen} options={{ headerShown: true }} />
                 <Stack.Screen name="Cities" component={CitiesScreen} options={{ headerShown: true }} />
                 <Stack.Screen name="City" component={CityScreen} options={{ headerShown: true }} />
-                <Stack.Screen name="Services" component={ServicesScreen} />
+                <Stack.Screen name="Search" component={SearchScreen} options={({ navigation }) => ({
+                  gestureEnabled: false,
+                  gestureDirection: 'vertical',
+                  cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
+                  headerRight: () => (
+                    <View style={{ flexDirection: 'row', marginRight: 15 }}>
+                      <Pressable onPress={() => navigation.goBack()}>
+                        <Ionicons name="close-outline" size={24} color="lightblue" />
+                      </Pressable>
+                    </View>
+                  ),
+                })}/>
                 <Stack.Screen name="UpdateDetails" component={UpdateDetailsScreen} options={{ headerShown: true }} />
                 <Stack.Screen name="FavoriteArticles" component={FavoritesScreen} options={{ headerTitle: "Favorite Articles" }} />
                 <Stack.Screen name="Payment" component={PaymentScreen} />

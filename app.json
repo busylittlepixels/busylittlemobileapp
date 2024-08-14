@@ -12,7 +12,6 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-   
     "ios": {
       "jsEngine": "jsc",
       "supportsTablet": true,
@@ -35,6 +34,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "157ae5e2-48bc-4393-b3bf-fe5deb1a0980"
+      }
+    },
+    "owner": "dangerro"
   }
 }

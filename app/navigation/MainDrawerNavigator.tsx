@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { useContext } from 'react';
-import { Pressable } from 'react-native';
+import { View, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; // or any other icon library you are using
 import { useNavigation } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -23,12 +23,20 @@ const MainDrawerNavigator = () => {
       initialRouteName="Home"
       screenOptions={{
         headerRight: () => (
-          <Pressable
-            onPress={() => navigation.navigate('Profile')} // Replace 'Settings' with the route name of your settings screen
-            style={{ marginRight: 15 }}
-          >
-            <Ionicons name="settings-outline" size={24} color="lightblue" />
-          </Pressable>
+          <View style={{ display: 'flex', flexDirection: 'row'}}>
+            <Pressable
+              onPress={() => navigation.navigate('Profile')} // Replace 'Settings' with the route name of your settings screen
+              style={{ marginRight: 15 }}
+            >
+              <Ionicons name="person-outline" size={24} color="lightblue" />
+            </Pressable>
+            <Pressable
+              onPress={() => navigation.navigate('Search')} // Replace 'Settings' with the route name of your settings screen
+              style={{ marginRight: 15 }}
+            >
+              <Ionicons name="search-outline" size={24} color="lightblue" />
+            </Pressable>
+          </View>
         ),
       }}
     >

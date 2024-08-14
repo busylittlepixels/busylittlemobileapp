@@ -40,7 +40,7 @@ const App = () => {
     <SafeAreaProvider>
       <StatusBar style="dark" backgroundColor="light" />
       <SafeAreaView style={styles.safeArea}>
-        
+       
         <AuthProvider>
           <AppNavigator />
         </AuthProvider>

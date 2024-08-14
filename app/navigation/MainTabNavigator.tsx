@@ -1,4 +1,5 @@
 import React from 'react';
+// @ts-ignore
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/PaymentScreen';
@@ -8,10 +9,10 @@ import TabTwoScreen from '../screens/TabTwo';
 import TabEileScreen from '../screens/TabEile';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Pressable } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import AccountScreen from '../screens/AccountScreen';
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator(); 
 const Stack = createStackNavigator();
 
 const DrawerToggle = ({ navigation }:any) => (

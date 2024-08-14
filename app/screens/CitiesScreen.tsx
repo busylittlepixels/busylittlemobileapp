@@ -20,6 +20,7 @@ const CitiesScreen = () => {
         const keys = await AsyncStorage.getAllKeys();
         if (keys.length > 0) {
           const result = await AsyncStorage.multiGet(keys);
+          console.log('In storage, called from City', result)
           const storedData = result.map(([key, value]) => ({ [key]: value }));
           
           // If you expect JSON values, you might need to parse them individually
@@ -61,7 +62,7 @@ const CitiesScreen = () => {
   return (
     <ScrollView
         style={{ "flex": 1}}
-        contentContainerStyle={styles.contentContainer}
+        contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -73,12 +74,14 @@ const CitiesScreen = () => {
 };
 
 const styles = StyleSheet.create({
+
   container: {
-    flexDirection: 'row',
+    flex: 1,
     flexWrap: 'wrap',
     justifyContent: 'center',
     alignItems: 'center',
-  }
+    backgroundColor: 'white',
+  },
 });
 
 export default CitiesScreen;

@@ -76,7 +76,12 @@ const CityPills = ({ user }: any) => {
 
   return (
     <View style={styles.container}>
-      <View><Text>{JSON.stringify(selectedCities)}</Text></View>
+      <View style={styles.headingBlock}>
+        <Text style={styles.pageHeading}>
+          Select Your City
+          </Text>
+          <Text style={{ textAlign: 'center', marginVertical: 10 }}>You can edit your preferences in your profile settings.</Text>
+      </View>
       {cities.length > 0 ? (
         cities.map((city) => {
           const isCitySelected = selectedCities.includes(city.name);
@@ -110,6 +115,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
+  },
+  headingBlock: {
+    paddingVertical:20,
+  },
+  pageHeading: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 2,
+    textAlign: 'center'
   },
   pill: {
     backgroundColor: '#ddd',

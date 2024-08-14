@@ -306,7 +306,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'lightgray',
     borderWidth: 1,
     color: '#000',
-    padding: 10
+    padding: 10,
+    borderRadius:3, 
   },
   selectedCity: {
     flexDirection: 'row',

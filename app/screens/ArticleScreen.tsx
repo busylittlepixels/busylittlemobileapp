@@ -5,6 +5,7 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import RenderHTML from 'react-native-render-html';
+import React from 'react';
 
 const baseStyles = {
     body: {

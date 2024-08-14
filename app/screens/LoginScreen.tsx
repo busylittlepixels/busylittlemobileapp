@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 12,
     padding: 10,
+    borderRadius:3, 
   },
   loginTitle: {
     fontSize: 18,
