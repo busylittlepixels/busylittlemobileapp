@@ -1,4 +1,5 @@
 // @ts-nocheck
+import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { Alert, ScrollView, View, TextInput, Text, Button, FlatList, StyleSheet, Pressable, RefreshControl } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
@@ -37,6 +38,26 @@ const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
   const [selectedCities, setSelectedCities] = useState([]);
   const [data, setData] = useState(null);
 
+
+  const triggerRefresh = async () => {
+    try {
+      await loadDataFromStorage(); 
+      Toast.show({
+        type: 'success',
+        text1: 'Data synced successfully',
+      });
+    } catch (error) {
+      console.error('Error syncing data:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to sync data. Please try again.',
+      });
+    }
+  };
+
+
+
   const loadDataFromStorage = async () => {
       
       console.log('starting')
@@ -67,6 +88,20 @@ const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
         console.error('Error loading data from AsyncStorage', error);
       }
   };
+
+  // Setting the header right icon to trigger loadDataFromStorage
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <View style={{ flexDirection: 'row', marginRight: 15 }}>
+          <Pressable onPress={triggerRefresh}>
+            <Ionicons name="refresh-outline" size={24} color="lightblue" />
+          </Pressable>
+        </View>
+      ),
+    });
+  }, [navigation]);
+  
   
   useEffect(() => {
     const getUserDetails = async () => {
@@ -104,7 +139,6 @@ const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
   useEffect(() => {
     console.log('profile', profile)
   }, [profile]);
-
 
 
   const handleUpdate = async () => {
