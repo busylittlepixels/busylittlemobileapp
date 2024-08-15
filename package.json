@@ -17,6 +17,7 @@
   "dependencies": {
     "@expo/html-elements": "^0.10.1",
     "@expo/vector-icons": "^14.0.2",
+    "@measured/puck": "^0.15.0",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/masked-view": "^0.1.11",
     "@react-native-picker/picker": "2.7.5",

@@ -42,6 +42,7 @@ export type RootStackParamList = {
   ResetPass: undefined;
   TabEile: undefined;
   Onboarding: undefined;
+  Services: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
