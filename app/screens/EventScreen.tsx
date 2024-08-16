@@ -7,6 +7,8 @@ import { ExternalLink } from '@/components/ExternalLink';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import EventSignupForm from '../components/EventSignupForm';
+import React from 'react';
 
 export default function EventScreen({ navigation, route }:any) {
 
@@ -24,6 +26,11 @@ export default function EventScreen({ navigation, route }:any) {
         <ThemedText>
             {route.params ? route.params.item.event_description : 'Body'}
         </ThemedText>
+
+        
+        
+        <EventSignupForm />
+        
         <View>
             <Button title="Back to List" onPress={() => navigation.navigate('Account')} />
         </View>

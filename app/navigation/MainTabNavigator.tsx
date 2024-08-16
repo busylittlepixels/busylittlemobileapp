@@ -1,16 +1,13 @@
 import React from 'react';
 // @ts-ignore
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import HomeScreen from '../screens/HomeScreen';
-import ProfileScreen from '../screens/PaymentScreen';
 import SettingsScreen from '../screens/SettingsScreen';
-import OnboardingScreen from '../screens/UpdateDetailsScreen';
 import TabTwoScreen from '../screens/TabTwo';
 import TabEileScreen from '../screens/TabEile';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Pressable } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import AccountScreen from '../screens/AccountScreen';
+import UpdateDetailsScreen from '../screens/UpdateDetailsScreen';
 
 const Tab = createBottomTabNavigator(); 
 const Stack = createStackNavigator();
@@ -60,9 +57,11 @@ const TabsStack = () => (
 const MainTabNavigator = () => {
   return (
     <Tab.Navigator>
-      <Tab.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
-      <Tab.Screen name="Account" component={TabsStack} options={{ headerShown: false }} />
+      {/* @ts-ignore */}
+      <Tab.Screen name="Me" component={UpdateDetailsScreen} options={{ headerShown: false }} />
+      <Tab.Screen name="Events" component={TabsStack} options={{ headerShown: false }} />
       <Tab.Screen name="Notifications" component={TabEileScreen} options={{ headerShown: false, tabBarBadge: 2 }} />
+      
     </Tab.Navigator>
   );
 };

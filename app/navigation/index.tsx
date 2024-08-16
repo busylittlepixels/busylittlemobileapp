@@ -13,6 +13,7 @@ import ServicesScreen from '../screens/ServicesScreen';
 import UpdateDetailsScreen from '../screens/UpdateDetailsScreen';
 import PaymentScreen from '../screens/PaymentScreen';
 import { AuthContext } from '../context/AuthContext';
+import MainTabNavigator from './MainTabNavigator';
 import MainDrawerNavigator from './MainDrawerNavigator';
 import SignUpScreen from '../screens/SignUpScreen';
 import EventScreen from '../screens/EventScreen';
@@ -162,7 +163,7 @@ const AppNavigator = () => {
             ) : (
               <>
                 <Stack.Screen name="Account" component={MainDrawerNavigator} options={{ headerShown: false }} />
-                <Stack.Screen name="Profile" component={UpdateDetailsScreen} options={{ headerShown: true }} />
+                <Stack.Screen name="Profile" component={MainTabNavigator} options={{ headerShown: true }} />
                 <Stack.Screen name="Event" component={EventScreen} options={{ headerShown: true }} />
                 <Stack.Screen name="Article" component={ArticleScreen} options={{ headerShown: true }} />
                 <Stack.Screen name="Cities" component={CitiesScreen} options={{ headerShown: true }} />
