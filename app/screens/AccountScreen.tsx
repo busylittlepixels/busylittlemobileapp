@@ -1,5 +1,6 @@
 // @ts-nocheck
 import React, { useContext, useState, useEffect, useCallback } from 'react';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { View, Text, ScrollView, RefreshControl, Image, Pressable, Button, StyleSheet } from 'react-native';
 import { supabase } from '../../supabase';
 import { AuthContext } from '../context/AuthContext';
@@ -138,7 +139,17 @@ const AccountScreen = ({ navigation }:any) => {
                                 <Text style={styles.description}>Here's some description...</Text>
                             </View>
                         </Pressable>
-                        <Button onPress={() => handleToggleFavorite(item.id, item.title?.rendered, item.slug, item.content?.rendered)} title={favorites[item.id] ? '✓' : '-'} />
+                        
+                        <Pressable
+                            onPress={() => handleToggleFavorite(item.id, item.title?.rendered, item.slug, item.content?.rendered)}
+                            style={styles.favoriteButton}
+                        >
+                            <Ionicons 
+                                name={favorites[item.id] ? 'checkmark-circle-outline' : 'remove-outline'} 
+                                size={24} 
+                                color={favorites[item.id] ? 'green' : 'gray'} 
+                            />
+                        </Pressable>
                     </View>
                 ))}
                 </View>

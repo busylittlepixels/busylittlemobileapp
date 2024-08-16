@@ -95,7 +95,9 @@ const UpdateDetailsScreen = ({ navigation }:UpdateProfileFormProps) => {
       headerRight: () => (
         <View style={{ flexDirection: 'row', marginRight: 15 }}>
           <Pressable onPress={triggerRefresh}>
-            <Ionicons name="refresh-outline" size={24} color="lightblue" />
+            <Ionicons name="refresh-outline" size={24} color="lightblue"
+            optio
+            />
           </Pressable>
         </View>
       ),
