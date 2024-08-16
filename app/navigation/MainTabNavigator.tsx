@@ -8,6 +8,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Pressable } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import UpdateDetailsScreen from '../screens/UpdateDetailsScreen';
+import MyEventsScreen from '../screens/MyEventsScreen';
 
 const Tab = createBottomTabNavigator(); 
 const Stack = createStackNavigator();
@@ -19,7 +20,7 @@ const DrawerToggle = ({ navigation }:any) => (
 );
 
 const screenOptions = ({ navigation }:any) => ({
-  headerLeft: () => <DrawerToggle navigation={navigation} />,
+  // headerLeft: () => <DrawerToggle navigation={navigation} />,
   headerShown: false
 });
 
@@ -58,8 +59,7 @@ const MainTabNavigator = () => {
   return (
     <Tab.Navigator>
       {/* @ts-ignore */}
-      <Tab.Screen name="Me" component={UpdateDetailsScreen} options={{ headerShown: false }} />
-      <Tab.Screen name="Events" component={TabsStack} options={{ headerShown: false }} />
+      <Tab.Screen name="My Settings" component={SettingsScreen} options={{ headerShown: false }} />
       <Tab.Screen name="Notifications" component={TabEileScreen} options={{ headerShown: false, tabBarBadge: 2 }} />
       
     </Tab.Navigator>

@@ -38,9 +38,9 @@ const App = () => {
  
   return (
     <SafeAreaProvider>
-       <StatusBar style="dark" backgroundColor="light" />
+      
       <SafeAreaView style={styles.safeArea}>
-       
+        <StatusBar style="dark" backgroundColor="light" />
         <AuthProvider>
           <AppNavigator />
         </AuthProvider>
