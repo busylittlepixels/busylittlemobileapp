@@ -104,7 +104,7 @@ const CityPills = ({ user }: any) => {
           );
         })
       ) : (
-        <Text>No cities available.</Text>  // Handle case where cities array is empty
+        <View><Text style={styles.title}>Fetching Cities...</Text></View>  // Handle case where cities array is empty
       )}
     </View>
   );
