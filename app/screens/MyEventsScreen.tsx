@@ -28,7 +28,7 @@ const MyEventsScreen = () => {
           headerShown: false,  // Hide header for all tabs
         })}
       >
-        <Tab.Screen name="Events" component={EventsList} 
+        <Tab.Screen name="My Feed" component={EventsList} 
           options={{
             tabBarIcon: ({ focused, color, size }) => (
               <Ionicons 
@@ -39,7 +39,7 @@ const MyEventsScreen = () => {
             ),
           }}
         />
-        <Tab.Screen name="All Events" component={FavoritesScreen} 
+        <Tab.Screen name="My Events" component={FavoritesScreen} 
          options={{
            tabBarIcon: ({ focused, color, size }) => (
              <Ionicons 
