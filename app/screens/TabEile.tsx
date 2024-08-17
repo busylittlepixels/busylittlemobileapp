@@ -13,7 +13,7 @@ export default function TabEileScreen({ navigation}:any) {
       headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
       headerImage={<Ionicons size={310} name="code-slash" style={styles.headerImage} />}>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Tab Eile</ThemedText>
+        <ThemedText type="title">Placeholder Screen</ThemedText>
       </ThemedView>
       <Collapsible title="File-based routing">
         <ThemedText>
