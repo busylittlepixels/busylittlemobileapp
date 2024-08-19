@@ -1,14 +1,14 @@
 // @ts-nocheck
-import React, { useContext, useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, Button} from 'react-native';
-import { AuthContext } from '../context/AuthContext';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
 import { supabase } from '../../supabase'; // Ensure your Supabase client is correctly imported
 import { useFocusEffect } from '@react-navigation/native';
 import { ThemedView } from '@/components/ThemedView';
 
-// @ts-ignore
 const FavoritesScreen = ({ navigation, route }: Props) => {
-  const { user } = useContext(AuthContext);
+  // Access the user from Redux state
+  const user = useSelector((state) => state.auth.user);
   const [loading, setLoading] = useState(false);
   const [favorites, setFavorites] = useState<any[]>([]);
 
@@ -49,13 +49,12 @@ const FavoritesScreen = ({ navigation, route }: Props) => {
 
   return (
     <ThemedView style={styles.titleContainer}>
-      {user && <Text style={{"color": "red","fontSize": 20}}>Favorite Articles for user: {user?.email}</Text>}
+      {user && <Text style={{ color: "red", fontSize: 20 }}>Favorite Articles for user: {user?.email}</Text>}
       <View>
         <Text style={styles.faveTitle}>Favourite Articles</Text>
         {favorites.length > 0 ? (
           favorites.map((item, index) => (
             <View key={index}>
-              {/* @ts-ignore */}
               <Pressable onPress={() => navigation.navigate("Article", { item })}>
                 <Text style={styles.faveLinks}>{item.title}</Text>
               </Pressable>
@@ -64,7 +63,7 @@ const FavoritesScreen = ({ navigation, route }: Props) => {
         ) : (
           <Text style={styles.noCont}>No favorites as of yet</Text>
         )}
-        </View>
+      </View>
     </ThemedView>
   );
 };
@@ -75,7 +74,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'white',
-    color: 'black'
+    color: 'black',
   },
   noCont: {
     color: '#fff', // '#000'
@@ -86,20 +85,20 @@ const styles = StyleSheet.create({
     gap: 8,
     color: '#fff',
     paddingTop: 20,
-    paddingHorizontal: 16
+    paddingHorizontal: 16,
   },
   faveTitle: {
     color: '#fff', 
     marginBottom: 20,
     fontSize: 18,
-    fontWeight: 'bold' 
+    fontWeight: 'bold',
   },
   faveLinks: {
     color: '#fff', 
     paddingTop: 10,
     fontSize: 14,
-    fontWeight: 'bold' 
-  }
+    fontWeight: 'bold',
+  },
 });
 
 export default FavoritesScreen;

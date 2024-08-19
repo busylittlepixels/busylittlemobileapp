@@ -1,27 +1,25 @@
 // @ts-nocheck
-import React from 'react';
+import React, { useEffect } from 'react';
 import AppNavigator from './navigation';
-import { AuthProvider } from './context/AuthContext';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { StatusBar } from 'expo-status-bar';
+import { StatusBar } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Provider } from 'react-redux';
+import store from './store'; // Import the Redux store
 
-// const STYLES = ['dark-content', 'light-content', 'default'] as const;
-// const TRANSITIONS = ['fade', 'slide', 'none'] as const;
+// Method to clear all data from AsyncStorage
+const clearAsyncStorage = async () => {
+  try {
+    await AsyncStorage.clear();
+    console.log('AsyncStorage successfully cleared!');
+  } catch (error) {
+    console.error('Failed to clear the AsyncStorage:', error);
+  }
+};
 
-// const clearAsyncStorage = async () => {
-//   try {
-//     await AsyncStorage.clear();
-//     console.log('AsyncStorage successfully cleared!');
-//   } catch (error) {
-//     console.error('Failed to clear the AsyncStorage:', error);
-//   }
-// };
-
-// clearAsyncStorage();
-
+// Method to check and log AsyncStorage contents
 const checkAsyncStorage = async () => {
   try {
     const keys = await AsyncStorage.getAllKeys();
@@ -32,23 +30,29 @@ const checkAsyncStorage = async () => {
   }
 };
 
-checkAsyncStorage();
+// Call this at the beginning of your app for testing purposes
 
 const App = () => {
- 
+
+  useEffect(() => {
+    StatusBar.setBarStyle('dark-content'); // Ensures that the bar style is set correctly after mount
+    StatusBar.setHidden(false); // Ensures that the StatusBar is visible
+  }, []);
+
+
   return (
     <SafeAreaProvider>
-      
-      <SafeAreaView style={styles.safeArea}>
-        <StatusBar style="dark" backgroundColor="dark" />
-        <AuthProvider>
+      <Provider store={store}>
+        <SafeAreaView style={styles.safeArea}>
+          <StatusBar style="dark" backgroundColor="dark" />
           <AppNavigator />
-        </AuthProvider>
-      </SafeAreaView>
+        </SafeAreaView>
+      </Provider>
       <Toast />
     </SafeAreaProvider>
-  );
+    );
 };
+
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -57,3 +61,6 @@ const styles = StyleSheet.create({
 });
 
 export default App;
+
+clearAsyncStorage(); // Uncomment to clear storage on each launch
+checkAsyncStorage(); // Uncomment to log storage contents

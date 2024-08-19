@@ -1,8 +1,9 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Text, Alert, Pressable } from 'react-native';
-import { AuthContext } from '../context/AuthContext';
+import { useDispatch } from 'react-redux';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation';
+import { signUp } from '../actions/authActions'; // Import the correct signUp action
 
 type SignUpScreenNavigationProp = StackNavigationProp<RootStackParamList, 'SignUp'>;
 
@@ -11,7 +12,7 @@ interface Props {
 }
 
 const SignUpScreen = ({ navigation }: Props) => {
-  const { signUp } = useContext(AuthContext);
+  const dispatch = useDispatch(); // Hook to dispatch actions
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUserName] = useState('');
@@ -24,20 +25,18 @@ const SignUpScreen = ({ navigation }: Props) => {
   };
 
   const handleSignUp = async () => {
-
-    console.log(email, username, full_name, password)
     if (!validateEmail(email)) {
       setError('Please enter a valid email address');
       return;
     }
-    if (!password || !full_name || !username ) {
+    if (!password || !full_name || !username) {
       setError('All fields are required');
       return;
     }
     setError(null);
     try {
       // @ts-ignore
-      await signUp(email, password, full_name, username);
+      await dispatch(signUp(email, password, full_name, username)); // Dispatch the signUp action
       Alert.alert('Success', 'Please check your email to confirm your account.');
       navigation.navigate('Auth');
     } catch (error: any) {
@@ -60,7 +59,7 @@ const SignUpScreen = ({ navigation }: Props) => {
         autoCapitalize='none'
         clearTextOnFocus={true}
       />
-      <Text>FullName</Text>
+      <Text>Full Name</Text>
       <TextInput
         placeholder="Full Name"
         placeholderTextColor='#000'

@@ -1,23 +1,25 @@
-import React, { useContext } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
-import { AuthContext } from '../context/AuthContext';
-// @ts-ignore
+// @ts-nocheck
+import React from 'react';
+import { View, Text, StyleSheet, Button } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../actions/authActions'; // Import the correct logout action
+
 const PaymentScreen = ({ navigation }: Props) => {
-  const { user, signOut } = useContext(AuthContext);
+  const dispatch = useDispatch(); // Hook to dispatch actions
+
+  // Access the user from Redux state
+  const user = useSelector((state) => state.auth.user);
 
   const handleLogout = async () => {
-    await signOut();
+    await dispatch(logout()); // Dispatch the logout action
     navigation.replace('Login');
   };
 
-  if(user){
-    console.log('user', user);
-    // alert(`${user.email}`);
-  }
   return (
     <View style={styles.container}>
-      <Text>Payment Screen - ass</Text>
+      <Text>Payment Screen</Text>
       {user && <Text>Payment Screen for user: {user?.email}</Text>}
+      <Button title="Logout" onPress={handleLogout} />
     </View>
   );
 };

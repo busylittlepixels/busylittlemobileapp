@@ -1,22 +1,21 @@
+// @ts-nocheck
 import React, { useEffect } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { AuthContext } from '../context/AuthContext';
+import { useSelector } from 'react-redux'; // Using Redux for state management
 
 const SplashScreen = () => {
   const navigation = useNavigation();
-  const { user, loading } = React.useContext(AuthContext);
+  const user = useSelector((state) => state.auth.user); // Access user state from Redux store
+  const loading = useSelector((state) => state.auth.loading); // Access loading state from Redux store
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (!loading) {
+      if (user) {
         if (user) {
-          // @ts-ignore
-          navigation.navigate('Account');
+          navigation.navigate('Account'); // Navigate to Account if user is authenticated
         } else {
-          
-        // @ts-ignore
-          navigation.navigate('Login');
+          navigation.navigate('Login'); // Navigate to Login if not authenticated
         }
       }
     }, 2000); // 2 seconds delay
@@ -42,7 +41,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     marginBottom: 20,
-    fontWeight: "black"
+    fontWeight: 'bold',
   },
 });
 
