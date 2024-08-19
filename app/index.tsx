@@ -42,9 +42,9 @@ const App = () => {
 
   return (
     <SafeAreaProvider>
+      <StatusBar style="dark" backgroundColor="dark" />
       <Provider store={store}>
         <SafeAreaView style={styles.safeArea}>
-          <StatusBar style="dark" backgroundColor="dark" />
           <AppNavigator />
         </SafeAreaView>
       </Provider>
@@ -62,5 +62,5 @@ const styles = StyleSheet.create({
 
 export default App;
 
-clearAsyncStorage(); // Uncomment to clear storage on each launch
-checkAsyncStorage(); // Uncomment to log storage contents
+// checkAsyncStorage(); // Uncomment to log storage contents
+// clearAsyncStorage(); // Uncomment to clear storage on each launch

@@ -5,15 +5,12 @@ import { Text, View, Button, Pressable } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSelector, useDispatch } from 'react-redux';
 import SplashScreen from '../screens/SplashScreen';
 import LoginScreen from '../screens/LoginScreen';
 import AccountScreen from '../screens/AccountScreen';
-import ServicesScreen from '../screens/ServicesScreen';
 import UpdateDetailsScreen from '../screens/UpdateDetailsScreen';
 import PaymentScreen from '../screens/PaymentScreen';
-import { useSelector, useDispatch } from 'react-redux'; // Import Redux hooks
-import MainTabNavigator from './__MainTabNavigator';
 import MainDrawerNavigator from './MainDrawerNavigator';
 import SignUpScreen from '../screens/SignUpScreen';
 import EventScreen from '../screens/EventScreen';
@@ -26,7 +23,7 @@ import FavoritesScreen from '../screens/FavoritesScreen';
 import CityScreen from '../screens/CityScreen';
 import CitiesScreen from '../screens/CitiesScreen';
 import SearchScreen from '../screens/SearchScreen';
-import { checkFirstLaunch, completeOnboarding } from '../actions/authActions'; // Import the actions
+import { checkFirstLaunch, completeOnboarding } from '../actions/authActions';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -50,9 +47,11 @@ export type RootStackParamList = {
 
 const Stack = createStackNavigator<RootStackParamList>();
 
-const OnboardingScreen = ({ onDone, user }) => {
+const OnboardingScreen = ({ onDone, user, navigation }) => {
   const [userId, setUserId] = useState([]);
   const [selectedCities, setSelectedCities] = useState([]);
+
+  console.log('onboarding navigation', navigation);
 
   const handleCityChange = (city) => {
     setSelectedCities((prevCities) => {
@@ -68,6 +67,7 @@ const OnboardingScreen = ({ onDone, user }) => {
     console.log('Onboarding Cities:', selectedCities);
     console.log('Onboarding User:', userId);
     onDone(user, selectedCities);
+    navigation.navigate('TabEile')
   };
 
   useEffect(() => {
@@ -115,7 +115,6 @@ const OnboardingScreen = ({ onDone, user }) => {
                 <Picker.Item label="Bogota" value="Bogota" />
                 <Picker.Item label="New York" value="New York" />
                 <Picker.Item label="Dublin" value="Dublin" />
-                {/* Add more cities as needed */}
               </Picker>
               <Button title="Finish Onboarding" onPress={handleOnDone} />
             </View>
@@ -128,25 +127,32 @@ const OnboardingScreen = ({ onDone, user }) => {
 
 const AppNavigator = () => {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.auth.user); // Get user from Redux store
-  const loading = useSelector((state) => state.auth.loading); // Get loading state from Redux store
-  const isFirstLaunch = useSelector((state) => state.auth.isFirstLaunch); // Get first launch flag from Redux store
+  const user = useSelector((state) => state.auth.user);
+  const loading = useSelector((state) => state.auth.loading);
+  const isFirstLaunch = useSelector((state) => state.auth.isFirstLaunch);
 
-  // Check if it's the first launch
   useEffect(() => {
-    dispatch(checkFirstLaunch()); // Ensures the first launch status is checked at app startup
+    dispatch(checkFirstLaunch());
   }, [dispatch]);
 
-  // Debugging: Log the state
   useEffect(() => {
     console.log('User:', user);
     console.log('Loading:', loading);
     console.log('Is First Launch:', isFirstLaunch);
   }, [user, loading, isFirstLaunch]);
 
-  // Handle onboarding completion
-  const handleCompleteOnboarding = (user, selectedCities) => {
-    dispatch(completeOnboarding(user.id, selectedCities)); // Dispatch onboarding completion action
+  const handleCompleteOnboarding = async (user, selectedCities) => {
+    try {
+      const updatedUser = await dispatch(completeOnboarding(user.id, selectedCities));
+      if (updatedUser) {
+        console.log('Onboarding completed, navigating to Account...');
+        navigation.navigate('Account');
+      } else {
+        console.error('Onboarding failed.');
+      }
+    } catch (error) {
+      console.error('Error completing onboarding:', error);
+    }
   };
 
   if (loading) {
@@ -161,53 +167,56 @@ const AppNavigator = () => {
 
   return (
     <NavigationContainer independent>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: true,
-        }}
-      >
+      <Stack.Navigator screenOptions={{ headerShown: true }}>
         {user ? (
-          <>
-            {isFirstLaunch ? (
-              <Stack.Screen name="Onboarding">
-                {() => <OnboardingScreen onDone={handleCompleteOnboarding} user={user} />}
-              </Stack.Screen>
-            ) : (
-              <>
-                <Stack.Screen name="Account" component={MainDrawerNavigator} options={{ headerShown: false }} />
-                <Stack.Screen name="Profile" component={UpdateDetailsScreen} options={{ headerShown: true }} />
-                <Stack.Screen name="Event" component={EventScreen} options={{ headerShown: true }} />
-                <Stack.Screen name="MyEvents" component={MyEventsScreen} options={{ headerShown: false }} />
-                <Stack.Screen name="Article" component={ArticleScreen} options={{ headerShown: true }} />
-                <Stack.Screen name="Cities" component={CitiesScreen} options={{ headerShown: true }} />
-                <Stack.Screen name="City" component={CityScreen} options={{ headerShown: true }} />
-                <Stack.Screen
-                  name="Search"
-                  component={SearchScreen}
-                  options={({ navigation }) => ({
-                    gestureEnabled: false,
-                    gestureDirection: 'vertical',
-                    cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
-                    headerRight: () => (
-                      <View style={{ flexDirection: 'row', marginRight: 15 }}>
-                        <Pressable onPress={() => navigation.goBack()}>
-                          <Ionicons name="close-outline" size={24} color="lightblue" />
-                        </Pressable>
-                      </View>
-                    ),
-                  })}
+          isFirstLaunch ? (
+            <Stack.Screen name="Onboarding">
+              {({ navigation }) => (
+                <OnboardingScreen
+                  onDone={(user, selectedCities) =>
+                    dispatch(completeOnboarding(user.id, selectedCities)).then(() => {
+                      navigation.navigate('Account');
+                    })
+                  }
+                  user={user}
                 />
-                <Stack.Screen name="UpdateDetails" component={UpdateDetailsScreen} options={{ headerShown: true }} />
-                <Stack.Screen
-                  name="FavoriteArticles"
-                  component={FavoritesScreen}
-                  options={{ headerTitle: 'Favorite Articles' }}
-                />
-                <Stack.Screen name="Payment" component={PaymentScreen} />
-                <Stack.Screen name="TabEile" component={TabEileScreen} />
-              </>
-            )}
-          </>
+              )}
+            </Stack.Screen>
+          ) : (
+            <>
+              <Stack.Screen name="Account" component={MainDrawerNavigator} options={{ headerShown: false }} />
+              <Stack.Screen name="Profile" component={UpdateDetailsScreen} options={{ headerShown: true }} />
+              <Stack.Screen name="Event" component={EventScreen} options={{ headerShown: true }} />
+              <Stack.Screen name="MyEvents" component={MyEventsScreen} options={{ headerShown: false }} />
+              <Stack.Screen name="Article" component={ArticleScreen} options={{ headerShown: true }} />
+              <Stack.Screen name="Cities" component={CitiesScreen} options={{ headerShown: true }} />
+              <Stack.Screen name="City" component={CityScreen} options={{ headerShown: true }} />
+              <Stack.Screen
+                name="Search"
+                component={SearchScreen}
+                options={({ navigation }) => ({
+                  gestureEnabled: false,
+                  gestureDirection: 'vertical',
+                  cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
+                  headerRight: () => (
+                    <View style={{ flexDirection: 'row', marginRight: 15 }}>
+                      <Pressable onPress={() => navigation.goBack()}>
+                        <Ionicons name="close-outline" size={24} color="lightblue" />
+                      </Pressable>
+                    </View>
+                  ),
+                })}
+              />
+              <Stack.Screen name="UpdateDetails" component={UpdateDetailsScreen} options={{ headerShown: true }} />
+              <Stack.Screen
+                name="FavoriteArticles"
+                component={FavoritesScreen}
+                options={{ headerTitle: 'Favorite Articles' }}
+              />
+              <Stack.Screen name="Payment" component={PaymentScreen} />
+              <Stack.Screen name="TabEile" component={TabEileScreen} />
+            </>
+          )
         ) : (
           <>
             <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />

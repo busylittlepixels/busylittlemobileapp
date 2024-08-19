@@ -1,11 +1,10 @@
 // @ts-nocheck
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Pressable } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation';
-import { login } from '../actions/authActions'; // Import the Redux login action
-import { useSelector } from 'react-redux';
+import { login } from '../actions/authActions';
 
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
 
@@ -15,21 +14,19 @@ interface Props {
 
 const LoginScreen = ({ navigation }: Props) => {
   const dispatch = useDispatch();
-  const user = useSelector((state: { auth: { user: any; }; }) => state.auth.user); // Monitor user state
+  const user = useSelector((state) => state.auth.user);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  useEffect(() => {
-    if (user) {
-      navigation.navigate('Account'); // Navigate only when user is available
-    }
-  }, [user]);
+  const [error, setError] = useState<string | null>(null);
 
   const handleLogin = async () => {
     try {
-      console.log('logging in');
       await dispatch(login(email, password));
+      if (!user) {
+        setError('Invalid email or password. Please try again.');
+      }
     } catch (error) {
+      setError('An error occurred. Please try again.');
       console.error(error);
     }
   };
@@ -38,13 +35,14 @@ const LoginScreen = ({ navigation }: Props) => {
     <View style={styles.container}>
       <Text style={styles.logoTitle}>busylittlemobileapp.</Text>
       <Text style={styles.loginTitle}>Sign In</Text>
+      {error && <Text style={styles.error}>{error}</Text>}
       <TextInput
         placeholder="your@email.com"
         placeholderTextColor='#000'
         value={email}
         onChangeText={setEmail}
         style={styles.input}
-        autoCapitalize={"none"}
+        autoCapitalize="none"
         clearTextOnFocus={true}
       />
       <TextInput
@@ -54,7 +52,7 @@ const LoginScreen = ({ navigation }: Props) => {
         onChangeText={setPassword}
         secureTextEntry
         style={styles.input}
-        autoCapitalize={"none"}
+        autoCapitalize="none"
         clearTextOnFocus={true}
       />
       <Button title="Login" onPress={handleLogin} />
@@ -95,6 +93,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     padding: 10,
     color: '#000',
+  },
+  error: {
+    color: 'red',
+    marginBottom: 10,
+    textAlign: 'center',
   },
 });
 
