@@ -1,19 +1,16 @@
 // @ts-nocheck
 import Ionicons from '@expo/vector-icons/Ionicons';
-import React, { useContext, useEffect, useState } from 'react';
-import { Text, View, Button, Pressable} from 'react-native';
-import {Picker} from '@react-native-picker/picker';
+import React, { useEffect, useState } from 'react';
+import { Text, View, Button, Pressable } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSelector, useDispatch } from 'react-redux';
 import SplashScreen from '../screens/SplashScreen';
 import LoginScreen from '../screens/LoginScreen';
 import AccountScreen from '../screens/AccountScreen';
-import ServicesScreen from '../screens/ServicesScreen';
 import UpdateDetailsScreen from '../screens/UpdateDetailsScreen';
 import PaymentScreen from '../screens/PaymentScreen';
-import { AuthContext } from '../context/AuthContext';
-import MainTabNavigator from './MainTabNavigator';
 import MainDrawerNavigator from './MainDrawerNavigator';
 import SignUpScreen from '../screens/SignUpScreen';
 import EventScreen from '../screens/EventScreen';
@@ -26,6 +23,7 @@ import FavoritesScreen from '../screens/FavoritesScreen';
 import CityScreen from '../screens/CityScreen';
 import CitiesScreen from '../screens/CitiesScreen';
 import SearchScreen from '../screens/SearchScreen';
+import { checkFirstLaunch, completeOnboarding } from '../actions/authActions';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -49,12 +47,11 @@ export type RootStackParamList = {
 
 const Stack = createStackNavigator<RootStackParamList>();
 
-
-const OnboardingScreen = ({ onDone, user }) => {
-
+const OnboardingScreen = ({ onDone, user, navigation }) => {
   const [userId, setUserId] = useState([]);
   const [selectedCities, setSelectedCities] = useState([]);
 
+  console.log('onboarding navigation', navigation);
 
   const handleCityChange = (city) => {
     setSelectedCities((prevCities) => {
@@ -70,11 +67,12 @@ const OnboardingScreen = ({ onDone, user }) => {
     console.log('Onboarding Cities:', selectedCities);
     console.log('Onboarding User:', userId);
     onDone(user, selectedCities);
+    navigation.navigate('TabEile')
   };
 
   useEffect(() => {
-    if(user){
-      setUserId(user.id)
+    if (user) {
+      setUserId(user.id);
     }
   }, [user]);
 
@@ -117,10 +115,9 @@ const OnboardingScreen = ({ onDone, user }) => {
                 <Picker.Item label="Bogota" value="Bogota" />
                 <Picker.Item label="New York" value="New York" />
                 <Picker.Item label="Dublin" value="Dublin" />
-                {/* Add more cities as needed */}
               </Picker>
               <Button title="Finish Onboarding" onPress={handleOnDone} />
-              </View>
+            </View>
           ),
         },
       ]}
@@ -128,18 +125,35 @@ const OnboardingScreen = ({ onDone, user }) => {
   );
 };
 
-// const clearOnboardingFlag = async () => {
-//   try {
-//     await AsyncStorage.removeItem('hasLaunched');
-//     console.log('Onboarding flag cleared');
-//   } catch (error) {
-//     console.error('Error clearing onboarding flag:', error);
-//   }
-// };
-
 const AppNavigator = () => {
-  const { user, loading, isFirstLaunch, completeOnboarding } = useContext(AuthContext);
-  // const navigation = useNavigation(); 
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
+  const loading = useSelector((state) => state.auth.loading);
+  const isFirstLaunch = useSelector((state) => state.auth.isFirstLaunch);
+
+  useEffect(() => {
+    dispatch(checkFirstLaunch());
+  }, [dispatch]);
+
+  useEffect(() => {
+    console.log('User:', user);
+    console.log('Loading:', loading);
+    console.log('Is First Launch:', isFirstLaunch);
+  }, [user, loading, isFirstLaunch]);
+
+  const handleCompleteOnboarding = async (user, selectedCities) => {
+    try {
+      const updatedUser = await dispatch(completeOnboarding(user.id, selectedCities));
+      if (updatedUser) {
+        console.log('Onboarding completed, navigating to Account...');
+        navigation.navigate('Account');
+      } else {
+        console.error('Onboarding failed.');
+      }
+    } catch (error) {
+      console.error('Error completing onboarding:', error);
+    }
+  };
 
   if (loading) {
     return (
@@ -150,31 +164,40 @@ const AppNavigator = () => {
       </NavigationContainer>
     );
   }
- 
+
   return (
     <NavigationContainer independent>
-      <Stack.Navigator screenOptions={{
-          headerShown: true,
-        }}>
+      <Stack.Navigator screenOptions={{ headerShown: true }}>
         {user ? (
-          <>
-            {isFirstLaunch ? (
-              <Stack.Screen name="Onboarding">
-                {() => <OnboardingScreen onDone={completeOnboarding} user={user} />}
-              </Stack.Screen>
-            ) : (
-              <>
-                <Stack.Screen name="Account" component={MainDrawerNavigator} options={{ headerShown: false }} />
-                <Stack.Screen name="Profile" component={UpdateDetailsScreen} options={{ headerShown: true }} />
-                <Stack.Screen name="Event" component={EventScreen} options={{ headerShown: true }} />
-                <Stack.Screen name="MyEvents" component={MyEventsScreen} options={{ headerShown: false }} />
-                <Stack.Screen name="Article" component={ArticleScreen} options={{ headerShown: true }} />
-                <Stack.Screen name="Cities" component={CitiesScreen} options={{ headerShown: true }} />
-                <Stack.Screen name="City" component={CityScreen} options={{ headerShown: true }} />
-                <Stack.Screen name="Search" component={SearchScreen} options={({ navigation }) => ({
+          isFirstLaunch ? (
+            <Stack.Screen name="Onboarding">
+              {({ navigation }) => (
+                <OnboardingScreen
+                  onDone={(user, selectedCities) =>
+                    dispatch(completeOnboarding(user.id, selectedCities)).then(() => {
+                      navigation.navigate('Account');
+                    })
+                  }
+                  user={user}
+                />
+              )}
+            </Stack.Screen>
+          ) : (
+            <>
+              <Stack.Screen name="Account" component={MainDrawerNavigator} options={{ headerShown: false }} />
+              <Stack.Screen name="Profile" component={UpdateDetailsScreen} options={{ headerShown: true }} />
+              <Stack.Screen name="Event" component={EventScreen} options={{ headerShown: true }} />
+              <Stack.Screen name="MyEvents" component={MyEventsScreen} options={{ headerShown: false }} />
+              <Stack.Screen name="Article" component={ArticleScreen} options={{ headerShown: true }} />
+              <Stack.Screen name="Cities" component={CitiesScreen} options={{ headerShown: true }} />
+              <Stack.Screen name="City" component={CityScreen} options={{ headerShown: true }} />
+              <Stack.Screen
+                name="Search"
+                component={SearchScreen}
+                options={({ navigation }) => ({
                   gestureEnabled: false,
                   gestureDirection: 'vertical',
-                  cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
+                  cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
                   headerRight: () => (
                     <View style={{ flexDirection: 'row', marginRight: 15 }}>
                       <Pressable onPress={() => navigation.goBack()}>
@@ -182,14 +205,18 @@ const AppNavigator = () => {
                       </Pressable>
                     </View>
                   ),
-                })}/>
-                <Stack.Screen name="UpdateDetails" component={UpdateDetailsScreen} options={{ headerShown: true }} />
-                <Stack.Screen name="FavoriteArticles" component={FavoritesScreen} options={{ headerTitle: "Favorite Articles" }} />
-                <Stack.Screen name="Payment" component={PaymentScreen} />
-                <Stack.Screen name="TabEile" component={TabEileScreen} />
-              </>
-            )}
-          </>
+                })}
+              />
+              <Stack.Screen name="UpdateDetails" component={UpdateDetailsScreen} options={{ headerShown: true }} />
+              <Stack.Screen
+                name="FavoriteArticles"
+                component={FavoritesScreen}
+                options={{ headerTitle: 'Favorite Articles' }}
+              />
+              <Stack.Screen name="Payment" component={PaymentScreen} />
+              <Stack.Screen name="TabEile" component={TabEileScreen} />
+            </>
+          )
         ) : (
           <>
             <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
@@ -204,5 +231,3 @@ const AppNavigator = () => {
 };
 
 export default AppNavigator;
-
-// clearOnboardingFlag();

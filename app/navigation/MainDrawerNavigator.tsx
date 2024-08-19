@@ -1,13 +1,14 @@
 // @ts-nocheck
-import { useContext } from 'react';
+import React from 'react';
 import { View, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; // or any other icon library you are using
 import { useNavigation } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import MainTabNavigator from './MainTabNavigator';
+import { useDispatch } from 'react-redux'; // Import useDispatch from react-redux
+import { logout } from '../actions/authActions'; // Import the logout action
+import MainTabNavigator from './__MainTabNavigator';
 import AccountScreen from '../screens/AccountScreen';
 import UpdateDetailsScreen from '../screens/UpdateDetailsScreen';
-import { AuthContext } from '../context/AuthContext';
 import FavoritesScreen from '../screens/FavoritesScreen';
 import CityScreen from '../screens/CityScreen';
 import CitiesScreen from '../screens/CitiesScreen';
@@ -16,23 +17,28 @@ import MyEventsScreen from '../screens/MyEventsScreen';
 const Drawer = createDrawerNavigator();
 
 const MainDrawerNavigator = () => {
-  const { signOut } = useContext(AuthContext);
+  const dispatch = useDispatch(); // Hook to dispatch actions
   const navigation = useNavigation();
+
+  const handleLogout = () => {
+    dispatch(logout()); // Dispatch the logout action
+    navigation.navigate('Login'); // Navigate to login screen or any other screen after logout
+  };
 
   return (
     <Drawer.Navigator
       initialRouteName="Home"
       screenOptions={{
         headerRight: () => (
-          <View style={{ display: 'flex', flexDirection: 'row'}}>
+          <View style={{ display: 'flex', flexDirection: 'row' }}>
             <Pressable
-              onPress={() => navigation.navigate('Profile')} // Replace 'Settings' with the route name of your settings screen
+              onPress={() => navigation.navigate('Profile')} // Navigate to the Profile screen
               style={{ marginRight: 15 }}
             >
               <Ionicons name="person-outline" size={24} color="lightblue" />
             </Pressable>
             <Pressable
-              onPress={() => navigation.navigate('Search')} // Replace 'Settings' with the route name of your settings screen
+              onPress={() => navigation.navigate('Search')} // Navigate to the Search screen
               style={{ marginRight: 15 }}
             >
               <Ionicons name="search-outline" size={24} color="lightblue" />
@@ -49,14 +55,13 @@ const MainDrawerNavigator = () => {
         name="Logout"
         component={AccountScreen} // Or any dummy component
         options={{ drawerLabel: 'Logout' }}
-        listeners={({ navigation }) => ({
+        listeners={{
           drawerItemPress: () => {
-            signOut();  // Call the logout function
+            handleLogout(); // Call the logout handler
           },
-        })}
+        }}
       />
     </Drawer.Navigator>
-    
   );
 };
 

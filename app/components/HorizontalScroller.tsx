@@ -87,8 +87,8 @@ const styles = StyleSheet.create({
   },
   innerContainer: {
     flex: 1,
-    justifyContent: 'center', // Center the image vertically within the container
-    alignItems: 'center', // Center the image horizontally within the container
+    alignItems: 'flex-start', // Align items to the top
+    justifyContent: 'flex-start', // Start items from the left
   },
   image: {
     width: 220, // Slightly larger than the container to allow the parallax effect
