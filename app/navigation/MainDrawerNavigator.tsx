@@ -44,7 +44,7 @@ const MainDrawerNavigator = () => {
       <Drawer.Screen name="Home" component={AccountScreen} />
       <Drawer.Screen name="Favorites" component={FavoritesScreen} />
       <Drawer.Screen name="Cities" component={CitiesScreen} />
-      <Drawer.Screen name="My Events" component={MyEventsScreen} />
+      <Drawer.Screen name="My Events" component={MyEventsScreen} options={{ drawerLabel: 'My Events' }}/>
       <Drawer.Screen
         name="Logout"
         component={AccountScreen} // Or any dummy component
