@@ -73,14 +73,11 @@ const CitiesGrid = ({ cities }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'flex-start', // Align items to the top
-    justifyContent: 'flex-start', // Start items from the left
-    padding: 10, // Add padding if needed
   },
   scrollView: {
     flexGrow: 1, // Ensures it takes up the full available space
-    alignItems: 'flex-start', // Align items to the top
-    justifyContent: 'flex-start', // Start items from the left
+    justifyContent: 'center', // Centers the content vertically
+    alignItems: 'center', // Centers the content horizontally
   },
   loading: {
     justifyContent: 'center',
@@ -89,8 +86,8 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     marginRight: 10, // Adjust spacing between items
-    alignItems: 'flex-start', // Center the content horizontally
-    justifyContent: 'flex-start', // Center the content vertically
+    alignItems: 'center', // Center the content horizontally
+    justifyContent: 'center', // Center the content vertically
     position: 'relative', // Enable absolute positioning for the text
   },
   image: {
