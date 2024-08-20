@@ -284,9 +284,9 @@ const UpdateDetailsScreen = ({ navigation }: UpdateProfileFormProps) => {
             )): <Text>No cities selected.</Text>}
           </View>
           <UpdateButton title="Update" onPress={handleUpdate} />
-          {/* <Pressable style={{ paddingVertical: 10, zIndex: 1 }}  onPress={() => navigation.replace('Account', { user })}>
+          <Pressable style={{ paddingVertical: 10, zIndex: 1 }}  onPress={() => navigation.replace('Account', { user })}>
             <Text>Back to profile</Text>
-          </Pressable> */}
+          </Pressable>
         </View>
       </View>
     </ScrollView>
