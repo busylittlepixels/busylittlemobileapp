@@ -35,7 +35,7 @@ const HorizontalScroller = () => {
         [{ nativeEvent: { contentOffset: { x: scrollX } } }],
         { useNativeDriver: true }
       )}
-      scrollEventThrottle={16}
+      scrollEventThrottle={4}
     >
       {images.map((item, index) => {
         const inputRange = [
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     paddingTop: StatusBar.currentHeight,
   },
   scrollView: {
-    paddingHorizontal: 10,
+    // paddingHorizontal: 10,
   },
   imageContainer: {
     marginRight: 10,

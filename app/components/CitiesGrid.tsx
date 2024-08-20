@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flexGrow: 1, // Ensures it takes up the full available space
-    justifyContent: 'center', // Centers the content vertically
+    justifyContent: 'flex-start', // Centers the content vertically
     alignItems: 'center', // Centers the content horizontally
   },
   loading: {

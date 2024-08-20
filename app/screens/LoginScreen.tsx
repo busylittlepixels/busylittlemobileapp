@@ -38,7 +38,7 @@ const LoginScreen = ({ navigation }: Props) => {
       {error && <Text style={styles.error}>{error}</Text>}
       <TextInput
         placeholder="your@email.com"
-        placeholderTextColor='#000'
+        placeholderTextColor='#fff'
         value={email}
         onChangeText={setEmail}
         style={styles.input}
@@ -47,7 +47,7 @@ const LoginScreen = ({ navigation }: Props) => {
       />
       <TextInput
         placeholder="Password"
-        placeholderTextColor='#000'
+        placeholderTextColor='#fff'
         value={password}
         onChangeText={setPassword}
         secureTextEntry
@@ -72,6 +72,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 16,
+    backgroundColor: '#000',
+    color: 'white'
   },
   input: {
     height: 40,
@@ -80,12 +82,14 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     padding: 10,
     borderRadius: 3, 
+    color: 'white'
   },
   loginTitle: {
     fontSize: 18,
     fontWeight: '600',
     textAlign: 'center',
     padding: 10,
+    color: 'white'
   },
   logoTitle: {
     fontSize: 20,
@@ -93,6 +97,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     padding: 10,
     color: '#000',
+    color: 'white'
   },
   error: {
     color: 'red',

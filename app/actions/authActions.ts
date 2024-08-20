@@ -70,6 +70,7 @@ export const checkFirstLaunch = () => async (dispatch: Dispatch) => {
 };
 
 export const completeOnboarding = (userId: string, cities: string[]) => async (dispatch: Dispatch) => {
+  console.log('onboarding action');
   try {
       const updatedUser = await complete({ id: userId }, cities);
       if (updatedUser) {

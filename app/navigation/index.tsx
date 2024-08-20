@@ -23,7 +23,7 @@ import FavoritesScreen from '../screens/FavoritesScreen';
 import CityScreen from '../screens/CityScreen';
 import CitiesScreen from '../screens/CitiesScreen';
 import SearchScreen from '../screens/SearchScreen';
-import { checkFirstLaunch, completeOnboarding } from '../actions/authActions';
+import { completeOnboarding } from '../actions/authActions'; // Ensure this action is correctly imported
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -36,7 +36,6 @@ export type RootStackParamList = {
   Account: undefined;
   Search: undefined;
   Event: undefined;
-  MyEvents: undefined;
   FavoriteArticles: undefined;
   UpdateDetails: undefined;
   Payment: undefined;
@@ -47,11 +46,10 @@ export type RootStackParamList = {
 
 const Stack = createStackNavigator<RootStackParamList>();
 
-const OnboardingScreen = ({ onDone, user, navigation }) => {
-  const [userId, setUserId] = useState([]);
+const OnboardingScreen = ({ navigation }) => {
   const [selectedCities, setSelectedCities] = useState([]);
-
-  console.log('onboarding navigation', navigation);
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
 
   const handleCityChange = (city) => {
     setSelectedCities((prevCities) => {
@@ -63,16 +61,25 @@ const OnboardingScreen = ({ onDone, user, navigation }) => {
     });
   };
 
-  const handleOnDone = () => {
-    console.log('Onboarding Cities:', selectedCities);
-    console.log('Onboarding User:', userId);
-    onDone(user, selectedCities);
-    navigation.navigate('TabEile')
+  const handleOnDone = async () => {
+    if (user?.id) {
+      console.log('User ID exists:', user.id);
+      const updatedUser = await dispatch(completeOnboarding(user.id, selectedCities));
+      if (updatedUser) {
+        console.log('Navigating to Account with user:', user);
+        navigation.navigate('Account', { user });
+      } else {
+        console.error('Onboarding failed. User update was unsuccessful.');
+      }
+    } else {
+      console.error('User ID is not set. Cannot complete onboarding.');
+    }
   };
+  
 
   useEffect(() => {
     if (user) {
-      setUserId(user.id);
+      setSelectedCities([]); // Optional: Reset selected cities if needed
     }
   }, [user]);
 
@@ -126,34 +133,13 @@ const OnboardingScreen = ({ onDone, user, navigation }) => {
 };
 
 const AppNavigator = () => {
-  const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   const loading = useSelector((state) => state.auth.loading);
-  const isFirstLaunch = useSelector((state) => state.auth.isFirstLaunch);
+  const isFirstLaunch = useSelector((state) => true);
 
-  useEffect(() => {
-    dispatch(checkFirstLaunch());
-  }, [dispatch]);
-
-  useEffect(() => {
-    console.log('User:', user);
-    console.log('Loading:', loading);
-    console.log('Is First Launch:', isFirstLaunch);
-  }, [user, loading, isFirstLaunch]);
-
-  const handleCompleteOnboarding = async (user, selectedCities) => {
-    try {
-      const updatedUser = await dispatch(completeOnboarding(user.id, selectedCities));
-      if (updatedUser) {
-        console.log('Onboarding completed, navigating to Account...');
-        navigation.navigate('Account');
-      } else {
-        console.error('Onboarding failed.');
-      }
-    } catch (error) {
-      console.error('Error completing onboarding:', error);
-    }
-  };
+  console.log('User:', user);
+  console.log('Loading:', loading);
+  console.log('Is First Launch:', isFirstLaunch);
 
   if (loading) {
     return (
@@ -171,23 +157,13 @@ const AppNavigator = () => {
         {user ? (
           isFirstLaunch ? (
             <Stack.Screen name="Onboarding">
-              {({ navigation }) => (
-                <OnboardingScreen
-                  onDone={(user, selectedCities) =>
-                    dispatch(completeOnboarding(user.id, selectedCities)).then(() => {
-                      navigation.navigate('Account');
-                    })
-                  }
-                  user={user}
-                />
-              )}
+              {({ navigation }) => <OnboardingScreen navigation={navigation} />}
             </Stack.Screen>
           ) : (
             <>
               <Stack.Screen name="Account" component={MainDrawerNavigator} options={{ headerShown: false }} />
               <Stack.Screen name="Profile" component={UpdateDetailsScreen} options={{ headerShown: true }} />
               <Stack.Screen name="Event" component={EventScreen} options={{ headerShown: true }} />
-              <Stack.Screen name="MyEvents" component={MyEventsScreen} options={{ headerShown: false }} />
               <Stack.Screen name="Article" component={ArticleScreen} options={{ headerShown: true }} />
               <Stack.Screen name="Cities" component={CitiesScreen} options={{ headerShown: true }} />
               <Stack.Screen name="City" component={CityScreen} options={{ headerShown: true }} />

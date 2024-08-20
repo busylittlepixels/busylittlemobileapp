@@ -27,6 +27,7 @@ const authReducer = (state = initialState, action: any) => {
     case SET_FIRST_LAUNCH:
       return { ...state, isFirstLaunch: action.payload };
     case COMPLETE_ONBOARDING:
+      console.log('onboatinf reducer');
       return { ...state, user: action.payload };
     default:
       return state;
