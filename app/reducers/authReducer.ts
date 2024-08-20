@@ -11,7 +11,7 @@ import {
 const initialState = {
   user: null,
   loading: false,
-  isFirstLaunch: false,
+  isFirstLaunch: true, // Default to true for first launch
 };
 
 const authReducer = (state = initialState, action: any) => {
@@ -25,9 +25,10 @@ const authReducer = (state = initialState, action: any) => {
     case SET_LOADING:
       return { ...state, loading: action.payload };
     case SET_FIRST_LAUNCH:
+      console.log('first launch');
       return { ...state, isFirstLaunch: action.payload };
     case COMPLETE_ONBOARDING:
-      console.log('onboatinf reducer');
+      console.log('onboarding reducer');
       return { ...state, user: action.payload };
     default:
       return state;

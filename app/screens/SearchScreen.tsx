@@ -1,8 +1,7 @@
- // @ts-nocheck
- import Ionicons from '@expo/vector-icons/Ionicons';
+import Ionicons from '@expo/vector-icons/Ionicons';
+
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, TextInput, StyleSheet, FlatList, Pressable } from 'react-native';
-import supbase from '../../supabase';
 import debounce from 'lodash.debounce';
 
 const data =[
@@ -100,6 +99,7 @@ const SearchScreen = ({navigation}:any) => {
               item.name.toLowerCase().includes(query.toLowerCase()) ||
               item.description.toLowerCase().includes(query.toLowerCase())
             );
+            // @ts-ignore
             setSearchResults(filteredData);
           } else {
             setSearchResults([]);
@@ -114,13 +114,16 @@ const SearchScreen = ({navigation}:any) => {
         setSearchResults([]);
       };
     
-      const handleSearch = (text) => {
+      const handleSearch = (text: React.SetStateAction<string>) => {
         setQuery(text);
         if (text) {
           const filteredData = data.filter((item) =>
+            // @ts-ignore
             item.name.toLowerCase().includes(text.toLowerCase()) ||
+            // @ts-ignore
             item.description.toLowerCase().includes(text.toLowerCase())
           );
+          // @ts-ignore
           setSearchResults(filteredData);
         } else {
           setSearchResults([]);
@@ -150,13 +153,17 @@ const SearchScreen = ({navigation}:any) => {
                 <Text style={styles.searchResultsTitle}>Search Results:</Text>
                 <FlatList
                     data={searchResults}
+                    // @ts-ignore
                     keyExtractor={(item) => item?.id.toString()}
                     renderItem={({ item }) => (
                     <Pressable 
+                    // @ts-ignore
                         key={item.id}
                         onPress={() => navigation.push('Article', { item })}
                         style={styles.item}>
+                          {/* @ts-ignore */}
                         <Text style={styles.title}>{item.name}</Text>
+                        {/* @ts-ignore */}
                         <Text style={styles.description}>{item.description}</Text>
                     </Pressable>
                     )}
