@@ -63,4 +63,3 @@ const styles = StyleSheet.create({
 export default App;
 
 checkAsyncStorage(); // Uncomment to log storage contents
-// clearAsyncStorage(); // Uncomment to clear storage on each launch
