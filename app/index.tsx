@@ -41,25 +41,28 @@ const App = () => {
 
 
   return (
-    <SafeAreaProvider>
+    <>
       <StatusBar style="dark" backgroundColor="dark" />
-      <Provider store={store}>
-        <SafeAreaView style={styles.safeArea}>
-          <AppNavigator />
-        </SafeAreaView>
-      </Provider>
-      <Toast />
-    </SafeAreaProvider>
-    );
+      <SafeAreaProvider>
+        <Provider store={store}>
+          <SafeAreaView style={styles.safeArea}>
+            <AppNavigator />
+          </SafeAreaView>
+        </Provider>
+        <Toast />
+      </SafeAreaProvider>
+    </>
+  );
 };
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: 'black',
   },
 });
 
 export default App;
 
-checkAsyncStorage(); // Uncomment to log storage contents
+// checkAsyncStorage(); // Uncomment to log storage contents
+// clearAsyncStorage(); // Uncomment to clear storage on each launch

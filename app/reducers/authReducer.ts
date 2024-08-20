@@ -11,7 +11,7 @@ import {
 const initialState = {
   user: null,
   loading: false,
-  isFirstLaunch: true, // Default to true for first launch
+  isFirstLaunch: false, // Default to true for first launch
 };
 
 const authReducer = (state = initialState, action: any) => {

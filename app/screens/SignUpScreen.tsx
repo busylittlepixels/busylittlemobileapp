@@ -11,6 +11,22 @@ interface Props {
   navigation: SignUpScreenNavigationProp;
 }
 
+const SignUpButton = ({ title, onPress }:any) => {
+  return (
+    <Pressable
+      style={({ pressed }) => [
+        {
+          backgroundColor: pressed ? '#cc0000' : '#FF0000', // Dim the color when pressed
+        },
+        styles.button,
+      ]}
+      onPress={onPress}
+    >
+      <Text style={styles.buttonText}>{title}</Text>
+    </Pressable>
+  );
+};
+
 const SignUpScreen = ({ navigation }: Props) => {
   const dispatch = useDispatch(); // Hook to dispatch actions
   const [email, setEmail] = useState('');
@@ -47,12 +63,14 @@ const SignUpScreen = ({ navigation }: Props) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.logoTitle}>busylittlemobileapp.</Text>
+      <View style={styles.loginString}>
+        <Text style={styles.logoTitle}>busy</Text><Text style={styles.logoTitleHighlight}>little</Text><Text style={styles.logoTitle}>signuppage</Text>
+      </View>
       {error && <Text style={styles.error}>{error}</Text>}
       <Text>Username</Text>
       <TextInput
         placeholder="Username"
-        placeholderTextColor='#000'
+        placeholderTextColor='#fff'
         value={username}
         onChangeText={setUserName}
         style={styles.input}
@@ -62,7 +80,7 @@ const SignUpScreen = ({ navigation }: Props) => {
       <Text>Full Name</Text>
       <TextInput
         placeholder="Full Name"
-        placeholderTextColor='#000'
+        placeholderTextColor='#fff'
         value={full_name}
         onChangeText={setFullName}
         style={styles.input}
@@ -73,7 +91,7 @@ const SignUpScreen = ({ navigation }: Props) => {
       <Text>Email</Text>
       <TextInput
         placeholder="you@example.com"
-        placeholderTextColor='#000'
+        placeholderTextColor='#fff'
         value={email}
         onChangeText={setEmail}
         style={styles.input}
@@ -84,7 +102,7 @@ const SignUpScreen = ({ navigation }: Props) => {
       <Text>Password</Text>
       <TextInput
         placeholder="Password"
-        placeholderTextColor='#000'
+        placeholderTextColor='#fff'
         value={password}
         onChangeText={setPassword}
         secureTextEntry
@@ -92,8 +110,10 @@ const SignUpScreen = ({ navigation }: Props) => {
         autoCapitalize='none'
         clearTextOnFocus={true}
       />
-      <Button title="Sign Up" onPress={handleSignUp} />
-      <Pressable onPress={() => navigation.navigate('Login')}><Text>Have an account? Log In</Text></Pressable>
+      <SignUpButton title="Sign Up" onPress={handleSignUp} />
+      <View style={styles.dropLinks}>
+        <Pressable onPress={() => navigation.navigate('Login')}><Text style={styles.otherLinks}>Have an account? Log In</Text></Pressable>
+      </View>
     </View>
   );
 };
@@ -103,6 +123,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 16,
+    backgroundColor: '#000',
+    color: 'white'
+  },
+  loginString:{
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginVertical: 20
   },
   input: {
     height: 40,
@@ -110,18 +138,77 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 12,
     padding: 10,
+    borderRadius: 3, 
+    color: 'white'
+  },
+  loginTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    textAlign: 'center',
+    color: 'white'
+  },
+  logoTitle: {
+    fontSize: 26,
+    fontWeight: '700',
+    textAlign: 'center',
+    color: 'white'
+  },
+  logoTitleHighlight: {
+    fontSize: 26,
+    fontWeight: '700',
+    textAlign: 'center',
+    color: 'red'
   },
   error: {
     color: 'red',
     marginBottom: 10,
-  },
-  logoTitle: {
-    fontSize: 20,
-    fontWeight: 700,
     textAlign: 'center',
-    padding: 10,
-    color: '#000'
+  },
+  otherLinks:{
+    color: 'white'
+  },
+
+  button: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#FFFFFF', // White text
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  dropLinks:{
+    marginTop: 50,
+    paddingVertical: 20
   }
 });
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     padding: 16,
+//   },
+//   input: {
+//     height: 40,
+//     borderColor: 'gray',
+//     borderWidth: 1,
+//     marginBottom: 12,
+//     padding: 10,
+//   },
+//   error: {
+//     color: 'red',
+//     marginBottom: 10,
+//   },
+//   logoTitle: {
+//     fontSize: 20,
+//     fontWeight: 700,
+//     textAlign: 'center',
+//     padding: 10,
+//     color: '#000'
+//   }
+// });
 
 export default SignUpScreen;

@@ -35,13 +35,13 @@ const MainDrawerNavigator = () => {
               onPress={() => navigation.navigate('Profile')} // Navigate to the Profile screen
               style={{ marginRight: 15 }}
             >
-              <Ionicons name="person-outline" size={24} color="lightblue" />
+              <Ionicons name="person-outline" size={24} color="black" />
             </Pressable>
             <Pressable
               onPress={() => navigation.navigate('Search')} // Navigate to the Search screen
               style={{ marginRight: 15 }}
             >
-              <Ionicons name="search-outline" size={24} color="lightblue" />
+              <Ionicons name="search-outline" size={24} color="black" />
             </Pressable>
           </View>
         ),

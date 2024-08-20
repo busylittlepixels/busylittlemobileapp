@@ -56,9 +56,9 @@ const AppNavigator = () => {
   const loading = useSelector((state) => state.auth.loading);
   const isFirstLaunch = useSelector((state) => state.auth.isFirstLaunch);
 
-  console.log('User:', user);
-  console.log('Loading:', loading);
-  console.log('Is First Launch:', isFirstLaunch);
+  // console.log('User:', user);
+  // console.log('Loading:', loading);
+  // console.log('Is First Launch:', isFirstLaunch);
 
   if (loading) {
     return (
@@ -97,7 +97,7 @@ const AppNavigator = () => {
                   headerRight: () => (
                     <View style={{ flexDirection: 'row', marginRight: 15 }}>
                       <Pressable onPress={() => navigation.goBack()}>
-                        <Ionicons name="close-outline" size={24} color="lightblue" />
+                        <Ionicons name="close-outline" size={24} color="black" />
                       </Pressable>
                     </View>
                   ),

@@ -4,6 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import { useSelector, useDispatch } from 'react-redux';
 import Onboarding from 'react-native-onboarding-swiper';
 import { completeOnboarding } from '../actions/authActions';
+import OnboardingCityPills from '../components/OnboardingCityPills'; 
 
 const OnboardingScreen = ({ navigation }:any ) => {
     const [selectedCities, setSelectedCities] = useState<string[]>([]);
@@ -73,23 +74,11 @@ const OnboardingScreen = ({ navigation }:any ) => {
                         </View>
                     ),
                     subtitle: (
-                        <View>
-                            <Picker
-                                selectedValue={selectedCities}
-                                // @ts-ignore
-                                onValueChange={(itemValue) => handleCityChange(itemValue)}
-                            >
-                                <Picker.Item label="Amsterdam" value="Amsterdam" />
-                                <Picker.Item label="Bogota" value="Bogota" />
-                                <Picker.Item label="Copenhagen" value="Copenhagen" />
-                                <Picker.Item label="London" value="London" />
-                                <Picker.Item label="Hamburg" value="Hamburg" />
-                                <Picker.Item label="Vienna" value="Vienna" />
-                                <Picker.Item label="New York" value="New York" />
-                                <Picker.Item label="Dublin" value="Dublin" />
-                            </Picker>
-                            <Button title="Finish Onboarding" onPress={handleOnDone} />
-                        </View>
+                        <OnboardingCityPills
+                            user={user}
+                            selectedCities={selectedCities}
+                            handleCityChange={handleCityChange}
+                      />
                     ),
                 },
             ]}

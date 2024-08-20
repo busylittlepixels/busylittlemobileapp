@@ -43,6 +43,22 @@ const UpdateDetailsScreen = ({ navigation }: UpdateProfileFormProps) => {
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
   const [data, setData] = useState(null);
 
+  const UpdateButton = ({ title, onPress }) => {
+    return (
+      <Pressable
+        style={({ pressed }) => [
+          {
+            backgroundColor: pressed ? '#90EE90' : 'green', // Dim the color when pressed
+          },
+          styles.button,
+        ]}
+        onPress={onPress}
+      >
+        <Text style={styles.buttonText}>{title}</Text>
+      </Pressable>
+    );
+  };
+
   const triggerRefresh = async () => {
     try {
       await loadDataFromStorage();
@@ -92,7 +108,7 @@ const UpdateDetailsScreen = ({ navigation }: UpdateProfileFormProps) => {
       headerRight: () => (
         <View style={{ flexDirection: 'row', marginRight: 15 }}>
           <Pressable onPress={triggerRefresh}>
-            <Ionicons name="refresh-outline" size={24} color="lightblue" />
+            <Ionicons name="refresh-outline" size={24} color="black" />
           </Pressable>
         </View>
       ),
@@ -267,10 +283,10 @@ const UpdateDetailsScreen = ({ navigation }: UpdateProfileFormProps) => {
               </View>
             )): <Text>No cities selected.</Text>}
           </View>
-          <Button title="Update" onPress={handleUpdate} />
-          <Pressable style={{ paddingVertical: 10, zIndex: 1 }}  onPress={() => navigation.replace('Account', { user })}>
+          <UpdateButton title="Update" onPress={handleUpdate} />
+          {/* <Pressable style={{ paddingVertical: 10, zIndex: 1 }}  onPress={() => navigation.replace('Account', { user })}>
             <Text>Back to profile</Text>
-          </Pressable>
+          </Pressable> */}
         </View>
       </View>
     </ScrollView>
@@ -318,6 +334,18 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginVertical: 5,
     fontSize: 18,
+  },
+  button: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 10
+  },
+  buttonText: {
+    color: '#FFFFFF', // White text
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

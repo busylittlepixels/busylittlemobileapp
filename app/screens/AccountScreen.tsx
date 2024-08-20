@@ -1,7 +1,7 @@
 // @ts-nocheck
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { View, Text, ScrollView, RefreshControl, Image, Pressable, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, Animated, RefreshControl, Image, Pressable, StyleSheet } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { supabase } from '../../supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -10,9 +10,11 @@ import HorizontalScroller from '../components/HorizontalScroller';
 import CitiesGrid from '../components/CitiesGrid';
 import EventsGrid from '../components/EventsGrid';
 import { toggleFavorite as toggleFavoriteService } from '../services/favouriteService';
+import ParallaxScrollAvatar from '../components/ParallaxScrollAvatar';
 
-const AccountScreen = ({ navigation }:any) => {
+const AccountScreen = ({ navigation }: any) => {
   const dispatch = useDispatch();
+  const scrollY = useRef(new Animated.Value(0)).current; // Ensure scrollY is correctly initialized
 
   // Access Redux state
   const user = useSelector((state) => state.auth.user);
@@ -31,13 +33,13 @@ const AccountScreen = ({ navigation }:any) => {
 
     try {
       // Fetch user profile, cities, and tickets in parallel
-      const [{ data: userDetails, error: userError }, 
-             { data: citiesData, error: citiesError }, 
-             { data: ticketsData, error: ticketsError }] = await Promise.all([
-        supabase.from('profiles').select('*').eq('id', user.id).single(),
-        supabase.from('profiles').select('cities').eq('id', user.id).single(),
-        supabase.from('tickets').select('*')
-      ]);
+      const [{ data: userDetails, error: userError },
+        { data: citiesData, error: citiesError },
+        { data: ticketsData, error: ticketsError }] = await Promise.all([
+          supabase.from('profiles').select('*').eq('id', user.id).single(),
+          supabase.from('profiles').select('cities').eq('id', user.id).single(),
+          supabase.from('tickets').select('*')
+        ]);
 
       if (userError) throw new Error(userError.message);
       setProfile(userDetails);
@@ -91,72 +93,78 @@ const AccountScreen = ({ navigation }:any) => {
   };
 
   return (
-    <ScrollView
-      style={{ flex: 1 }}
-      contentContainerStyle={styles.contentContainer}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-    >
-      <View style={styles.accountDetails}>
-        <Text style={styles.sectionTitle}>Account:</Text>
-        {user && (
-          <>
-            <Text>Hey {profile?.username || user.user_metadata?.username}</Text>
-            <Text>Email: {user.email}</Text>
-          </>
-        )}
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Latest:</Text>
-        <HorizontalScroller />
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Your Selected Cities:</Text>
-        <CitiesGrid cities={profile?.cities || cities} />
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Events:</Text>
-        <EventsGrid tickets={tickets} />
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.articleSectionTitle}>Articles:</Text>
-        <View>
-          {articles.map(item => (
-            <View key={item.id} style={styles.item}>
-              <Pressable onPress={() => navigation.navigate('Article', { item })} style={styles.articlePressable}>
-                <Image style={styles.tinyLogo} source={{ uri: 'https://via.placeholder.com/50/800080/FFFFFF' }} />
-                <View style={styles.textContainer}>
-                  <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
-                    {item.title.rendered}
-                  </Text>
-                  <Text style={styles.description}>Here's some description...</Text>
-                </View>
-              </Pressable>
-
-              <Pressable
-                onPress={() => handleToggleFavorite(item.id, item.title?.rendered, item.slug, item.content?.rendered)}
-                style={styles.favoriteButton}
-              >
-                <Ionicons 
-                  name={favorites[item.id] ? 'checkmark-circle-outline' : 'remove-outline'} 
-                  size={24} 
-                  color={favorites[item.id] ? 'green' : 'gray'} 
-                />
-              </Pressable>
-            </View>
-          ))}
+    <View style={{ flex: 1 }}>
+      <Animated.View style={styles.avatarContainer}>
+		{user && (
+			<View style={styles.userInfoContainer}>
+				<View style={styles.textContainer}>
+					<Text style={styles.screenTitle}>Hey {profile?.username || user.user_metadata?.username}</Text>
+					<Text>Email: {profile?.email || user?.email}</Text>
+				</View>
+				<ParallaxScrollAvatar
+					imageUrl={null}
+					name={profile?.username || user.user_metadata?.username}
+				/>
+			</View>
+		)}
+		</Animated.View>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={styles.contentContainer}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      >
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Latest:</Text>
+          <HorizontalScroller />
         </View>
-      </View>
-    </ScrollView>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Your Selected Cities:</Text>
+          <CitiesGrid cities={profile?.cities || cities} />
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Events:</Text>
+          <EventsGrid tickets={tickets} />
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.articleSectionTitle}>Articles:</Text>
+          <View>
+            {articles.map(item => (
+              <View key={item.id} style={styles.item}>
+                <Pressable onPress={() => navigation.navigate('Article', { item })} style={styles.articlePressable}>
+                  <Image style={styles.tinyLogo} source={{ uri: 'https://via.placeholder.com/50/800080/FFFFFF' }} />
+                  <View style={styles.textContainer}>
+                    <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
+                      {item.title.rendered}
+                    </Text>
+                    <Text style={styles.description}>Here's some description...</Text>
+                  </View>
+                </Pressable>
+
+                <Pressable
+                  onPress={() => handleToggleFavorite(item.id, item.title?.rendered, item.slug, item.content?.rendered)}
+                  style={styles.favoriteButton}
+                >
+                  <Ionicons
+                    name={favorites[item.id] ? 'checkmark-circle-outline' : 'remove-outline'}
+                    size={24}
+                    color={favorites[item.id] ? 'green' : 'gray'}
+                  />
+                </Pressable>
+              </View>
+            ))}
+          </View>
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  contentContainer: { },
-  accountDetails: { padding: 20, backgroundColor: '#e1e1e1', elevation: 5 },
+  contentContainer: {},
+  accountDetails: { padding: 20, position: 'relative', backgroundColor: '#e1e1e1', elevation: 5, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   section: { padding: 20, backgroundColor: '#ffffff', elevation: 5 },
   eventsSectionTitle: {
     fontSize: 20,
@@ -189,6 +197,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     marginRight: 10,
+    borderRadius: 5
   },
   textContainer: {
     flex: 1,
@@ -203,6 +212,27 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
   },
+  avatarContainer: {
+    padding: 20, // Add some padding around the whole container
+  },
+  userInfoContainer: {
+    flexDirection: 'row', // Align items horizontally
+    justifyContent: 'space-between', // Space between text and avatar
+    alignItems: 'center', // Align items vertically centered
+  },
+  textContainer: {
+    flexDirection: 'column', // Align text vertically
+    justifyContent: 'center', // Center the text vertically
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+	marginBottom: 10
+  },
+  screenTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  }
 });
 
 export default AccountScreen;
