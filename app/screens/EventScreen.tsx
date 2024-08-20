@@ -2,9 +2,9 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useEffect } from 'react';
 import { StyleSheet, Image, Platform, Pressable, Text, View, Button } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import ParallaxScrollView from '@/app/components/ParallaxScrollView';
+import { ThemedText } from '@/app/components/ThemedText';
+import { ThemedView } from '@/app/components/ThemedView';
 import EventSignupForm from '../components/EventSignupForm';
 import React from 'react';
 
@@ -30,7 +30,7 @@ export default function EventScreen({ navigation, route }: any) {
         {route.params ? route.params.item.event_description : 'Body'}
       </ThemedText>
 
-      <EventSignupForm />
+      <EventSignupForm user={user}/>
 
       <View>
         <Button title="Back to List" onPress={() => navigation.navigate('Account')} />

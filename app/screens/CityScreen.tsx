@@ -1,10 +1,10 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useEffect, useState } from 'react';
 import { Image, View, Text, ActivityIndicator, StyleSheet, Dimensions, Button } from 'react-native';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
+import ParallaxScrollView from '@/app/components/ParallaxScrollView';
 import { supabase } from '../../supabase'; // Ensure your Supabase client is correctly imported
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/app/components/ThemedText';
+import { ThemedView } from '@/app/components/ThemedView';
 import RenderHTML from 'react-native-render-html';
 
 // Define the City type

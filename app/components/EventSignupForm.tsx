@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Pressable } from 'react-native';
 
 const Step1 = ({ nextStep, formData, setFormData }:any) => {
+
   return (
     <View style={{ display: 'flex', flex: 1}}>
-      <Text>Step 1: Personal Information</Text>
+      <Text style={styles.sectionTitle}>Step 1: Personal Information</Text>
       <TextInput
         style={styles.inputStyle}
         placeholder="Enter your name"
@@ -44,30 +45,27 @@ const Step1 = ({ nextStep, formData, setFormData }:any) => {
 const Step2 = ({ prevStep, nextStep, formData, setFormData }:any) => {
   return (
     <View>
-      <Text>Step 2: Event Details</Text>
+      <Text style={styles.sectionTitle}>Step 2: Event Details</Text>
       <TextInput
         style={styles.inputStyle}
         placeholder="City"
-        value={formData.eventDate}
-        onChangeText={(value) => setFormData({ ...formData, eventDate: value })}
-      />
-      <TextInput
-        style={styles.inputStyle}
-        placeholder="Enter event name"
-        value={formData.eventName}
-        onChangeText={(value) => setFormData({ ...formData, eventName: value })}
+        value={formData.city}
+        onChangeText={(value) => setFormData({ ...formData, city: value })}
+        placeholderTextColor='#000'
       />
       <TextInput
         style={styles.inputStyle}
         placeholder="Enter event date"
         value={formData.eventDate}
         onChangeText={(value) => setFormData({ ...formData, eventDate: value })}
+         placeholderTextColor='#000'
       />
       <TextInput
         style={styles.inputStyle}
         placeholder="Completion Estimate"
-        value={formData.eventDate}
-        onChangeText={(value) => setFormData({ ...formData, eventDate: value })}
+        value={formData.completionEstimate}
+        onChangeText={(value) => setFormData({ ...formData, completionEstimate: value })}
+        placeholderTextColor='#000'
       />
       <View style={styles.buttonContainer}>
         <Pressable style={({ pressed }) => [
@@ -89,65 +87,67 @@ const Step2 = ({ prevStep, nextStep, formData, setFormData }:any) => {
   );
 };
 
-const Step3 = ({ prevStep, nextStep, formData, setFormData }:any) => {
+// const Step3 = ({ prevStep, nextStep, formData, setFormData }:any) => {
+//   return (
+//     <View>
+//       <Text>Step 3: Third Step</Text>
+//       <TextInput
+//         style={styles.inputStyle}
+//         placeholder="City"
+//         value={formData.city}
+//         onChangeText={(value) => setFormData({ ...formData, city: value })}
+//       />
+//       <TextInput
+//         style={styles.inputStyle}
+//         placeholder="Enter event name"
+//         value={formData.eventName}
+//         onChangeText={(value) => setFormData({ ...formData, eventName: value })}
+//       />
+//       <TextInput
+//         style={styles.inputStyle}
+//         placeholder="Enter event date"
+//         value={formData.eventDate}
+//         onChangeText={(value) => setFormData({ ...formData, eventDate: value })}
+//       />
+//       <TextInput
+//         style={styles.inputStyle}
+//         placeholder="Completion Estimate"
+//         value={formData.eventDate}
+//         onChangeText={(value) => setFormData({ ...formData, eventDate: value })}
+//       />
+//       {/* <Button title="Back" onPress={prevStep} />
+//       <Button title="Next" onPress={nextStep} /> */}
+
+//       <View style={styles.buttonContainer}>
+//         <Pressable style={({ pressed }) => [
+//             styles.button, 
+//             { opacity: pressed ? 0.8 : 1 } // Visual feedback on press
+//           ]} 
+//           onPress={prevStep}>
+//           <Text style={styles.buttonText}>Back</Text>
+//         </Pressable>
+//         <Pressable style={({ pressed }) => [
+//             styles.button, 
+//             { opacity: pressed ? 0.8 : 1 } // Visual feedback on press
+//           ]} 
+//           onPress={nextStep}>
+//           <Text style={styles.buttonText}>Next</Text>
+//         </Pressable>
+//       </View>
+//     </View>
+//   );
+// };
+
+const Step3 = ({ prevStep, nextStep, formData }:any) => {
   return (
     <View>
-      <Text>Step 3: Third Step</Text>
-      <TextInput
-        style={styles.inputStyle}
-        placeholder="City"
-        value={formData.eventDate}
-        onChangeText={(value) => setFormData({ ...formData, eventDate: value })}
-      />
-      <TextInput
-        style={styles.inputStyle}
-        placeholder="Enter event name"
-        value={formData.eventName}
-        onChangeText={(value) => setFormData({ ...formData, eventName: value })}
-      />
-      <TextInput
-        style={styles.inputStyle}
-        placeholder="Enter event date"
-        value={formData.eventDate}
-        onChangeText={(value) => setFormData({ ...formData, eventDate: value })}
-      />
-      <TextInput
-        style={styles.inputStyle}
-        placeholder="Completion Estimate"
-        value={formData.eventDate}
-        onChangeText={(value) => setFormData({ ...formData, eventDate: value })}
-      />
-      {/* <Button title="Back" onPress={prevStep} />
-      <Button title="Next" onPress={nextStep} /> */}
-
-      <View style={styles.buttonContainer}>
-        <Pressable style={({ pressed }) => [
-            styles.button, 
-            { opacity: pressed ? 0.8 : 1 } // Visual feedback on press
-          ]} 
-          onPress={prevStep}>
-          <Text style={styles.buttonText}>Back</Text>
-        </Pressable>
-        <Pressable style={({ pressed }) => [
-            styles.button, 
-            { opacity: pressed ? 0.8 : 1 } // Visual feedback on press
-          ]} 
-          onPress={nextStep}>
-          <Text style={styles.buttonText}>Next</Text>
-        </Pressable>
-      </View>
-    </View>
-  );
-};
-
-const Step4 = ({ prevStep, nextStep, formData }:any) => {
-  return (
-    <View>
-      <Text>Step 4: Confirm Details</Text>
-      <Text>Name: {formData.name}</Text>
-      <Text>Email: {formData.email}</Text>
-      <Text>Event: {formData.eventName}</Text>
-      <Text>Date: {formData.eventDate}</Text>
+      <View style={{ display: 'flex', backgroundColor: '#fff', padding: 10}}>
+        <Text>Step 4: Confirm Details</Text>
+        <Text>Name: {formData.name}</Text>
+        <Text>Email: {formData.email}</Text>
+        <Text>Event: {formData.eventName}</Text>
+        <Text>Date: {formData.eventDate}</Text>
+      </View> 
       <View style={styles.buttonContainer}>
         <Pressable style={({ pressed }) => [
             styles.button, 
@@ -168,10 +168,10 @@ const Step4 = ({ prevStep, nextStep, formData }:any) => {
   );
 };
 
-const Step5 = ({ submitForm, formData }:any) => {
+const Step4 = ({ submitForm, formData }:any) => {
   return (
     <View>
-      <Text>Payment Scteen</Text>
+      <Text>Payment Screen</Text>
       
         <Pressable style={({ pressed }) => [
             styles.button, 
@@ -185,7 +185,7 @@ const Step5 = ({ submitForm, formData }:any) => {
   );
 };
 
-const Step6 = ({ formData }:any) => {
+const Step5 = ({ formData }:any) => {
   return (
     <View>
       <Text>Payment Complete! Check 'My Entries' tab in your account</Text>
@@ -194,11 +194,12 @@ const Step6 = ({ formData }:any) => {
 };
 
 // In your main component
-const EventSignupForm = () => {
+const EventSignupForm = ({ user }:any) => {
+  // console.log('event form user', user.user_metadata.full_name)
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
+    name: user ? user.user_metadata.full_name : '',
+    email: user ? user.email : '',
     eventName: '',
     eventDate: '',
   });
@@ -225,9 +226,7 @@ const EventSignupForm = () => {
     case 4:
         return <Step4 prevStep={prevStep} nextStep={nextStep} formData={formData} setFormData={setFormData} />;
     case 5:
-      return <Step5 prevStep={prevStep} submitForm={submitForm} formData={formData} />
-    case 6:
-      return <Step6 formData={formData} />;
+      return <Step5 formData={formData} />;
     default:
       return <Step1 nextStep={nextStep} formData={formData} setFormData={setFormData} />;
   }
@@ -262,6 +261,12 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius:3, 
     width: '100%'
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+	  marginBottom: 10,
+    color: '#fff'
   },
   selectedCity: {
     flexDirection: 'row',

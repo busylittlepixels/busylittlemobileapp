@@ -11,6 +11,8 @@ import CitiesGrid from '../components/CitiesGrid';
 import EventsGrid from '../components/EventsGrid';
 import { toggleFavorite as toggleFavoriteService } from '../services/favouriteService';
 import ParallaxScrollAvatar from '../components/ParallaxScrollAvatar';
+import AdBanner from '../components/AdBanner';
+import Spacer from '../components/Spacer';
 
 const AccountScreen = ({ navigation }: any) => {
   const dispatch = useDispatch();
@@ -95,18 +97,18 @@ const AccountScreen = ({ navigation }: any) => {
   return (
     <View style={{ flex: 1 }}>
       <Animated.View style={styles.avatarContainer}>
-		{user && (
-			<View style={styles.userInfoContainer}>
-				<View style={styles.textContainer}>
-					<Text style={styles.screenTitle}>Hey {profile?.username || user.user_metadata?.username}</Text>
-					<Text>Email: {profile?.email || user?.email}</Text>
-				</View>
-				<ParallaxScrollAvatar
-					imageUrl={null}
-					name={profile?.username || user.user_metadata?.username}
-				/>
-			</View>
-		)}
+        {user && (
+          <View style={styles.userInfoContainer}>
+            <View style={styles.textContainer}>
+              <Text style={styles.screenTitle}>Hey {profile?.username || user.user_metadata?.username}</Text>
+              <Text style={styles.screenSub}>{profile?.email || user?.email}</Text>
+            </View>
+            <ParallaxScrollAvatar
+              imageUrl={null}
+              name={profile?.username || user.user_metadata?.username}
+            />
+          </View>
+        )}
 		</Animated.View>
       <ScrollView
         style={{ flex: 1 }}
@@ -118,6 +120,10 @@ const AccountScreen = ({ navigation }: any) => {
           <HorizontalScroller />
         </View>
 
+        
+        <AdBanner />
+
+
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Your Selected Cities:</Text>
           <CitiesGrid cities={profile?.cities || cities} />
@@ -127,6 +133,8 @@ const AccountScreen = ({ navigation }: any) => {
           <Text style={styles.sectionTitle}>Events:</Text>
           <EventsGrid tickets={tickets} />
         </View>
+        {/* <Spacer space={10} /> */}
+        <AdBanner />
 
         <View style={styles.section}>
           <Text style={styles.articleSectionTitle}>Articles:</Text>
@@ -164,7 +172,7 @@ const AccountScreen = ({ navigation }: any) => {
 
 const styles = StyleSheet.create({
   contentContainer: {},
-  accountDetails: { padding: 20, position: 'relative', backgroundColor: '#e1e1e1', elevation: 5, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  accountDetails: { padding: 20, position: 'relative', backgroundColor: '#000', elevation: 5, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   section: { padding: 20, backgroundColor: '#ffffff', elevation: 5 },
   eventsSectionTitle: {
     fontSize: 20,
@@ -214,6 +222,8 @@ const styles = StyleSheet.create({
   },
   avatarContainer: {
     padding: 20, // Add some padding around the whole container
+    backgroundColor: '#000'
+  
   },
   userInfoContainer: {
     flexDirection: 'row', // Align items horizontally
@@ -227,11 +237,17 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-	marginBottom: 10
+	  marginBottom: 10
   },
   screenTitle: {
     fontSize: 20,
     fontWeight: 'bold',
+    color: '#fff'
+  },
+  screenSub: {
+    fontSize: 14,
+    fontWeight: 500,
+    color: '#fff'
   }
 });
 

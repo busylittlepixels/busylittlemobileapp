@@ -59,6 +59,22 @@ const UpdateDetailsScreen = ({ navigation }: UpdateProfileFormProps) => {
     );
   };
 
+  const ProfileButton = ({ title, onPress }) => {
+    return (
+      <Pressable
+        style={({ pressed }) => [
+          {
+            backgroundColor: pressed ? 'lightgray' : 'gray', // Dim the color when pressed
+          },
+          styles.button,
+        ]}
+        onPress={onPress}
+      >
+        <Text style={styles.buttonText}>{title}</Text>
+      </Pressable>
+    );
+  };
+
   const triggerRefresh = async () => {
     try {
       await loadDataFromStorage();
@@ -228,7 +244,7 @@ const UpdateDetailsScreen = ({ navigation }: UpdateProfileFormProps) => {
             <Text><Text style={{ fontWeight: 'bold'}}>Email:</Text> {user.email}</Text>
             <View>
               <Text><Text style={{ fontWeight: 'bold'}}>Username:</Text> {profile?.username}</Text>
-              <Text><Text style={{ fontWeight: 'bold'}}>Full Name:</Text> {profile?.full_name}</Text>
+              {/* <Text><Text style={{ fontWeight: 'bold'}}>Full Name:</Text> {profile?.full_name}</Text> */}
               {profile?.website ? <Text><Text style={{ fontWeight: 'bold'}}>Website:</Text>  {profile?.website}</Text> : null}
               <Text style={{ fontWeight: 'bold', paddingBottom: 2 }}>Selected city/cities:</Text>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -284,9 +300,7 @@ const UpdateDetailsScreen = ({ navigation }: UpdateProfileFormProps) => {
             )): <Text>No cities selected.</Text>}
           </View>
           <UpdateButton title="Update" onPress={handleUpdate} />
-          <Pressable style={{ paddingVertical: 10, zIndex: 1 }}  onPress={() => navigation.replace('Account', { user })}>
-            <Text>Back to profile</Text>
-          </Pressable>
+          <ProfileButton title="Back to Profile" onPress={() => navigation.replace('Account', { user })} />
         </View>
       </View>
     </ScrollView>
@@ -303,7 +317,7 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     flex: 3,
-    marginTop: 20,
+    // marginTop: 10,
   },
   innerContainer: {
     flex: 1,

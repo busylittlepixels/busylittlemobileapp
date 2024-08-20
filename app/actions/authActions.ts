@@ -70,16 +70,16 @@ export const checkFirstLaunch = () => async (dispatch: Dispatch) => {
 };
 
 export const completeOnboarding = (userId:any, cities: string[]) => async (dispatch: any) => {
-  console.log('authActions userID', userId);
-  console.log('authActions cities', cities);
+  // console.log('authActions userID', userId);
+  // console.log('authActions cities', cities);
 
   try {
     const onBoarded = await complete(userId, cities);
-    console.log('onboarded', onBoarded);
+    // console.log('onboarded', onBoarded);
 
     if (onBoarded) {
       await AsyncStorage.setItem('user', JSON.stringify(onBoarded));
-      console.log('something worked');
+      // console.log('something worked');
       dispatch({ type: SET_FIRST_LAUNCH, payload: false });
       return onBoarded;  // Ensure the value is returned here
     } else {

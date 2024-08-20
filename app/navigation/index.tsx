@@ -84,7 +84,7 @@ const AppNavigator = () => {
             ) : (
               <>
                 <Stack.Screen name="Account" component={MainDrawerNavigator} options={{ headerShown: false }} />
-                <Stack.Screen name="Profile" component={UpdateDetailsScreen} options={{ headerShown: true }} />
+                <Stack.Screen name="Profile" component={UpdateDetailsScreen} options={{ headerTintColor: '#000', headerShown: true }} />
                 <Stack.Screen name="Event" component={EventScreen} options={{ headerShown: true }} />
                 <Stack.Screen name="MyEvents" component={MyEventsScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="Article" component={ArticleScreen} options={{ headerShown: true }} />
@@ -94,6 +94,7 @@ const AppNavigator = () => {
                   gestureEnabled: false,
                   gestureDirection: 'vertical',
                   cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
+                  headerTintColor: '#000', // 
                   headerRight: () => (
                     <View style={{ flexDirection: 'row', marginRight: 15 }}>
                       <Pressable onPress={() => navigation.goBack()}>

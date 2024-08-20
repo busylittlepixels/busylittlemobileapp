@@ -29,6 +29,7 @@ const MainDrawerNavigator = () => {
     <Drawer.Navigator
       initialRouteName="Home"
       screenOptions={{
+        headerTintColor: '#000', // Change this to your desired color
         headerRight: () => (
           <View style={{ display: 'flex', flexDirection: 'row' }}>
             <Pressable

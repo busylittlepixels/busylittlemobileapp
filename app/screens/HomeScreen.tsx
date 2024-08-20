@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Image, Text, StyleSheet, Button } from 'react-native';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
+import ParallaxScrollView from '@/app/components/ParallaxScrollView';
 import { useRoute } from '@react-navigation/native';
 
 const HomeScreen =  ({ navigation }:any) => {

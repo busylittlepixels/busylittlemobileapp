@@ -92,7 +92,7 @@ const CityPills = ({ user }: any) => {
               style={[
                 styles.pill,
                 isCitySelected && styles.selectedPill,
-                isCitySelected && { backgroundColor: '#CCCCCC' }, // Apply different background color for selected cities
+                isCitySelected && { backgroundColor: '#000' }, // Apply different background color for selected cities
               ]}
               onPress={() => !isCitySelected && handleCityToggle(city.name)} // Disable press if already selected
               disabled={isCitySelected} // Disable pressable for already selected cities

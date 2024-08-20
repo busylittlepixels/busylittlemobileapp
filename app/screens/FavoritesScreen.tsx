@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { supabase } from '../../supabase'; // Ensure your Supabase client is correctly imported
 import { useFocusEffect } from '@react-navigation/native';
-import { ThemedView } from '@/components/ThemedView';
+import { ThemedView } from '@/app/components/ThemedView';
 
 const FavoritesScreen = ({ navigation, route }: Props) => {
   // Access the user from Redux state
