@@ -1,7 +1,7 @@
 // @ts-nocheck
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useState, useEffect, useCallback } from 'react';
-import { Alert, ScrollView, View, TextInput, Text, Button, FlatList, StyleSheet, Pressable, RefreshControl, Switch } from 'react-native';
+import { Alert, ScrollView, View, TextInput, Text, Button, FlatList, StyleSheet, Pressable, RefreshControl, Switch, Image } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux'; // Import useSelector and useDispatch
 import { supabase } from '../../supabase';
@@ -328,7 +328,7 @@ const UpdateDetailsScreen = ({ navigation }: UpdateProfileFormProps) => {
             )): <Text>No cities selected.</Text>}
           </View>
           <UpdateButton title="Update" onPress={handleUpdate} />
-          <ProfileButton title="Back to Profile" onPress={() => navigation.replace('Account', { user })} />
+          <ProfileButton title="Back to Profile" onPress={() => navigation.replace('Account', { user })} style={{ marginBottom: 10, paddingBottom: 20 }} />
         </View>
       </View>
     </ScrollView>
@@ -387,7 +387,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFFFFF', // White text
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: 'normal',
   },
   profileHeader:{
     paddingVertical: 20,

@@ -2,10 +2,29 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { supabase } from '../../supabase'; // Import your Supabase client instance
+import { useNavigation } from '@react-navigation/native'; 
+import { TransitionPresets } from '@react-navigation/stack';
+
+const BackButton = ({ title, onPress }) => {
+  return (
+    <Pressable
+      style={({ pressed }) => [
+        {
+          backgroundColor: pressed ? '#ddd' : 'gray', // Dim the color when pressed
+        },
+        styles.button,
+      ]}
+      onPress={onPress}
+    >
+      <Text style={styles.pillText}>{title}</Text>
+    </Pressable>
+  );
+};
 
 const CityPills = ({ user }: any) => {
   const [cities, setCities] = useState([]);
   const [selectedCities, setSelectedCities] = useState([]);
+  const navigation = useNavigation(); 
 
   useEffect(() => {
     const fetchCitiesAndUserSelections = async () => {
@@ -74,7 +93,13 @@ const CityPills = ({ user }: any) => {
     }
   };
 
+  const navigateToProfile = () => {
+    navigation.navigate('Profile', { user });
+  };
+  
+
   return (
+    <>
     <View style={styles.container}>
       <View style={styles.headingBlock}>
         <Text style={styles.pageHeading}>
@@ -107,6 +132,8 @@ const CityPills = ({ user }: any) => {
         <View><Text style={styles.title}>Fetching Cities...</Text></View>  // Handle case where cities array is empty
       )}
     </View>
+    <BackButton title="Back to Profile" onPress={navigateToProfile} />
+    </>
   );
 };
 
@@ -138,6 +165,19 @@ const styles = StyleSheet.create({
   pillText: {
     color: '#fff',
   },
+  button: {
+    marginTop: 50,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    alignItems: 'center',
+    borderColor: 'gray',
+    borderWidth: 2,
+    color: '#fff',
+  },
+  buttonText: {
+    // color: '#FFFFFF', // White text
+  }
 });
 
 export default CityPills;
