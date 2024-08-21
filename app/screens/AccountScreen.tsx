@@ -95,16 +95,16 @@ const AccountScreen = ({ navigation }: any) => {
     }
   };
 
-  useEffect(() => {
-    const loadAdvertPreference = async () => {
-      const showAdverts = await AsyncStorage.getItem('showAdverts');
-      if (showAdverts !== null) {
-        dispatch(setAdvertPreference(JSON.parse(showAdverts)));
-      }
-    };
+  // useEffect(() => {
+  //   const loadAdvertPreference = async () => {
+  //     const showAdverts = await AsyncStorage.getItem('showAdverts');
+  //     if (showAdverts !== null) {
+  //       dispatch(setAdvertPreference(JSON.parse(showAdverts)));
+  //     }
+  //   };
 
-    loadAdvertPreference();
-  }, [dispatch]);
+  //   loadAdvertPreference();
+  // }, [dispatch]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -132,9 +132,9 @@ const AccountScreen = ({ navigation }: any) => {
           <HorizontalScroller />
         </View>
 
-        {showAdverts && 
+        {showAdverts ?  
           <AdBanner color={'#f00000'} image='https://placehold.co/500x100' subtitle="This is the water, and this is the well. Drink full, and descend. The horse is the white of the eyes, and dark within" />
-        }
+        : null }
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Your Selected Cities:</Text>
@@ -146,9 +146,9 @@ const AccountScreen = ({ navigation }: any) => {
           <EventsGrid tickets={tickets} />
         </View>
         {/* <Spacer space={10} /> */}
-        {showAdverts && 
+        {showAdverts ? 
           <AdBanner color={'#008000'} image='https://placehold.co/500x100' subtitle="Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light?" />
-        }
+        : null }
         <View style={styles.section}>
           <Text style={styles.articleSectionTitle}>Articles:</Text>
           <View>

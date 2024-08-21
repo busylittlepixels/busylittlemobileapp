@@ -95,7 +95,7 @@ const CityScreen = ({ navigation, route }: any) => {
     
     <ParallaxScrollView
         headerBackgroundColor={{ light: '#353636', dark: '#D0D0D0' }}
-        headerImage={<Image source={cityImage}  />}>
+        headerImage={<Image source={cityImage} />}>
       <ThemedView style={styles.titleContainer}>
           <ThemedText type="title">{name}</ThemedText>
           <Text style={{ color: '#fff'}}>{country}</Text>
