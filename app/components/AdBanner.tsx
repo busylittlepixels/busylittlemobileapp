@@ -8,13 +8,14 @@ const AdBanner = ({ color, image, text, subtitle }: any) => {
     
     <View style={styles.container}>
       <Image 
-        source={{ uri: image }} 
+        // source={{ uri: image }} 
         style={[styles.image, { backgroundColor: col }]} // Background color for visibility
         resizeMode="cover" 
         onError={(error) => console.log('Image failed to load', error.nativeEvent.error)} 
       />
       <View style={styles.overlay}>
-        <Text style={styles.sectionTitle}>{text ? text : '[ Advert Goes Here ]'}</Text>
+        <Text style={[styles.sectionTitle, { color: '#fff', marginBottom: 10 }]}>[ Advert ]</Text>
+        {text && <Text style={styles.sectionTitle}>{text}</Text> }
         <Text style={styles.subTitle}>{subtitle ? subtitle : "Did you know you can use car oil to fertilize your lawn?"}</Text>
       </View>
     </View>
@@ -28,6 +29,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     height: 100,
+    // paddingHorizontal: 20
   },
   image: {
     width: '100%', 
@@ -54,6 +56,7 @@ const styles = StyleSheet.create({
     fontSize: 12, // Adjust font size as needed
     fontWeight: 'normal', // Make text bold
     textAlign: 'center', // Center the text
+    width: '80%'
   }
 });
 
