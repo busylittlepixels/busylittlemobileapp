@@ -121,7 +121,7 @@ const AccountScreen = ({ navigation }: any) => {
         </View>
 
         
-        <AdBanner />
+        <AdBanner color={'#f00000'} image='https://placehold.co/500x100' text="Need a Boost?" subtitle="Try Steroids! Your one-shot solution to achieve athletic glory!" />
 
 
         <View style={styles.section}>
@@ -134,7 +134,7 @@ const AccountScreen = ({ navigation }: any) => {
           <EventsGrid tickets={tickets} />
         </View>
         {/* <Spacer space={10} /> */}
-        <AdBanner />
+        <AdBanner color={'#008000'} image='https://placehold.co/500x100' text="Life Getting You Down?" subtitle="Maybe you should try alcohol!" />
 
         <View style={styles.section}>
           <Text style={styles.articleSectionTitle}>Articles:</Text>

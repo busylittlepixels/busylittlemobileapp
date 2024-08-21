@@ -240,7 +240,7 @@ const UpdateDetailsScreen = ({ navigation }: UpdateProfileFormProps) => {
         <Text style={styles.title}>Update Profile Details</Text>
         <Spacer space={20} />
         {user && (
-          <>
+          <View style={styles.profileHeader}>
             <Text><Text style={{ fontWeight: 'bold'}}>Email:</Text> {user.email}</Text>
             <View>
               <Text><Text style={{ fontWeight: 'bold'}}>Username:</Text> {profile?.username}</Text>
@@ -255,7 +255,7 @@ const UpdateDetailsScreen = ({ navigation }: UpdateProfileFormProps) => {
                 )}
               </View>
             </View>
-          </>
+          </View>
         )}
         
         <View style={styles.formContainer}>
@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 10,
+    marginVertical: 2,
     backgroundColor: '#f0f0f0',
     padding: 10,
     borderRadius: 5,
@@ -361,6 +361,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  profileHeader:{
+    paddingVertical: 20,
+    paddingHorizontal: 15, 
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderRadius: 3, 
+  }
 });
 
 export default UpdateDetailsScreen;
