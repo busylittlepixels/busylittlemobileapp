@@ -22,6 +22,7 @@ const AccountScreen = ({ navigation }: any) => {
   const user = useSelector((state) => state.auth.user);
   const loading = useSelector((state) => state.auth.loading);
   const isFirstLaunch = useSelector((state) => state.auth.isFirstLaunch);
+  const showAdverts = useSelector((state) => state.auth.showAdverts);
 
   const [refreshing, setRefreshing] = useState(false);
   const [tickets, setTickets] = useState([]);
@@ -94,6 +95,17 @@ const AccountScreen = ({ navigation }: any) => {
     }
   };
 
+  useEffect(() => {
+    const loadAdvertPreference = async () => {
+      const showAdverts = await AsyncStorage.getItem('showAdverts');
+      if (showAdverts !== null) {
+        dispatch(setAdvertPreference(JSON.parse(showAdverts)));
+      }
+    };
+
+    loadAdvertPreference();
+  }, [dispatch]);
+
   return (
     <View style={{ flex: 1 }}>
       <Animated.View style={styles.avatarContainer}>
@@ -120,9 +132,9 @@ const AccountScreen = ({ navigation }: any) => {
           <HorizontalScroller />
         </View>
 
-        
-        <AdBanner color={'#f00000'} image='https://placehold.co/500x100' subtitle="This is the water, and this is the well. Drink full, and descend. The horse is the white of the eyes, and dark within" />
-
+        {showAdverts && 
+          <AdBanner color={'#f00000'} image='https://placehold.co/500x100' subtitle="This is the water, and this is the well. Drink full, and descend. The horse is the white of the eyes, and dark within" />
+        }
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Your Selected Cities:</Text>
@@ -134,8 +146,9 @@ const AccountScreen = ({ navigation }: any) => {
           <EventsGrid tickets={tickets} />
         </View>
         {/* <Spacer space={10} /> */}
-        <AdBanner color={'#008000'} image='https://placehold.co/500x100' subtitle="Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light?" />
-
+        {showAdverts && 
+          <AdBanner color={'#008000'} image='https://placehold.co/500x100' subtitle="Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light?" />
+        }
         <View style={styles.section}>
           <Text style={styles.articleSectionTitle}>Articles:</Text>
           <View>

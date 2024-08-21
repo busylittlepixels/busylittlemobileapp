@@ -11,6 +11,8 @@ export const SIGNUP_SUCCESS = 'SIGNUP_SUCCESS';
 export const SET_LOADING = 'SET_LOADING';
 export const SET_FIRST_LAUNCH = 'SET_FIRST_LAUNCH';
 export const COMPLETE_ONBOARDING = 'COMPLETE_ONBOARDING';
+export const SET_ADVERT_PREFERENCE = 'SET_ADVERT_PREFERENCE';
+
 
 // Action Creators
 export const login = (email: string, password: string) => async (dispatch: Dispatch) => {
@@ -89,5 +91,22 @@ export const completeOnboarding = (userId:any, cities: string[]) => async (dispa
   } catch (error) {
     console.error('Error during onboarding:', error);
     return null;  // Explicitly return null on error
+  }
+};
+
+
+// Action to set advert preference
+export const setAdvertPreference = (showAdverts: any) => async (dispatch: any) => {
+  try {
+    // Save the preference in AsyncStorage
+    await AsyncStorage.setItem('showAdverts', JSON.stringify(showAdverts));
+
+    // Dispatch the action to update Redux state
+    dispatch({
+      type: SET_ADVERT_PREFERENCE,
+      payload: showAdverts,
+    });
+  } catch (error) {
+    console.error('Failed to save advert preference', error);
   }
 };

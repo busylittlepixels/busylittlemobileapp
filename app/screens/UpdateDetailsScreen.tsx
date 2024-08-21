@@ -1,14 +1,14 @@
 // @ts-nocheck
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useState, useEffect, useCallback } from 'react';
-import { Alert, ScrollView, View, TextInput, Text, Button, FlatList, StyleSheet, Pressable, RefreshControl } from 'react-native';
+import { Alert, ScrollView, View, TextInput, Text, Button, FlatList, StyleSheet, Pressable, RefreshControl, Switch } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux'; // Import useSelector and useDispatch
 import { supabase } from '../../supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import Spacer from '../components/Spacer';
-import { logout } from '../actions/authActions'; // Import the logout action if needed
+import { logout, setAdvertPreference } from '../actions/authActions'; // Import the logout action if needed
 
 export interface Profile {
   id: string;
@@ -32,7 +32,8 @@ const UpdateDetailsScreen = ({ navigation }: UpdateProfileFormProps) => {
 
   // Access Redux state
   const user = useSelector((state) => state.auth.user);
-
+  const showAdverts = useSelector((state) => state.auth.showAdverts);
+  
   const [refreshing, setRefreshing] = useState(false);
   const [username, setUsername] = useState('');
   const [website, setWebsite] = useState('');
@@ -42,6 +43,10 @@ const UpdateDetailsScreen = ({ navigation }: UpdateProfileFormProps) => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
   const [data, setData] = useState(null);
+
+  const toggleAdverts = (value) => {
+    dispatch(setAdvertPreference(value));
+  };
 
   const UpdateButton = ({ title, onPress }) => {
     return (
@@ -259,36 +264,55 @@ const UpdateDetailsScreen = ({ navigation }: UpdateProfileFormProps) => {
         )}
         
         <View style={styles.formContainer}>
-          <Text style={styles.label}>Username:</Text>
-          <TextInput
-            placeholder={profile?.username}
-            placeholderTextColor='#000'
-            value={username}
-            onChangeText={setUsername}
-            autoCapitalize={"none"}
-            clearTextOnFocus={true}
-            style={styles.inputStyle}
-          />
-          <Text style={styles.label}>Website:</Text>
-          <TextInput
-            placeholder={profile?.website}
-            placeholderTextColor='#000'
-            clearTextOnFocus={true}
-            value={website}
-            onChangeText={setWebsite}
-            autoCapitalize={"none"}
-            style={styles.inputStyle}
-          />
-          <Text style={styles.label}>Full Name:</Text>
-          <TextInput
-            placeholder={profile?.full_name}
-            placeholderTextColor='#000'
-            value={full_name}
-            clearTextOnFocus={true}
-            onChangeText={setFullname}
-            autoCapitalize={"none"}
-            style={styles.inputStyle}
-          />
+          <View style={styles.inputWrapper}>
+            <Text style={styles.inlineLabel}>Username:</Text>
+            <TextInput
+              placeholder={profile?.username}
+              placeholderTextColor='#000'
+              value={username}
+              onChangeText={setUsername}
+              autoCapitalize="none"
+              clearTextOnFocus={true}
+              style={styles.innerWrapperInputStyle}
+            />
+          </View>
+          
+          <View style={styles.inputWrapper}>
+            <Text style={styles.inlineLabel}>Website:</Text>
+            <TextInput
+              placeholder={profile?.website}
+              placeholderTextColor='#000'
+              clearTextOnFocus={true}
+              value={website}
+              onChangeText={setWebsite}
+              autoCapitalize={"none"}
+              style={styles.innerWrapperInputStyle}
+            />
+          </View>
+
+         
+          <View style={styles.inputWrapper}>
+            <Text style={styles.inlineLabel}>Full Name:</Text>
+            <TextInput
+              placeholder={profile?.full_name}
+              placeholderTextColor='#000'
+              clearTextOnFocus={true}
+              value={full_name}
+              clearTextOnFocus={true}
+              onChangeText={setFullname}
+              autoCapitalize={"none"}
+              style={styles.innerWrapperInputStyle}
+            />
+          </View>
+          
+          <View>
+            <Text style={[styles.label], { paddingBottom: 5, fontWeight: 'bold'}}>Show Adverts</Text>
+            <Switch
+              value={showAdverts}
+              onValueChange={toggleAdverts}
+            />
+          </View>
+    
 
           <Text style={styles.label}>Manage cities:</Text>
           <View style={styles.inputStyle}>
@@ -367,7 +391,31 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderRadius: 3, 
-  }
+    marginBottom: 5
+  },
+  inputWrapper: {
+    flexDirection: 'row', // Align items in a row
+    alignItems: 'center', // Center items vertically
+    backgroundColor: 'lightgray',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    marginVertical: 5,
+  },
+  inlineLabel: {
+    color: '#000',
+    fontWeight: 'bold',
+    fontSize: 14,
+    marginRight: 10, // Space between label and input
+  },
+  innerWrapperInputStyle: {
+    flex: 1, // Take up the remaining space
+    textAlign: 'right', // Align text to the right
+    color: '#000',
+    fontSize: 14,
+  },
+  
 });
 
 export default UpdateDetailsScreen;
