@@ -249,7 +249,6 @@ const UpdateDetailsScreen = ({ navigation }: UpdateProfileFormProps) => {
             <Text><Text style={{ fontWeight: 'bold'}}>Email:</Text> {user.email}</Text>
             <View>
               <Text><Text style={{ fontWeight: 'bold'}}>Username:</Text> {profile?.username}</Text>
-              {/* <Text><Text style={{ fontWeight: 'bold'}}>Full Name:</Text> {profile?.full_name}</Text> */}
               {profile?.website ? <Text><Text style={{ fontWeight: 'bold'}}>Website:</Text>  {profile?.website}</Text> : null}
               <Text style={{ fontWeight: 'bold', paddingBottom: 2 }}>Selected city/cities:</Text>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -259,6 +258,7 @@ const UpdateDetailsScreen = ({ navigation }: UpdateProfileFormProps) => {
                   <Text>No cities selected</Text>
                 )}
               </View>
+              <Text><Text style={{ fontWeight: 'bold'}}>Adverts: </Text> {showAdverts ? 'Active' : 'Inactive'}</Text>
             </View>
           </View>
         )}
@@ -305,12 +305,16 @@ const UpdateDetailsScreen = ({ navigation }: UpdateProfileFormProps) => {
             />
           </View>
           
-          <View>
-            <Text style={[styles.label], { paddingBottom: 5, fontWeight: 'bold'}}>Show Adverts</Text>
-            <Switch
-              value={showAdverts}
-              onValueChange={toggleAdverts}
-            />
+          <View style={styles.inputWrapper}>
+            <Text style={styles.inlineLabel}>Show Adverts</Text>
+            <View style={styles.innerWrapper}>
+              <Switch
+                value={showAdverts}
+                trackColor={{ true: 'green', false: 'gray' }}
+                onValueChange={toggleAdverts}
+                style={styles.innerWrapperInputStyle}
+              />
+            </View>
           </View>
     
 
@@ -402,7 +406,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     marginVertical: 5,
+    justifyContent: 'space-between'
   },
+  
   inlineLabel: {
     color: '#000',
     fontWeight: 'bold',
