@@ -56,10 +56,6 @@ const AppNavigator = () => {
   const loading = useSelector((state) => state.auth.loading);
   const isFirstLaunch = useSelector((state) => state.auth.isFirstLaunch);
 
-  // console.log('User:', user);
-  // console.log('Loading:', loading);
-  // console.log('Is First Launch:', isFirstLaunch);
-
   if (loading) {
     return (
       <NavigationContainer independent>
@@ -88,6 +84,22 @@ const AppNavigator = () => {
                 <Stack.Screen name="Event" component={EventScreen} options={{ headerShown: true }} />
                 <Stack.Screen name="MyEvents" component={MyEventsScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="Article" component={ArticleScreen} options={{ headerShown: true }} />
+                {/* <Stack.Screen name="Article" component={ArticleScreen} options={({ navigation, route }) => ({ 
+                  headerShown: true, 
+                  headerRight: () => (
+                    <View style={{ display: 'flex', flexDirection: 'row' }}>
+                        <Pressable
+                          onPress={() => {
+                            if (route?.params?.item.article_id) {
+                              handleToggleFavorite(route?.params?.item.article_id); // Call the method
+                            }
+                          }}
+                          style={{ marginRight: 15 }}
+                        >
+                          <Ionicons name="checkmark-circle-outline" size={24} color="black" />
+                        </Pressable>
+                    </View>
+                  )})} /> */}
                 <Stack.Screen name="Cities" component={CitiesScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="City" component={CityScreen} options={{ headerShown: true }} />
                 <Stack.Screen name="Search" component={SearchScreen} options={({ navigation }) => ({
@@ -96,11 +108,20 @@ const AppNavigator = () => {
                   cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
                   headerTintColor: '#000', // 
                   headerRight: () => (
-                    <View style={{ flexDirection: 'row', marginRight: 15 }}>
-                      <Pressable onPress={() => navigation.goBack()}>
-                        <Ionicons name="close-outline" size={24} color="black" />
-                      </Pressable>
-                    </View>
+                    <View style={{ display: 'flex', flexDirection: 'row' }}>
+                        <Pressable
+                          onPress={() => navigation.navigate('Profile')} // Navigate to the Profile screen
+                          style={{ marginRight: 15 }}
+                        >
+                          <Ionicons name="person-outline" size={24} color="black" />
+                        </Pressable>
+                        <Pressable
+                          onPress={() => navigation.navigate('Search')} // Navigate to the Search screen
+                          style={{ marginRight: 15 }}
+                        >
+                          <Ionicons name="search-outline" size={24} color="black" />
+                        </Pressable>
+                      </View>
                   ),
                 })}/>
                 <Stack.Screen name="UpdateDetails" component={UpdateDetailsScreen} options={{ headerShown: true }} />

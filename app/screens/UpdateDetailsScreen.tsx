@@ -226,7 +226,7 @@ const UpdateDetailsScreen = ({ navigation }: UpdateProfileFormProps) => {
     
     setTimeout(() => {
         setRefreshing(false);
-        console.log('should refresh user details');
+        // console.log('should refresh user details');
     }, 2000);
   }, []);
 

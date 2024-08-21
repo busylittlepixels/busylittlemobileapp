@@ -1,6 +1,7 @@
 // @ts-nocheck
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, ScrollView, Animated, RefreshControl, Image, Pressable, StyleSheet } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { supabase } from '../../supabase';
@@ -30,6 +31,29 @@ const AccountScreen = ({ navigation }: any) => {
   const [cities, setCities] = useState([]);
   const [articles, setArticles] = useState([]);
   const [favorites, setFavorites] = useState({});
+
+  useFocusEffect(
+    useCallback(() => {
+      // Function to fetch updated favorites from AsyncStorage
+      const fetchFavorites = async () => {
+        try {
+          const storedFavorites = await AsyncStorage.getItem(`favorites_${user?.id}`);
+          const parsedFavorites = storedFavorites ? JSON.parse(storedFavorites) : {};
+          setFavorites(parsedFavorites);
+        } catch (error) {
+          console.error('Failed to fetch favorites', error);
+        }
+      };
+
+      // Fetch updated favorites when the screen is focused
+      fetchFavorites();
+
+      // Optional: Return a cleanup function if needed
+      return () => {
+        // Cleanup logic if necessary when the screen loses focus
+      };
+    }, [favorites])
+  );
 
   const fetchData = async () => {
     if (!user || !user.id) return;
@@ -95,7 +119,7 @@ const AccountScreen = ({ navigation }: any) => {
     }
   };
 
-  
+
   return (
     <View style={{ flex: 1 }}>
       <Animated.View style={styles.avatarContainer}>
@@ -144,7 +168,7 @@ const AccountScreen = ({ navigation }: any) => {
           <View>
             {articles.map(item => (
               <View key={item.id} style={styles.item}>
-                <Pressable onPress={() => navigation.navigate('Article', { item })} style={styles.articlePressable}>
+                <Pressable onPress={() => navigation.navigate('Article', { item: item, isFavorite: favorites[item.id] })} style={styles.articlePressable}>
                   <Image style={styles.tinyLogo} source={{ uri: 'https://via.placeholder.com/50/800080/FFFFFF' }} />
                   <View style={styles.textContainer}>
                     <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
