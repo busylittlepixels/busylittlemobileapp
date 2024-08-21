@@ -95,17 +95,7 @@ const AccountScreen = ({ navigation }: any) => {
     }
   };
 
-  // useEffect(() => {
-  //   const loadAdvertPreference = async () => {
-  //     const showAdverts = await AsyncStorage.getItem('showAdverts');
-  //     if (showAdverts !== null) {
-  //       dispatch(setAdvertPreference(JSON.parse(showAdverts)));
-  //     }
-  //   };
-
-  //   loadAdvertPreference();
-  // }, [dispatch]);
-
+  
   return (
     <View style={{ flex: 1 }}>
       <Animated.View style={styles.avatarContainer}>
