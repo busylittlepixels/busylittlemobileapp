@@ -33,7 +33,7 @@ const CitiesGrid = ({ cities }: any) => {
         return require('../../assets/images/copenhagen.png');
       // Add more cities as needed
       default:
-        return require('../../assets/images/newyork.png'); // Fallback image
+        return require('../../assets/images/klingons.png'); // Fallback image
     }
   };
 

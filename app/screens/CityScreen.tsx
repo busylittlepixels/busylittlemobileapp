@@ -34,7 +34,7 @@ const getCityImage = (name:string) => {
     case 'new york':
         return require('../../assets/images/newyork.png');
     default:
-      return require('../../assets/images/dublin.png'); // Fallback image
+      return require('../../assets/images/klingons.png'); // Fallback image
   }
 };
 

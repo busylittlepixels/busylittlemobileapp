@@ -13,7 +13,7 @@ const initialState = {
   user: null,
   loading: false,
   isFirstLaunch: false, // Default to true for first launch
-  showAdverts: true,  // Default to true or false based on your preference
+  showAdverts: null,  // Default to true or false based on your preference
 };
 
 const authReducer = (state = initialState, action: any) => {

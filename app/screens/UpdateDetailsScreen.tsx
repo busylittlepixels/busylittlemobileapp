@@ -250,7 +250,7 @@ const UpdateDetailsScreen = ({ navigation }: UpdateProfileFormProps) => {
             <View>
               <Text><Text style={{ fontWeight: 'bold'}}>Username:</Text> {profile?.username}</Text>
               {profile?.website ? <Text><Text style={{ fontWeight: 'bold'}}>Website:</Text>  {profile?.website}</Text> : null}
-              <Text style={{ fontWeight: 'bold', paddingBottom: 2 }}>Selected city/cities:</Text>
+              <Text style={{ fontWeight: 'bold', paddingBottom: 2 }}>Selected cities:</Text>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
                 {selectedCities.length > 0 ? (
                   <Text>{selectedCities.join(', ')}</Text>
@@ -258,7 +258,7 @@ const UpdateDetailsScreen = ({ navigation }: UpdateProfileFormProps) => {
                   <Text>No cities selected</Text>
                 )}
               </View>
-              <Text><Text style={{ fontWeight: 'bold'}}>Adverts: </Text> {showAdverts ? 'Active' : 'Inactive'}</Text>
+              <Text><Text style={{ fontWeight: 'bold'}}>Show adverts: </Text> {showAdverts ? 'Active' : 'Inactive'}</Text>
             </View>
           </View>
         )}
