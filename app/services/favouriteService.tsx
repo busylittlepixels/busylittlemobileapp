@@ -1,27 +1,73 @@
 import { supabase } from '../../supabase';
 
-const addFavorite = async (userId: any, articleId: any, title: any, slug:any, content: any) => {
+// Function to generate a slug from the title
+
+const generateSlug = (title: { toString: () => string; }) => {
+    if (!title) return ''; // Fallback if title is undefined or null
+    return title
+        .toString()
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')           // Replace spaces with -
+        .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+        .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+        .replace(/^-+/, '')             // Trim - from start of text
+        .replace(/-+$/, '');            // Trim - from end of text
+};
+
+const normalizeContent = (input: { rendered: any; }) => {
+    if (input && typeof input === 'object' && input.rendered) {
+        return input.rendered;
+    }
+    return input || ''; // Fallback to an empty string if input is undefined or null
+};
+
+const addFavorite = async (userId: any, articleId: any, title: { rendered: any; }, slug: string, content: { rendered: any; }) => {
     try {
+        // Normalize title and content
+        const normalizedTitle = normalizeContent(title);
+        const normalizedContent = normalizeContent(content);
+
+        // Generate slug if it's not provided
+        const finalSlug = slug || generateSlug(normalizedTitle);
+
+        // Check if the favorite already exists to prevent duplication
+        const { data: existingFavorite, error: fetchError } = await supabase
+            .from('favorites')
+            .select('id')
+            .eq('user_id', userId)
+            .eq('article_id', articleId)
+            .single();
+
+        if (fetchError && fetchError.code !== 'PGRST116') { // Error code for no rows found
+            console.error('Error checking for existing favorite:', fetchError);
+            return { error: fetchError };
+        }
+
+        if (existingFavorite) {
+            return { message: 'Favorite already exists', data: existingFavorite };
+        }
+
+        // Insert new favorite
         const { data, error } = await supabase
             .from('favorites')
             .insert([
-                { user_id: userId, article_id: articleId, title: title, article_slug: slug, content: content },
+                {
+                    user_id: userId,
+                    article_id: articleId,
+                    title: normalizedTitle,
+                    article_slug: finalSlug,
+                    content: normalizedContent
+                },
             ])
             .select();  // Explicitly request the inserted data to be returned
-        
-        if (error) {
-            // Handle the unique constraint violation
-            console.log('Favorite already exists.', error);
-            return { message: 'Favorite already exists', data: null };
-        }
 
         if (error) {
             console.error('Error adding favorite:', error);
             return { error };
-        } else {
-            // console.log('Favorite added:', data);
-            return { data };
         }
+
+        return { data };
     } catch (error) {
         console.error('Unexpected error:', error);
         return { error };
@@ -70,9 +116,6 @@ const getFavorites = async (userId: any) => {
 
 const toggleFavorite = async (userId: any, articleId: any, title: any, slug: any, content: any) => {
     try {
-        // console.log('inside toggle fave method (userid)', userId);
-        // console.log('inside toggle fave method (articleid)', articleId);
-
         const { data, error } = await supabase
             .from('favorites')
             .select('id')
@@ -81,12 +124,8 @@ const toggleFavorite = async (userId: any, articleId: any, title: any, slug: any
             .single();
 
         if (data) {
-            // Article is already favorited, remove it
-            // console.log('already here, removing');
             return await removeFavorite(userId, articleId);
         } else {
-            // Article is not favorited, add it
-            // console.log('not already here, adding');
             return await addFavorite(userId, articleId, title, slug, content);
         }
     } catch (error) {

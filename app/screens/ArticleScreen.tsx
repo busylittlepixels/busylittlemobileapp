@@ -23,78 +23,119 @@ const baseStyles = {
 export default function ArticleScreen({ navigation, route }: any) {
   const { item, isFavorite: initialFavorite } = route.params;
   const [isFavorite, setIsFavorite] = useState(initialFavorite);
-  const [favorites, setFavorites] = useState({});  // Initialize the favorites state
+  const [favorites, setFavorites] = useState({});
 
   // Retrieve user information from the global state
   const user = useSelector((state) => state.auth.user);
 
   // Destructure relevant data from the article item
-  const { title, content, id, slug } = route.params.item;
+  const { title, content, id, slug } = item;
 
   // Normalize the title and content to ensure consistent rendering
-  const normalizedTitle = title?.rendered || title;
-  const normalizedContent = content?.rendered || JSON.parse(content);
+  let normalizedTitle, normalizedContent;
+  if (typeof item.title === 'string') {
+    try {
+      const parsedTitle = JSON.parse(item.title);
+      normalizedTitle = parsedTitle.rendered ? parsedTitle.rendered : item.title;
+    } catch (error) {
+      console.warn('Failed to parse title as JSON:', error);
+      normalizedTitle = item.title;
+    }
+  } else if (typeof item.title === 'object' && item.title.rendered) {
+    normalizedTitle = item.title.rendered;
+  } else {
+    normalizedTitle = item.title;
+  }
 
-  // Load the favorites from AsyncStorage when the component mounts
+  if (typeof item.content === 'string') {
+    try {
+      const parsedContent = JSON.parse(item.content);
+      normalizedContent = parsedContent.rendered ? parsedContent.rendered : item.content;
+    } catch (error) {
+      console.warn('Failed to parse content as JSON:', error);
+      normalizedContent = item.content;
+    }
+  } else if (typeof item.content === 'object' && item.content.rendered) {
+    normalizedContent = item.content.rendered;
+  } else {
+    normalizedContent = item.content;
+  }
+
+  // Load favorites from AsyncStorage when the component mounts
+  const loadFavorites = async () => {
+    try {
+      // Fetch and set favorites
+      const savedFavorites = await AsyncStorage.getItem(`favorites_${user?.id}`);
+      const parsedFavorites = savedFavorites ? JSON.parse(savedFavorites) : {};
+
+      setFavorites(parsedFavorites);
+
+      // Check if the current article is a favorite and update the isFavorite state
+      setIsFavorite(!!parsedFavorites[id]);
+    } catch (error) {
+      console.error('Failed to load favorites', error);
+    }
+  };
+
   useEffect(() => {
-    const loadFavorites = async () => {
-      const storedFavorites = await AsyncStorage.getItem(`favorites_${user?.id}`);
-      if (storedFavorites) {
-        const parsedFavorites = JSON.parse(storedFavorites);
-        setFavorites(parsedFavorites);
-        // setIsFavorite(!!parsedFavorites[id]);  // Set initial favorite status based on storage
-      }
-    };
-
+    // Load favorites when the component mounts
     loadFavorites();
-  }, [id, user?.id]);
+  }, []);
 
-  // Handle the toggling of the favorite status
+  // Handle toggling of favorites
   const handleToggleFavorite = async (articleId, title, slug, content) => {
-    const isFavorite = favorites[articleId];
-    const serializedContent = JSON.stringify(content);
+    const serializedContent = typeof content === 'string' ? content : JSON.stringify(content);
 
-    // Create an object that includes all necessary article properties
+    // Prepare the article data
     const articleData = {
-        id: articleId,
-        title: title,
-        slug: slug,
-        content: serializedContent
+      id: articleId,
+      title: title,
+      slug: slug,
+      content: serializedContent
     };
 
+    // Check if the article is already a favorite
+    const isFavorite = !!favorites[articleId];
+
+    // Log the current state of favorites before the update
+    console.log('Favorites before update:', favorites);
+    console.log('Is article a favorite before toggle:', isFavorite);
+
+    // Toggle the favorite status in the database
     const result = await toggleFavoriteService(user?.id, articleId, title, slug, serializedContent);
 
     if (result.error) {
-        Toast.show({ 
-          type: 'error', 
-          text1: 'Error', 
-          text2: 'Failed to update favorites.' 
-        });
-    } else {
-        // If article is already favorited, remove it; otherwise, add it
-        const updatedFavorites = {
-            ...favorites,
-            [articleId]: !isFavorite ? articleData : undefined  // Store the article data instead of just `true`
-        };
-
-        // Remove undefined values (articles that have been unfavorited)
-        const cleanedFavorites = Object.fromEntries(
-            Object.entries(updatedFavorites).filter(([key, value]) => value !== undefined)
-        );
-
-        console.log('cleanedc', cleanedFavorites);
-        setFavorites(cleanedFavorites);
-        await AsyncStorage.setItem(`favorites_${user?.id}`, JSON.stringify(cleanedFavorites));
-        setIsFavorite(!isFavorite);
-
-        Toast.show({
-            type: 'success',
-            text1: 'Success',
-            text2: isFavorite ? 'Removed from favorites.' : 'Added to favorites.'
-        });
+      Toast.show({ 
+        type: 'error', 
+        text1: 'Error', 
+        text2: 'Failed to update favorites.' 
+      });
+      return;
     }
+
+    // Update the local favorites state
+    const updatedFavorites = { ...favorites };
+
+    if (isFavorite) {
+      delete updatedFavorites[articleId]; // Remove the favorite
+    } else {
+      updatedFavorites[articleId] = articleData; // Add the favorite
+    }
+
+    // Log the updated state of favorites after the update
+    console.log('Favorites after update:', updatedFavorites);
+
+    // Persist the updated favorites list
+    setFavorites(updatedFavorites);
+    await AsyncStorage.setItem(`favorites_${user?.id}`, JSON.stringify(updatedFavorites));
+    setIsFavorite(!isFavorite);
+
+    Toast.show({
+      type: 'success',
+      text1: 'Success',
+      text2: isFavorite ? 'Removed from favorites.' : 'Added to favorites.'
+    });
   };
-  
 
   // Update the header options when the component mounts or when the favorite status changes
   useEffect(() => {
@@ -160,4 +201,3 @@ const styles = StyleSheet.create({
     left: 0,
   },
 });
-

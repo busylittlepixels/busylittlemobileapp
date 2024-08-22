@@ -64,10 +64,40 @@ const FavoritesScreen = ({ navigation, route }: any) => {
         <Text style={styles.faveTitle}>Favourite Articles</Text>
         {favorites.length > 0 ? (
           favorites.map((item, index) => {
-            console.log('Full item.title object:', item.title);
-            const normalizedTitle = item.title ? item.title : item.title.rendered;
+            console.log('Full item.title object:', JSON.stringify(item.title));
 
-            console.log('normalizedTitle:', normalizedTitle);
+            let normalizedTitle, normalizedContent;
+            // Check if item.title is a string that looks like a JSON object
+            if (typeof item.title === 'string') {
+                try {
+                    const parsedTitle = JSON.parse(item.title); // Parse the string into an object
+                    normalizedTitle = parsedTitle.rendered ? parsedTitle.rendered : item.title; // Use the rendered property if it exists
+                } catch (error) {
+                    console.warn('Failed to parse title as JSON:', error);
+                    normalizedTitle = item.title; // Fallback to using the string as-is if parsing fails
+                }
+            } else if (typeof item.title === 'object' && item.title.rendered) {
+                normalizedTitle = item.title.rendered; // Use the rendered property directly if it's already an object
+            } else {
+                normalizedTitle = item.title; // Fallback to the title itself if none of the above cases apply
+            }
+
+            if (typeof item.content === 'string') {
+              try {
+                  const parsedContent = JSON.parse(item.content); // Parse the string into an object
+                  normalizedContent = parsedContent.rendered ? parsedContent.rendered : item.content; // Use the rendered property if it exists
+              } catch (error) {
+                  console.warn('Failed to parse title as JSON:', error);
+                  normalizedContent = item.content; // Fallback to using the string as-is if parsing fails
+              }
+          } else if (typeof item.content === 'object' && item.content.rendered) {
+              normalizedContent = item.content.rendered; // Use the rendered property directly if it's already an object
+          } else {
+              normalizedContent = item.content; // Fallback to the title itself if none of the above cases apply
+          }
+
+            console.log('normalizedTitle on Favorites:', normalizedTitle);
+            console.log('looka on Favorites:', normalizedContent);
             return (
               <View key={index}>
                 <Pressable 
