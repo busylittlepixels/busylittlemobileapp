@@ -3,26 +3,24 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, ScrollView, Animated, RefreshControl, Image, Pressable, StyleSheet } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { supabase } from '../../supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import HorizontalScroller from '../components/HorizontalScroller';
 import CitiesGrid from '../components/CitiesGrid';
 import EventsGrid from '../components/EventsGrid';
-import { toggleFavorite as toggleFavoriteService } from '../services/favouriteService';
 import ParallaxScrollAvatar from '../components/ParallaxScrollAvatar';
 import AdBanner from '../components/AdBanner';
+import ArticleItem from '../components/ArticleItem';
 import Spacer from '../components/Spacer';
+import { toggleFavorite as toggleFavoriteService } from '../services/favouriteService';
 
 const AccountScreen = ({ navigation }: any) => {
-  const dispatch = useDispatch();
-  const scrollY = useRef(new Animated.Value(0)).current; // Ensure scrollY is correctly initialized
+  const scrollY = useRef(new Animated.Value(0)).current;
 
   // Access Redux state
   const user = useSelector((state) => state.auth.user);
-  const loading = useSelector((state) => state.auth.loading);
-  const isFirstLaunch = useSelector((state) => state.auth.isFirstLaunch);
   const showAdverts = useSelector((state) => state.auth.showAdverts);
 
   const [refreshing, setRefreshing] = useState(false);
@@ -32,41 +30,27 @@ const AccountScreen = ({ navigation }: any) => {
   const [articles, setArticles] = useState([]);
   const [favorites, setFavorites] = useState({});
 
-  useFocusEffect(
-    useCallback(() => {
-      // Function to fetch updated favorites from AsyncStorage
-      const fetchFavorites = async () => {
-        try {
-          const storedFavorites = await AsyncStorage.getItem(`favorites_${user?.id}`);
-          const parsedFavorites = storedFavorites ? JSON.parse(storedFavorites) : {};
-          setFavorites(parsedFavorites);
-        } catch (error) {
-          console.error('Failed to fetch favorites', error);
-        }
-      };
+  // Fetch favorites from AsyncStorage
+  const fetchFavorites = useCallback(async () => {
+    try {
+      const storedFavorites = await AsyncStorage.getItem(`favorites_${user?.id}`);
+      const parsedFavorites = storedFavorites ? JSON.parse(storedFavorites) : {};
+      setFavorites(parsedFavorites);
+    } catch (error) {
+      console.error('Failed to fetch favorites', error);
+    }
+  }, [user?.id]);
 
-      // Fetch updated favorites when the screen is focused
-      fetchFavorites();
-
-      // Optional: Return a cleanup function if needed
-      return () => {
-        // Cleanup logic if necessary when the screen loses focus
-      };
-    }, [favorites])
-  );
-
-  const fetchData = async () => {
+  // Fetch user-related data
+  const fetchUserData = useCallback(async () => {
     if (!user || !user.id) return;
 
     try {
-      // Fetch user profile, cities, and tickets in parallel
-      const [{ data: userDetails, error: userError },
-        { data: citiesData, error: citiesError },
-        { data: ticketsData, error: ticketsError }] = await Promise.all([
-          supabase.from('profiles').select('*').eq('id', user.id).single(),
-          supabase.from('profiles').select('cities').eq('id', user.id).single(),
-          supabase.from('tickets').select('*')
-        ]);
+      const [{ data: userDetails, error: userError }, { data: citiesData, error: citiesError }, { data: ticketsData, error: ticketsError }] = await Promise.all([
+        supabase.from('profiles').select('*').eq('id', user.id).single(),
+        supabase.from('profiles').select('cities').eq('id', user.id).single(),
+        supabase.from('tickets').select('*')
+      ]);
 
       if (userError) throw new Error(userError.message);
       setProfile(userDetails);
@@ -77,11 +61,14 @@ const AccountScreen = ({ navigation }: any) => {
       if (ticketsError) throw new Error(ticketsError.message);
       setTickets(ticketsData);
 
-      // Fetch and set favorites
-      const savedFavorites = await AsyncStorage.getItem(`favorites_${user.id}`);
-      setFavorites(savedFavorites ? JSON.parse(savedFavorites) : {});
+    } catch (err) {
+      console.error('Failed to fetch user data:', err.message);
+    }
+  }, [user?.id]);
 
-      // Fetch and set articles
+  // Fetch articles from external API
+  const fetchArticles = useCallback(async () => {
+    try {
       const response = await fetch('https://blpwp.frb.io/wp-json/wp/v2/news', {
         headers: {
           'Content-Type': 'application/json',
@@ -89,20 +76,32 @@ const AccountScreen = ({ navigation }: any) => {
       });
       const articlesData = await response.json();
       setArticles(articlesData);
-
     } catch (err) {
-      console.error('Failed to fetch data:', err.message);
+      console.error('Failed to fetch articles:', err.message);
     }
-  };
+  }, []);
+
+  // Combined data fetching
+  const fetchData = useCallback(async () => {
+    await fetchUserData();
+    await fetchFavorites();
+    await fetchArticles();
+  }, [fetchUserData, fetchFavorites, fetchArticles]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchFavorites();
+    }, [fetchFavorites])
+  );
 
   useEffect(() => {
     fetchData();
-  }, [user]);
+  }, [fetchData]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     fetchData().finally(() => setRefreshing(false));
-  }, []);
+  }, [fetchData]);
 
   const handleToggleFavorite = async (articleId, title, slug, content) => {
     const isFavorite = favorites[articleId];
@@ -119,7 +118,6 @@ const AccountScreen = ({ navigation }: any) => {
     }
   };
 
-
   return (
     <View style={{ flex: 1 }}>
       <Animated.View style={styles.avatarContainer}>
@@ -135,7 +133,7 @@ const AccountScreen = ({ navigation }: any) => {
             />
           </View>
         )}
-		</Animated.View>
+      </Animated.View>
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={styles.contentContainer}
@@ -146,9 +144,9 @@ const AccountScreen = ({ navigation }: any) => {
           <HorizontalScroller />
         </View>
 
-        {showAdverts ?  
+        {showAdverts && (
           <AdBanner color={'#f00000'} image='https://placehold.co/500x100' subtitle="This is the water, and this is the well. Drink full, and descend. The horse is the white of the eyes, and dark within" />
-        : null }
+        )}
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Your Selected Cities:</Text>
@@ -159,36 +157,21 @@ const AccountScreen = ({ navigation }: any) => {
           <Text style={styles.sectionTitle}>Events:</Text>
           <EventsGrid tickets={tickets} />
         </View>
-        {/* <Spacer space={10} /> */}
-        {showAdverts ? 
+
+        {showAdverts && (
           <AdBanner color={'#008000'} image='https://placehold.co/500x100' subtitle="Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light?" />
-        : null }
+        )}
+
         <View style={styles.section}>
           <Text style={styles.articleSectionTitle}>Articles:</Text>
           <View>
-            {articles.map(item => (
-              <View key={item.id} style={styles.item}>
-                <Pressable onPress={() => navigation.navigate('Article', { item: item, isFavorite: favorites[item.id] })} style={styles.articlePressable}>
-                  <Image style={styles.tinyLogo} source={{ uri: 'https://via.placeholder.com/50/800080/FFFFFF' }} />
-                  <View style={styles.textContainer}>
-                    <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
-                      {item.title.rendered}
-                    </Text>
-                    <Text style={styles.description}>Here's some description...</Text>
-                  </View>
-                </Pressable>
-
-                <Pressable
-                  onPress={() => handleToggleFavorite(item.id, item.title?.rendered, item.slug, item.content?.rendered)}
-                  style={styles.favoriteButton}
-                >
-                  <Ionicons
-                    name={favorites[item.id] ? 'checkmark-circle-outline' : 'remove-outline'}
-                    size={24}
-                    color={favorites[item.id] ? 'green' : 'gray'}
-                  />
-                </Pressable>
-              </View>
+          {articles.map(item => (
+              <ArticleItem
+                key={item.id}
+                item={item}
+                isFavorite={favorites[item.id]}
+                onToggleFavorite={handleToggleFavorite}
+              />
             ))}
           </View>
         </View>
@@ -248,23 +231,13 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   avatarContainer: {
-    padding: 20, // Add some padding around the whole container
+    padding: 20,
     backgroundColor: '#000'
-  
   },
   userInfoContainer: {
-    flexDirection: 'row', // Align items horizontally
-    justifyContent: 'space-between', // Space between text and avatar
-    alignItems: 'center', // Align items vertically centered
-  },
-  textContainer: {
-    flexDirection: 'column', // Align text vertically
-    justifyContent: 'center', // Center the text vertically
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-	  marginBottom: 10
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   screenTitle: {
     fontSize: 20,
@@ -273,7 +246,7 @@ const styles = StyleSheet.create({
   },
   screenSub: {
     fontSize: 14,
-    fontWeight: 500,
+    fontWeight: '500',
     color: '#fff'
   }
 });

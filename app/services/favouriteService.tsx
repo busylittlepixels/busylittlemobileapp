@@ -23,6 +23,7 @@ const normalizeContent = (input: { rendered: any; }) => {
 };
 
 const addFavorite = async (userId: any, articleId: any, title: { rendered: any; }, slug: string, content: { rendered: any; }) => {
+    console.log('add favorite userId', userId)
     try {
         // Normalize title and content
         const normalizedTitle = normalizeContent(title);
