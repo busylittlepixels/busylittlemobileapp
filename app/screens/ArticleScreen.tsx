@@ -21,24 +21,26 @@ const baseStyles = {
 };
 
 export default function ArticleScreen({ navigation, route }: any) {
+  
   const { item, isFavorite: initialFavorite } = route.params;
-  const [isFavorite, setIsFavorite] = useState(initialFavorite);
+  const [isFavorite, setIsFavorite] = useState(route.params?.isFavorite);
   const [favorites, setFavorites] = useState({});
 
+
+  console.log('is it a favorite?', route.params?.isFavorite + ' ' + item.title);
   // Retrieve user information from the global state
   const user = useSelector((state) => state.auth.user);
-
   // Destructure relevant data from the article item
   const { title, content, id, slug } = item;
 
-  // Normalize the title and content to ensure consistent rendering
+  // Normalize the title to ensure consistent rendering
   let normalizedTitle, normalizedContent;
   if (typeof item.title === 'string') {
     try {
       const parsedTitle = JSON.parse(item.title);
-      normalizedTitle = parsedTitle.rendered ? parsedTitle.rendered : item.title;
+      normalizedTitle = parsedTitle ? parsedTitle.rendered : item.title;
     } catch (error) {
-      console.warn('Failed to parse title as JSON:', error);
+      // console.warn('Failed to parse title as JSON:', error);
       normalizedTitle = item.title;
     }
   } else if (typeof item.title === 'object' && item.title.rendered) {
@@ -46,7 +48,7 @@ export default function ArticleScreen({ navigation, route }: any) {
   } else {
     normalizedTitle = item.title;
   }
-
+  // Normalize the content to ensure consistent rendering
   if (typeof item.content === 'string') {
     try {
       const parsedContent = JSON.parse(item.content);
@@ -71,7 +73,7 @@ export default function ArticleScreen({ navigation, route }: any) {
       setFavorites(parsedFavorites);
 
       // Check if the current article is a favorite and update the isFavorite state
-      setIsFavorite(!!parsedFavorites[id]);
+      setIsFavorite(isFavorite);
     } catch (error) {
       console.error('Failed to load favorites', error);
     }
@@ -94,15 +96,12 @@ export default function ArticleScreen({ navigation, route }: any) {
       content: serializedContent
     };
 
-    // Check if the article is already a favorite
-    const isFavorite = !!favorites[articleId];
-
     // Log the current state of favorites before the update
     console.log('Favorites before update:', favorites);
     console.log('Is article a favorite before toggle:', isFavorite);
 
     // Toggle the favorite status in the database
-    const result = await toggleFavoriteService(user?.id, articleId, title, slug, serializedContent);
+    const result = await toggleFavoriteService(user?.id, articleId, normalizedTitle, slug, serializedContent);
 
     if (result.error) {
       Toast.show({ 

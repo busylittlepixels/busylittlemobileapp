@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useState, useEffect, useCallback } from 'react';
-import { ScrollView, View, Text, StyleSheet, Pressable, RefreshControl } from 'react-native';
+import { ScrollView, View, Text, StyleSheet, Pressable, Image, RefreshControl } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase'; // Ensure your Supabase client is correctly imported
@@ -27,7 +27,7 @@ const FavoritesScreen = ({ navigation, route }: any) => {
 
       setFavorites(favoriteData || []);
     } catch (error) {
-      console.error('Error fetching favorites from database:', error);
+      console.error('Error fetching favorites from database:');
     } finally {
       setRefreshing(false);
     }
@@ -64,7 +64,7 @@ const FavoritesScreen = ({ navigation, route }: any) => {
         <Text style={styles.faveTitle}>Favourite Articles</Text>
         {favorites.length > 0 ? (
           favorites.map((item, index) => {
-            console.log('Full item.title object:', JSON.stringify(item.title));
+            console.log('Full item.title object:', item.title);
 
             let normalizedTitle, normalizedContent;
             // Check if item.title is a string that looks like a JSON object
@@ -73,7 +73,7 @@ const FavoritesScreen = ({ navigation, route }: any) => {
                     const parsedTitle = JSON.parse(item.title); // Parse the string into an object
                     normalizedTitle = parsedTitle.rendered ? parsedTitle.rendered : item.title; // Use the rendered property if it exists
                 } catch (error) {
-                    console.warn('Failed to parse title as JSON:', error);
+                    // console.warn('Failed to parse title as JSON:', error);
                     normalizedTitle = item.title; // Fallback to using the string as-is if parsing fails
                 }
             } else if (typeof item.title === 'object' && item.title.rendered) {
@@ -87,8 +87,9 @@ const FavoritesScreen = ({ navigation, route }: any) => {
                   const parsedContent = JSON.parse(item.content); // Parse the string into an object
                   normalizedContent = parsedContent.rendered ? parsedContent.rendered : item.content; // Use the rendered property if it exists
               } catch (error) {
-                  console.warn('Failed to parse title as JSON:', error);
+                  // console.warn('Failed to parse title as JSON');
                   normalizedContent = item.content; // Fallback to using the string as-is if parsing fails
+                  console.log('noramlised', normalizedContent)
               }
           } else if (typeof item.content === 'object' && item.content.rendered) {
               normalizedContent = item.content.rendered; // Use the rendered property directly if it's already an object
@@ -96,8 +97,6 @@ const FavoritesScreen = ({ navigation, route }: any) => {
               normalizedContent = item.content; // Fallback to the title itself if none of the above cases apply
           }
 
-            console.log('normalizedTitle on Favorites:', normalizedTitle);
-            console.log('looka on Favorites:', normalizedContent);
             return (
               <View key={index}>
                 <Pressable 
