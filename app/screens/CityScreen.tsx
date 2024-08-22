@@ -5,7 +5,8 @@ import ParallaxScrollView from '@/app/components/ParallaxScrollView';
 import { supabase } from '../../supabase'; // Ensure your Supabase client is correctly imported
 import { ThemedText } from '@/app/components/ThemedText';
 import { ThemedView } from '@/app/components/ThemedView';
-import RenderHTML from 'react-native-render-html';
+// @ts-ignore
+import HTMLView from 'react-native-htmlview';
 
 // Define the City type
 type City = {

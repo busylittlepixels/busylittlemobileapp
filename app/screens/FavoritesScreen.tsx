@@ -1,19 +1,19 @@
+// @ts-nocheck
 import React, { useState, useEffect, useCallback } from 'react';
 import { ScrollView, View, Text, StyleSheet, Pressable, RefreshControl } from 'react-native';
 import { useSelector } from 'react-redux';
-import { supabase } from '../../supabase'; // Ensure your Supabase client is correctly imported
 import { useFocusEffect } from '@react-navigation/native';
+import { supabase } from '../../supabase'; // Ensure your Supabase client is correctly imported
 import { ThemedView } from '@/app/components/ThemedView';
 
-const FavoritesScreen = ({ navigation, route }:any) => {
-  // @ts-ignore
+const FavoritesScreen = ({ navigation, route }: any) => {
   const user = useSelector((state) => state.auth.user);
-  const [loading, setLoading] = useState(false);
   const [favorites, setFavorites] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-
+  
+  // Fetch favorite articles from the database
   const fetchFavorites = async () => {
-    setLoading(true);
+    setRefreshing(true);
     try {
       const { data: favoriteData, error: favoriteError } = await supabase
         .from('favorites')
@@ -21,31 +21,22 @@ const FavoritesScreen = ({ navigation, route }:any) => {
         .eq('user_id', user?.id);
   
       if (favoriteError) {
-        console.error('Error fetching faves:', favoriteError);
+        console.error('Error fetching favorites:', favoriteError);
         return;
       }
-      
-      if (favoriteData) {
-        // @ts-ignore
-        setFavorites(favoriteData);
-      } else {
-        console.error('favoriteData is null or undefined');
-      }
+
+      setFavorites(favoriteData || []);
     } catch (error) {
-      console.error('Error during fetchFavorites:', error);
+      console.error('Error fetching favorites from database:', error);
     } finally {
-      setLoading(false);
+      setRefreshing(false);
     }
   };
 
-
-  
   useFocusEffect(
-   
     useCallback(() => {
-      console.log('reloaded faves');
       fetchFavorites();
-    }, [route]) // Include route as a dependency to trigger refetch when navigating back
+    }, [route])
   );
 
   useEffect(() => {
@@ -56,42 +47,42 @@ const FavoritesScreen = ({ navigation, route }:any) => {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    // Sync data from AsyncStorage
-    fetchFavorites().then(() => setRefreshing(false));
-    
-    setTimeout(() => {
-        setRefreshing(false);
-        console.log('should refresh user details');
-    }, 2000);
+    fetchFavorites().finally(() => setRefreshing(false));
   }, []);
 
+
+
   return (
-    <ThemedView style={styles.titleContainer}>
+    <View style={styles.titleContainer}>
       {user && <Text style={{ color: "red", fontSize: 20 }}>Favorite Articles for user: {user?.email}</Text>}
       <ScrollView
         style={{ flex: 1 }}
-        // @ts-ignore
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
         <Text style={styles.faveTitle}>Favourite Articles</Text>
         {favorites.length > 0 ? (
-          favorites.map((item, index) => (
-            <View key={index}>
-              <Pressable onPress={() => navigation.navigate("Article", { item, isFavorite: true })}>
-                {/* @ts-ignore */}
-                <Text style={styles.faveLinks}>{item?.title}</Text>
-              </Pressable>
-            </View>
-          ))
+          favorites.map((item, index) => {
+            console.log('Full item.title object:', item.title);
+            const normalizedTitle = item.title ? item.title : item.title.rendered;
+
+            console.log('normalizedTitle:', normalizedTitle);
+            return (
+              <View key={index}>
+                <Pressable 
+                  onPress={() => navigation.navigate("Article", { item, isFavorite: true })}
+                >
+                  <Text style={styles.faveLinks}>{normalizedTitle}</Text>
+                </Pressable>
+              </View>
+            )
+          })
         ) : (
           <Text style={styles.noCont}>No favorites as of yet</Text>
         )}
       </ScrollView>
-    </ThemedView>
+    </View>
   );
 };
 
@@ -100,7 +91,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'black',
+    backgroundColor: '#fff',
     color: 'black',
   },
   noCont: {

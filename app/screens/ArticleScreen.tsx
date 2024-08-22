@@ -15,7 +15,7 @@ import React from 'react';
 const baseStyles = {
     body: {
       whiteSpace: 'normal',
-      color: '#000',
+      backgroundColor: '#fff',
       padding: 0
     }
 };
@@ -23,6 +23,7 @@ const baseStyles = {
 export default function ArticleScreen({ navigation, route }: any) {
   const { item, isFavorite: initialFavorite } = route.params;
   const [isFavorite, setIsFavorite] = useState(initialFavorite);
+  const [favorites, setFavorites] = useState({});  // Initialize the favorites state
 
   // Retrieve user information from the global state
   const user = useSelector((state) => state.auth.user);
@@ -34,36 +35,58 @@ export default function ArticleScreen({ navigation, route }: any) {
   const normalizedTitle = title?.rendered || title;
   const normalizedContent = content?.rendered || JSON.parse(content);
 
-  // Handle the toggling of the favorite status
-  const handleToggleFavorite = async (articleId: string) => {
-    try {
-      // Retrieve the current favorites from AsyncStorage
+  // Load the favorites from AsyncStorage when the component mounts
+  useEffect(() => {
+    const loadFavorites = async () => {
       const storedFavorites = await AsyncStorage.getItem(`favorites_${user?.id}`);
-      const favorites = storedFavorites ? JSON.parse(storedFavorites) : {};
+      if (storedFavorites) {
+        const parsedFavorites = JSON.parse(storedFavorites);
+        setFavorites(parsedFavorites);
+        setIsFavorite(!!parsedFavorites[id]);  // Set initial favorite status based on storage
+      }
+    };
 
-      // Determine the current favorite status and toggle it
-      const isCurrentlyFavorite = favorites[articleId];
-      const updatedFavoriteStatus = !isCurrentlyFavorite;
+    loadFavorites();
+  }, [id, user?.id]);
 
-      // Update the favorites object with the new status
-      const updatedFavorites = { ...favorites, [articleId]: updatedFavoriteStatus };
+  // Handle the toggling of the favorite status
+  const handleToggleFavorite = async (articleId, title, slug, content) => {
+    const isFavorite = favorites[articleId];
+    const serializedContent = JSON.stringify(content);
 
-      // Persist the updated favorites back to AsyncStorage
-      await AsyncStorage.setItem(`favorites_${user?.id}`, JSON.stringify(updatedFavorites));
+    // Create an object that includes all necessary article properties
+    const articleData = {
+        id: articleId,
+        title: title,
+        slug: slug,
+        content: serializedContent
+    };
 
-      // Update the local state to reflect the change
-      setIsFavorite(updatedFavoriteStatus);
+    const result = await toggleFavoriteService(user?.id, articleId, title, slug, serializedContent);
 
-      // Optionally, show a Toast message indicating the result
-      Toast.show({
-        type: 'success',
-        text1: 'Success',
-        text2: updatedFavoriteStatus ? 'Added to favorites.' : 'Removed from favorites.',
-      });
-    } catch (error) {
-      // Handle any errors that occur during the process
-      console.error('Failed to toggle favorite', error);
-      Toast.show({ type: 'error', text1: 'Error', text2: 'Failed to update favorites.' });
+    if (result.error) {
+        Toast.show({ type: 'error', text1: 'Error', text2: 'Failed to update favorites.' });
+    } else {
+        // If article is already favorited, remove it; otherwise, add it
+        const updatedFavorites = {
+            ...favorites,
+            [articleId]: !isFavorite ? articleData : undefined  // Store the article data instead of just `true`
+        };
+
+        // Remove undefined values (articles that have been unfavorited)
+        const cleanedFavorites = Object.fromEntries(
+            Object.entries(updatedFavorites).filter(([key, value]) => value !== undefined)
+        );
+
+        setFavorites(cleanedFavorites);
+        await AsyncStorage.setItem(`favorites_${user?.id}`, JSON.stringify(cleanedFavorites));
+        setIsFavorite(!isFavorite);
+
+        Toast.show({
+            type: 'success',
+            text1: 'Success',
+            text2: isFavorite ? 'Removed from favorites.' : 'Added to favorites.'
+        });
     }
   };
 
@@ -74,7 +97,7 @@ export default function ArticleScreen({ navigation, route }: any) {
       headerRight: () => (
         <View style={{ display: 'flex', flexDirection: 'row' }}>
           <Pressable
-            onPress={() => handleToggleFavorite(id)}
+            onPress={() => handleToggleFavorite(id, title, slug, content)}
             style={{ marginRight: 15 }}
           >
             <Ionicons
@@ -98,13 +121,12 @@ export default function ArticleScreen({ navigation, route }: any) {
     >
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">{normalizedTitle}</ThemedText>
-        {/* <Text style={{ color: '#000'}}>{isFavorite ? 'yep' : 'nope'}</Text> */}
       </ThemedView>
       <RenderHTML
         contentWidth={width}
         source={{ html: normalizedContent }}
         tagsStyles={baseStyles}
-        style={{ paddingHorizontal: 0 }}
+        style={{ paddingHorizontal: 0, color: "white" }}
       />
       <View>
         <Button title="Back to Articles" onPress={() => navigation.navigate('Account')} />
@@ -132,3 +154,4 @@ const styles = StyleSheet.create({
     left: 0,
   },
 });
+
