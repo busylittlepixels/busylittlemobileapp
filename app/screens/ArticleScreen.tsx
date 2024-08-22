@@ -42,7 +42,7 @@ export default function ArticleScreen({ navigation, route }: any) {
       if (storedFavorites) {
         const parsedFavorites = JSON.parse(storedFavorites);
         setFavorites(parsedFavorites);
-        setIsFavorite(!!parsedFavorites[id]);  // Set initial favorite status based on storage
+        // setIsFavorite(!!parsedFavorites[id]);  // Set initial favorite status based on storage
       }
     };
 
@@ -65,7 +65,11 @@ export default function ArticleScreen({ navigation, route }: any) {
     const result = await toggleFavoriteService(user?.id, articleId, title, slug, serializedContent);
 
     if (result.error) {
-        Toast.show({ type: 'error', text1: 'Error', text2: 'Failed to update favorites.' });
+        Toast.show({ 
+          type: 'error', 
+          text1: 'Error', 
+          text2: 'Failed to update favorites.' 
+        });
     } else {
         // If article is already favorited, remove it; otherwise, add it
         const updatedFavorites = {
@@ -78,6 +82,7 @@ export default function ArticleScreen({ navigation, route }: any) {
             Object.entries(updatedFavorites).filter(([key, value]) => value !== undefined)
         );
 
+        console.log('cleanedc', cleanedFavorites);
         setFavorites(cleanedFavorites);
         await AsyncStorage.setItem(`favorites_${user?.id}`, JSON.stringify(cleanedFavorites));
         setIsFavorite(!isFavorite);
@@ -89,6 +94,7 @@ export default function ArticleScreen({ navigation, route }: any) {
         });
     }
   };
+  
 
   // Update the header options when the component mounts or when the favorite status changes
   useEffect(() => {
