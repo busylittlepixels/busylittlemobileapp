@@ -3,8 +3,8 @@ import { Text, View, Button } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useSelector, useDispatch } from 'react-redux';
 import Onboarding from 'react-native-onboarding-swiper';
-import { completeOnboarding } from '../actions/authActions';
-import OnboardingCityPills from '../components/OnboardingCityPills'; 
+import { completeOnboarding } from '../../actions/authActions';
+import OnboardingCityPills from '../../components/OnboardingCityPills'; 
 
 const OnboardingScreen = ({ navigation }:any ) => {
     const [selectedCities, setSelectedCities] = useState<string[]>([]);

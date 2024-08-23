@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import ParallaxScrollView from '@/app/components/ParallaxScrollView';
 import { ThemedText } from '@/app/components/ThemedText';
 import { ThemedView } from '@/app/components/ThemedView';
-import EventSignupForm from '../components/EventSignupForm';
+import EventSignupForm from '../../components/EventSignupForm';
 import React from 'react';
 
 export default function EventScreen({ navigation, route }: any) {

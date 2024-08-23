@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Text, Alert, Pressable } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../navigation';
-import { signUp } from '../actions/authActions'; // Import the correct signUp action
+import { RootStackParamList } from '../../navigation';
+import { signUp } from '../../actions/authActions'; // Import the correct signUp action
 
 type SignUpScreenNavigationProp = StackNavigationProp<RootStackParamList, 'SignUp'>;
 

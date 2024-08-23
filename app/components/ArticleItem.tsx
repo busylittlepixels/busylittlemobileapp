@@ -9,7 +9,7 @@ const ArticleItem = ({ item, isFavorite, onToggleFavorite }:any) => {
     return(
         <View key={item.id} style={styles.item}>
         {/* @ts-ignore */}
-        <Pressable onPress={() => navigation.navigate('Article', { item, isFavorite })} style={styles.articlePressable}>
+        <Pressable onPress={() => navigation.navigate('Article', { item, isFavorite: true })} style={styles.articlePressable}>
             <Image style={styles.tinyLogo} source={{ uri: 'https://via.placeholder.com/50/800080/FFFFFF' }} />
             <View style={styles.textContainer}>
             <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">

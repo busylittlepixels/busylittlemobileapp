@@ -8,27 +8,28 @@ import { Picker } from '@react-native-picker/picker';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import SplashScreen from '../screens/SplashScreen';
-import LoginScreen from '../screens/LoginScreen';
-import AccountScreen from '../screens/AccountScreen';
-import ServicesScreen from '../screens/ServicesScreen';
-import UpdateDetailsScreen from '../screens/UpdateDetailsScreen';
-import PaymentScreen from '../screens/PaymentScreen';
-import { AuthContext } from '../context/AuthContext';
+import SplashScreen from '../screens/Login/SplashScreen';
+import LoginScreen from '../screens/Login/LoginScreen';
+import AccountScreen from '../screens/Account/AccountScreen';
+import ServicesScreen from '../screens/Services/ServicesScreen';
+import UpdateDetailsScreen from '../screens/Profile/UpdateDetailsScreen';
+import PaymentScreen from '../screens/Payment/PaymentScreen';
+import ProfileScreen from '../screens/Profile/ProfileScreen';
 import MainTabNavigator from './MainTabNavigator';
 import MainDrawerNavigator from './MainDrawerNavigator';
-import SignUpScreen from '../screens/SignUpScreen';
-import EventScreen from '../screens/EventScreen';
-import MyEventsScreen from '../screens/MyEventsScreen';
-import TabEileScreen from '../screens/TabEileScreen';
-import ArticleScreen from '../screens/ArticleScreen';
-import ResetPassScreen from '../screens/ResetPassScreen';
+import SignUpScreen from '../screens/Auth/SignUpScreen';
+import EventScreen from '../screens/Events/EventScreen';
+import MyEventsScreen from '../screens/MyScreens/MyEventsScreen';
+import TabEileScreen from '../screens/General/TabEileScreen';
+import ArticleScreen from '../screens/Article/ArticleScreen';
+import ResetPassScreen from '../screens/Auth/ResetPassScreen';
 import Onboarding from 'react-native-onboarding-swiper';
-import FavoritesScreen from '../screens/FavoritesScreen';
-import CityScreen from '../screens/CityScreen';
-import CitiesScreen from '../screens/CitiesScreen';
-import SearchScreen from '../screens/SearchScreen';
-import OnboardingScreen from '../screens/OnboardingScreen';
+import FavoritesScreen from '../screens/Favourites/FavoritesScreen';
+import CityScreen from '../screens/Cities/CityScreen';
+import CitiesScreen from '../screens/Cities/CitiesScreen';
+import SearchScreen from '../screens/Search/SearchScreen';
+import OnboardingScreen from '../screens/Login/OnboardingScreen';
+import FavoriteArticleScreen from '../screens/Favourites/FavoriteArticleScreen';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -80,10 +81,11 @@ const AppNavigator = () => {
             ) : (
               <>
                 <Stack.Screen name="Account" component={MainDrawerNavigator} options={{ headerShown: false }} />
-                <Stack.Screen name="Profile" component={UpdateDetailsScreen} options={{ headerTintColor: '#000', headerShown: true }} />
+                <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerTintColor: '#000', headerShown: true }} />
                 <Stack.Screen name="Event" component={EventScreen} options={{ headerShown: true }} />
                 <Stack.Screen name="MyEvents" component={MyEventsScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="Article" component={ArticleScreen} options={{ headerShown: true }} />
+                <Stack.Screen name="FavoriteArticle" component={FavoriteArticleScreen} options={{ headerShown: true }} />
                 <Stack.Screen name="Cities" component={CitiesScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="City" component={CityScreen} options={{ headerShown: true }} />
                 <Stack.Screen name="Search" component={SearchScreen} options={({ navigation }) => ({
@@ -94,16 +96,10 @@ const AppNavigator = () => {
                   headerRight: () => (
                     <View style={{ display: 'flex', flexDirection: 'row' }}>
                       <Pressable
-                        onPress={() => navigation.navigate('Profile')} // Navigate to the Profile screen
+                        onPress={() => navigation.goBack()} // Navigate to the Search screen
                         style={{ marginRight: 15 }}
                       >
-                        <Ionicons name="person-outline" size={24} color="black" />
-                      </Pressable>
-                      <Pressable
-                        onPress={() => navigation.navigate('Search')} // Navigate to the Search screen
-                        style={{ marginRight: 15 }}
-                      >
-                        <Ionicons name="search-outline" size={24} color="black" />
+                        <Ionicons name="close-outline" size={24} color="black" />
                       </Pressable>
                     </View>
                   ),

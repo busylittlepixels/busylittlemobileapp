@@ -100,7 +100,7 @@ const getFavorites = async (userId: any) => {
     try {
         const { data, error } = await supabase
             .from('favorites')
-            .select('article_id')
+            .select('*')
             .eq('user_id', userId);
 
         if (error) {

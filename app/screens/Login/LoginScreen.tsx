@@ -4,7 +4,7 @@ import { View, Text, TextInput, Button, StyleSheet, Pressable } from 'react-nati
 import { useDispatch, useSelector } from 'react-redux';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation';
-import { login } from '../actions/authActions';
+import { login } from '../../actions/authActions';
 
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
 

@@ -2,10 +2,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, ScrollView, StyleSheet, RefreshControl } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
-import { supabase } from '../../supabase'; // Import your Supabase client instance
+import { supabase } from '../../../supabase'; // Import your Supabase client instance
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import CityPills from '../components/CityPills';
-import { logout } from '../actions/authActions'; // Import logout action if needed
+import CityPills from '../../components/CityPills';
+import { logout } from '../../actions/authActions'; // Import logout action if needed
 
 const CitiesScreen = () => {
   const dispatch = useDispatch();

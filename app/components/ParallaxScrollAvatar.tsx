@@ -3,9 +3,10 @@ import { View, StyleSheet } from 'react-native';
 import UserAvatar from './UserAvatar';
 
 const ParallaxScrollAvatar = ({ imageUrl, name }: any) => {
+  console.log('avatar img', imageUrl);
   return (
     <View style={styles.avatarContainer}>
-      <UserAvatar imageUrl={imageUrl} name={name} />
+      <UserAvatar imageUrl={imageUrl} name={name} resizeMode="cover"/>
     </View>
   );
 };
@@ -19,6 +20,7 @@ const styles = StyleSheet.create({
     marginRight: 20, // Adds some space between the text and the avatar
     marginBottom: 20
   },
+
 });
 
 export default ParallaxScrollAvatar;

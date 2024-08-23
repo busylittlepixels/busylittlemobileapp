@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { View, Text, SafeAreaView, StyleSheet, FlatList} from 'react-native';
-import EventsListItem from '../components/EventsListItem';
+import EventsListItem from '../../components/EventsListItem';
 import { useFocusEffect } from '@react-navigation/native';
 import { Calendar } from 'react-native-calendars';
 

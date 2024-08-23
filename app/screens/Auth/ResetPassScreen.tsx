@@ -1,8 +1,8 @@
 import React, { useContext, useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Pressable } from 'react-native';
-import { authService } from '../services/authService';
+import { authService } from '../../services/authService';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../navigation';
+import { RootStackParamList } from '../../navigation';
 
 type ResetPassScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
 

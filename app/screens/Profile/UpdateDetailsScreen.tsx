@@ -1,14 +1,14 @@
 // @ts-nocheck
 import Ionicons from '@expo/vector-icons/Ionicons';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useImperativeHandle, forwardRef } from 'react';
 import { Alert, ScrollView, View, TextInput, Text, Button, FlatList, StyleSheet, Pressable, RefreshControl, Switch, Image } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux'; // Import useSelector and useDispatch
-import { supabase } from '../../supabase';
+import { supabase } from '../../../supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
-import Spacer from '../components/Spacer';
-import { logout, setAdvertPreference } from '../actions/authActions'; // Import the logout action if needed
+import Spacer from '../../components/Spacer';
+import { logout, setAdvertPreference } from '../../actions/authActions'; // Import the logout action if needed
 
 export interface Profile {
   id: string;
@@ -27,20 +27,20 @@ interface UpdateProfileFormProps {
   user: User;
 }
 
-const UpdateDetailsScreen = ({ navigation }: UpdateProfileFormProps) => {
+const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
+  const [refreshing, setRefreshing] = useState(false);
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   // Access Redux state
-  const user = useSelector((state) => state.auth.user);
   const showAdverts = useSelector((state) => state.auth.showAdverts);
-  
-  const [refreshing, setRefreshing] = useState(false);
+
   const [username, setUsername] = useState('');
   const [website, setWebsite] = useState('');
   const [full_name, setFullname] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<any>([]);
-  const [profile, setProfile] = useState<Profile | null>(null);
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
   const [data, setData] = useState(null);
 
@@ -81,6 +81,7 @@ const UpdateDetailsScreen = ({ navigation }: UpdateProfileFormProps) => {
   };
 
   const triggerRefresh = async () => {
+    console.log('refresh triggered');
     try {
       await loadDataFromStorage();
       Toast.show({
@@ -231,7 +232,10 @@ const UpdateDetailsScreen = ({ navigation }: UpdateProfileFormProps) => {
   }, []);
 
   const filteredCities = selectedCities && selectedCities.filter(city => city.toLowerCase());
-
+  useImperativeHandle(ref, () => ({
+    triggerRefresh, // Expose the triggerRefresh method
+  }));
+  
   return (
     <ScrollView
       style={{ flex: 1 }}
@@ -333,7 +337,7 @@ const UpdateDetailsScreen = ({ navigation }: UpdateProfileFormProps) => {
       </View>
     </ScrollView>
   );
-};
+});
 
 const styles = StyleSheet.create({
   main: {

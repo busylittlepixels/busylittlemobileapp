@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useEffect, useState } from 'react';
 import { Image, View, Text, ActivityIndicator, StyleSheet, Dimensions, Button } from 'react-native';
 import ParallaxScrollView from '@/app/components/ParallaxScrollView';
-import { supabase } from '../../supabase'; // Ensure your Supabase client is correctly imported
+import { supabase } from '../../../supabase'; // Ensure your Supabase client is correctly imported
 import { ThemedText } from '@/app/components/ThemedText';
 import { ThemedView } from '@/app/components/ThemedView';
 // @ts-ignore
@@ -21,21 +21,21 @@ type City = {
 const getCityImage = (name:string) => {
   switch (name.toLowerCase()) {
     case 'amsterdam':
-      return require('../../assets/images/amsterdam.png');
+      return require('../../../assets/images/amsterdam.png');
     case 'dublin':
-      return require('../../assets/images/dublin.png');
+      return require('../../../assets/images/dublin.png');
     case 'london':
-      return require('../../assets/images/london.png');
+      return require('../../../assets/images/london.png');
     case 'bogota':
-      return require('../../assets/images/bogota.png');
+      return require('../../../assets/images/bogota.png');
     case 'hamburg':
-      return require('../../assets/images/hamburg.png');
+      return require('../../../assets/images/hamburg.png');
     case 'copenhagen':
-      return require('../../assets/images/copenhagen.png');
+      return require('../../../assets/images/copenhagen.png');
     case 'new york':
-        return require('../../assets/images/newyork.png');
+        return require('../../../assets/images/newyork.png');
     default:
-      return require('../../assets/images/klingons.png'); // Fallback image
+      return require('../../../assets/images/klingons.png'); // Fallback image
   }
 };
 

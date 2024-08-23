@@ -7,12 +7,12 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { useDispatch } from 'react-redux'; // Import useDispatch from react-redux
 import { logout } from '../actions/authActions'; // Import the logout action
 import MainTabNavigator from './__MainTabNavigator';
-import AccountScreen from '../screens/AccountScreen';
+import AccountScreen from '../screens/Account/AccountScreen';
 import UpdateDetailsScreen from '../screens/UpdateDetailsScreen';
-import FavoritesScreen from '../screens/FavoritesScreen';
-import CityScreen from '../screens/CityScreen';
-import CitiesScreen from '../screens/CitiesScreen';
-import MyEventsScreen from '../screens/MyEventsScreen';
+import FavoritesScreen from '../screens/Favourites/FavoritesScreen';
+import CityScreen from '../screens/Cities/CityScreen';
+import CitiesScreen from '../screens/Cities/CitiesScreen';
+import MyEventsScreen from '../screens/MyScreens/MyEventsScreen';
 
 const Drawer = createDrawerNavigator();
 

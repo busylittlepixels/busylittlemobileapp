@@ -4,17 +4,18 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, ScrollView, Animated, RefreshControl, Image, Pressable, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
-import { supabase } from '../../supabase';
+import { supabase } from '../../../supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
-import HorizontalScroller from '../components/HorizontalScroller';
-import CitiesGrid from '../components/CitiesGrid';
-import EventsGrid from '../components/EventsGrid';
-import ParallaxScrollAvatar from '../components/ParallaxScrollAvatar';
-import AdBanner from '../components/AdBanner';
-import ArticleItem from '../components/ArticleItem';
-import Spacer from '../components/Spacer';
-import { toggleFavorite as toggleFavoriteService } from '../services/favouriteService';
+import HorizontalScroller from '../../components/HorizontalScroller';
+import CitiesGrid from '../../components/CitiesGrid';
+import EventsGrid from '../../components/EventsGrid';
+import ParallaxScrollAvatar from '../../components/ParallaxScrollAvatar';
+import AdBanner from '../../components/AdBanner';
+import ArticleItem from '../../components/ArticleItem';
+import Spacer from '../../components/Spacer';
+import { toggleFavorite as toggleFavoriteService } from '../../services/favouriteService';
+import { Asset } from 'expo-asset';
 
 const AccountScreen = ({ navigation }: any) => {
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -30,6 +31,10 @@ const AccountScreen = ({ navigation }: any) => {
   const [articles, setArticles] = useState([]);
   const [favorites, setFavorites] = useState({});
 
+
+  const avatarBlipImage = Asset.fromModule(require('../../../assets/images/marathon6.png')).uri;
+  const avatarImage = Asset.fromModule(require('../../../assets/images/blp-splash.png')).uri;
+  const imageUrl = user.id === '3e70dd7c-735f-4b46-aeda-5c0996a2dbea' ? avatarImage : avatarBlipImage;
   // Fetch favorites from AsyncStorage
   const fetchFavorites = useCallback(async () => {
     try {
@@ -66,6 +71,8 @@ const AccountScreen = ({ navigation }: any) => {
     }
   }, [user?.id]);
 
+
+  console.log(user?.id);
   // Fetch articles from external API
   const fetchArticles = useCallback(async () => {
     try {
@@ -126,9 +133,10 @@ const AccountScreen = ({ navigation }: any) => {
             <View style={styles.textContainer}>
               <Text style={styles.screenTitle}>Hey {profile?.username || user.user_metadata?.username}</Text>
               <Text style={styles.screenSub}>{profile?.email || user?.email}</Text>
+              <Text style={styles.screenMicro}>UserId: {user.id}</Text>
             </View>
             <ParallaxScrollAvatar
-              imageUrl={null}
+              imageUrl={avatarImage}
               name={profile?.username || user.user_metadata?.username}
             />
           </View>
@@ -247,6 +255,11 @@ const styles = StyleSheet.create({
   screenSub: {
     fontSize: 14,
     fontWeight: '500',
+    color: '#fff'
+  },
+  screenMicro: {
+    fontSize: 10,
+    fontWeight: '400',
     color: '#fff'
   }
 });

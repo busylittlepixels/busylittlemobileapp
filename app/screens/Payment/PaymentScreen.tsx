@@ -2,7 +2,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Button } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
-import { logout } from '../actions/authActions'; // Import the correct logout action
+import { logout } from '../../actions/authActions'; // Import the correct logout action
 
 const PaymentScreen = ({ navigation }: Props) => {
   const dispatch = useDispatch(); // Hook to dispatch actions

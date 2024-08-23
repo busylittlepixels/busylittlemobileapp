@@ -1,10 +1,11 @@
-// reducers/index.js
-import { combineReducers } from '@reduxjs/toolkit';
-import authReducer from './authReducer'; // Ensure paths are correct
+// reducers/index.ts
+import { combineReducers } from 'redux';
+import authReducer from './authReducer';
+import favoriteReducer from './favoriteReducer';
 
 const rootReducer = combineReducers({
-  auth: authReducer,
-  // other reducers can be added here
+    auth: authReducer,
+    favorite: favoriteReducer,
 });
 
 export default rootReducer;

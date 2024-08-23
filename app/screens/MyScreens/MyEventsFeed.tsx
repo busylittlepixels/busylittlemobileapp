@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { View, Text, SafeAreaView, StyleSheet, FlatList} from 'react-native';
-import EventsListItem from '../components/EventsListItem';
+import EventsListItem from '../../components/EventsListItem';
 import { useFocusEffect } from '@react-navigation/native';
 
 const newsData = [
@@ -81,15 +81,16 @@ const MyEventsFeed = ({ navigation }:any) => {
     }, [navigation]);
 
     return(
-        <View style={styles.container}>
-        <SafeAreaView style={styles.container}>
-            <FlatList
-            data={newsData}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={styles.list}
-            />
-        </SafeAreaView>
+        <View style={styles.innerContainer}>
+          <Text style={[styles.title, { paddingBottom: 5 }]}>Account Settings</Text>
+          <SafeAreaView style={styles.container}>
+              <FlatList
+              data={newsData}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id}
+              contentContainerStyle={styles.list}
+              />
+          </SafeAreaView>
         </View>
     ); 
 };
@@ -102,6 +103,19 @@ const styles = StyleSheet.create({
       justifyContent: 'flex-start',
       // alignItems: 'center',
       backgroundColor: 'white',
+    },
+    innerContainer: {
+      flex: 1,
+      flexDirection: 'column',
+      justifyContent: 'center',
+      paddingRight: 16,
+      paddingLeft: 16,
+      marginTop: 10,
+    },
+    title: {
+      fontWeight: 'bold',
+      marginVertical: 5,
+      fontSize: 18,
     },
     header: {
       fontWeight: 'bold',
