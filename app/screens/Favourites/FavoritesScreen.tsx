@@ -1,14 +1,39 @@
 // @ts-nocheck
-import React, { useCallback } from 'react';
-import { ScrollView, View, Text, StyleSheet, Pressable } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { ScrollView, View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
-import { fetchFavorites } from '../../actions/favoriteActions';
+import { fetchFavorites, clearFavorites } from '../../actions/favoriteActions';
+
+
+const ResetButton = ({ title, onPress }) => {
+    return (
+      <Pressable
+        style={({ pressed }) => [
+          {
+            backgroundColor: pressed ? 'darkred' : 'red', // Dim the color when pressed
+          },
+          styles.resetButton,
+        ]}
+        onPress={onPress}
+      >
+        <Text style={styles.resetButtonText}>{title}</Text>
+      </Pressable>
+    );
+};
+
+
 
 const FavoritesScreen = ({ navigation }: any) => {
     const dispatch = useDispatch();
     const user = useSelector((state: any) => state.auth.user);
     const favorites = useSelector((state: any) => state.favorite.favorites);
+    const [loading, setIsLoading] = useState<boolean>(false);
+
+    const handleResetFavorites = () => {
+        const userId = user.id;
+        dispatch(clearFavorites(userId));
+    };
 
     useFocusEffect(
         useCallback(() => {
@@ -20,7 +45,7 @@ const FavoritesScreen = ({ navigation }: any) => {
 
     return (
         <View style={styles.titleContainer}>
-            {user && <Text style={{ color: "green", fontSize: 20 }}>Favorite Articles for user: {user?.email}</Text>}
+            {/* {user && <Text style={{ color: "green", fontSize: 20 }}>Favorite Articles for user: {user?.email}</Text>} */}
             <ScrollView
                 style={{ flex: 1 }}
                 contentContainerStyle={styles.contentContainer}
@@ -52,7 +77,11 @@ const FavoritesScreen = ({ navigation }: any) => {
                 ) : (
                     <Text style={styles.noCont}>No favorites as of yet</Text>
                 )}
+                
             </ScrollView>
+            {Object.keys(favorites).length > 0 ? (
+            <ResetButton title="Clear All Favorites" onPress={handleResetFavorites} style={{ marginBottom: 10, paddingBottom: 50 }} />
+            ) : null}
         </View>
     );
 };
@@ -64,6 +93,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#fff',
         color: 'black',
+    },
+    contentContainer:{
+        justifyContent: 'space-between',
     },
     noCont: {
         color: '#000',
@@ -86,6 +118,19 @@ const styles = StyleSheet.create({
         color: 'black', 
         paddingTop: 10,
         fontSize: 14,
+        fontWeight: 'bold',
+    },
+    resetButton: {
+        width: '100%',
+        backgroundColor: 'red',
+        paddingVertical: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+        marginBottom: 20
+    },
+    resetButtonText: {
+        color: '#fff',
+        fontSize: 16,
         fontWeight: 'bold',
     },
 });

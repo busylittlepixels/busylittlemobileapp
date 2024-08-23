@@ -1,11 +1,11 @@
 // actions/favoriteActions.ts
 import { Dispatch } from 'redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getFavorites, toggleFavorite as toggleFavoriteService } from '../services/favouriteService';
+import { resetFavorites, getFavorites, toggleFavorite as toggleFavoriteService } from '../services/favouriteService';
 
 export const SET_FAVORITES = 'SET_FAVORITES';
 export const TOGGLE_FAVORITE = 'TOGGLE_FAVORITE';
-
+export const RESET_FAVORITES = 'RESET_FAVORITES';
 // Action to set favorites in Redux state
 export const setFavorites = (favorites: any) => ({
     type: SET_FAVORITES,
@@ -66,4 +66,19 @@ export const toggleFavorite = (userId: any, article: any) => async (dispatch: Di
 
     // Update AsyncStorage
     await AsyncStorage.setItem(`favorites_${userId}`, JSON.stringify(updatedFavorites));
+};
+
+
+export const clearFavorites = (userId:any) => async (dispatch:Dispatch) => {
+    try {
+        const result = await resetFavorites(userId); // Call the resetFavorites service
+        if (result.error) {
+            console.error('Failed to clear favorites:', result.error);
+        } else {
+            dispatch({ type: RESET_FAVORITES });
+            await AsyncStorage.removeItem(`favorites_${userId}`);
+        }
+    } catch (error) {
+        console.error('Unexpected error in clearing favorites:', error);
+    }
 };

@@ -55,7 +55,6 @@ export const logout = () => async (dispatch: Dispatch) => {
     await AsyncStorage.removeItem('user');
     await AsyncStorage.removeItem('access_token');
     await AsyncStorage.removeItem('refresh_token');
-    await AsyncStorage.clear();
     dispatch({ type: LOGOUT_SUCCESS });
   } catch (error) {
     console.error('Error logging out:', error);
@@ -71,6 +70,7 @@ export const checkFirstLaunch = () => async (dispatch: Dispatch) => {
     dispatch({ type: SET_FIRST_LAUNCH, payload: false });
   }
 };
+
 
 export const completeOnboarding = (userId:any, cities: string[]) => async (dispatch: any) => {
   // console.log('authActions userID', userId);

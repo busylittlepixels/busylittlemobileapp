@@ -135,4 +135,24 @@ const toggleFavorite = async (userId: any, articleId: any, title: any, slug: any
     }
 };
 
-export { addFavorite, removeFavorite, getFavorites, toggleFavorite };
+const resetFavorites = async (userId: any) => {
+    try {
+        const { data, error } = await supabase
+            .from('favorites')
+            .delete()
+            .eq('user_id', userId);
+
+        if (error) {
+            console.error('Error resetting favorites:', error);
+            return { error };
+        }
+
+        return { data };
+    } catch (error) {
+        console.error('Unexpected error:', error);
+        return { error };
+    }
+};
+
+
+export { addFavorite, removeFavorite, getFavorites, toggleFavorite, resetFavorites };

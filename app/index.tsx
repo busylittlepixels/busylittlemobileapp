@@ -10,25 +10,25 @@ import { Provider } from 'react-redux';
 import store from './store'; // Import the Redux store
 
 // Method to clear all data from AsyncStorage
-const clearAsyncStorage = async () => {
-  try {
-    await AsyncStorage.clear();
-    console.log('AsyncStorage successfully cleared!');
-  } catch (error) {
-    console.error('Failed to clear the AsyncStorage:', error);
-  }
-};
+// const clearAsyncStorage = async () => {
+//   try {
+//     await AsyncStorage.clear();
+//     console.log('AsyncStorage successfully cleared!');
+//   } catch (error) {
+//     console.error('Failed to clear the AsyncStorage:', error);
+//   }
+// };
 
-// Method to check and log AsyncStorage contents
-const checkAsyncStorage = async () => {
-  try {
-    const keys = await AsyncStorage.getAllKeys();
-    const result = await AsyncStorage.multiGet(keys);
-    console.log(result); // Logs all keys and their values
-  } catch (error) {
-    console.error('Failed to load AsyncStorage data:', error);
-  }
-};
+// // Method to check and log AsyncStorage contents
+// const checkAsyncStorage = async () => {
+//   try {
+//     const keys = await AsyncStorage.getAllKeys();
+//     const result = await AsyncStorage.multiGet(keys);
+//     console.log(result); // Logs all keys and their values
+//   } catch (error) {
+//     console.error('Failed to load AsyncStorage data:', error);
+//   }
+// };
 
 
 

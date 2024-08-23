@@ -1,5 +1,5 @@
 // reducers/favoriteReducer.ts
-import { TOGGLE_FAVORITE, SET_FAVORITES } from '../actions/favoriteActions';
+import { TOGGLE_FAVORITE, SET_FAVORITES, RESET_FAVORITES } from '../actions/favoriteActions';
 
 const initialState = {
     favorites: {},
@@ -16,6 +16,11 @@ const favoriteReducer = (state = initialState, action: any) => {
             return {
                 ...state,
                 favorites: action.payload,
+            };
+        case RESET_FAVORITES:
+            return {
+                ...state,
+                favorites: {},
             };
         default:
             return state;

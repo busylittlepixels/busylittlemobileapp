@@ -81,7 +81,7 @@ export default function FavoriteArticleScreen({ navigation, route }: any) {
             </ThemedView>
             <RenderHTML
                 contentWidth={width}
-                source={{ html: content }}
+                source={{ html: JSON.parse(content) }}
                 tagsStyles={baseStyles}
                 style={{ paddingHorizontal: 0, color: "white" }}
             />
