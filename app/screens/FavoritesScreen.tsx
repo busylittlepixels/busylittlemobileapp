@@ -4,7 +4,7 @@ import { ScrollView, View, Text, StyleSheet, Pressable } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { supabase } from '../../supabase'; // Ensure you import supabase or any other API client you're using
+import { supabase } from '../../supabase';
 
 const FavoritesScreen = ({ navigation, route }: any) => {
   const user = useSelector((state) => state.auth.user);
@@ -21,17 +21,24 @@ const FavoritesScreen = ({ navigation, route }: any) => {
       if (Object.keys(parsedFavorites).length > 0) {
         console.log('Fetching full article data for favorites:', Object.keys(parsedFavorites));
         const { data, error } = await supabase
-          .from('favorites') // Replace with your actual table name
+          .from('favorites')
           .select('*')
           .eq('user_id', user?.id);
 
-        if (error) {
-          console.error('Error fetching full article data:', error);
-          return;
-        }
+        if (data) {
+          const normalizedData = data.map((item) => {
+            // Ensure content and title are correctly formatted
+            const normalizedTitle = typeof item.title === 'object' && item.title.rendered ? item.title.rendered : item.title;
+            const normalizedContent = typeof item.content === 'object' && item.content.rendered ? item.content.rendered : item.content;
 
-        setFavorites(data || []);
-        console.log('Fetched full article data:', data);
+            return { ...item, title: normalizedTitle, content: normalizedContent };
+          });
+
+          setFavorites(normalizedData);
+          // console.log('Fetched and normalized article data:', normalizedData);
+        } else if (error) {
+          console.error('Error fetching full article data:', error);
+        }
       } else {
         setFavorites([]);
       }
@@ -69,17 +76,26 @@ const FavoritesScreen = ({ navigation, route }: any) => {
         <Text style={styles.faveTitle}>Favourite Articles</Text>
         {favorites.length > 0 ? (
           favorites.map((item, index) => {
-            console.log('Rendering favorite item:', item);
+            // console.log('Rendering favorite item:', item);
             let normalizedTitle = typeof item.title === 'object' && item.title.rendered ? item.title.rendered : item.title;
 
             return (
-              <View key={index}>
-                <Pressable 
-                  onPress={() => navigation.navigate("Article", { item, isFavorite: true })}
-                >
-                  <Text style={styles.faveLinks}>{normalizedTitle}</Text>
-                </Pressable>
-              </View>
+              <Pressable 
+                key={index}
+                onPress={() => {
+                  // Ensure normalized title and content
+                  const normalizedTitle = typeof item.title === 'object' && item.title.rendered ? item.title.rendered : item.title;
+                  const normalizedContent = typeof item.content === 'object' && item.content.rendered ? item.content.rendered : item.content;
+
+                  // Pass normalized data to ArticleScreen
+                  navigation.navigate("Article", { 
+                    item: { ...item, title: normalizedTitle, content: normalizedContent },
+                    isFavorite: true  // Ensure isFavorite is passed correctly
+                  });
+                }}
+              >
+                <Text style={styles.faveLinks}>{normalizedTitle}</Text>
+              </Pressable>
             );
           })
         ) : (
