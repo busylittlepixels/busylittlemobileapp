@@ -31,7 +31,6 @@ export default function ArticleScreen({ navigation, route }: any) {
     const favorites = useSelector((state: any) => state.favorite.favorites);
 
     const { item, isFavorite } = route.params;
-    console.log('ArticleScreen is favorite?', route.params.isFavorite);
     const { id, article_id } = item;
     
     // Extract and normalize title and content
