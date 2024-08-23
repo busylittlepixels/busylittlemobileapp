@@ -30,19 +30,15 @@ export default function ArticleScreen({ navigation, route }: any) {
     const user = useSelector((state: any) => state.auth.user);
     const favorites = useSelector((state: any) => state.favorite.favorites);
 
-    const { item } = route.params;
-
+    const { item, isFavorite } = route.params;
+    console.log('ArticleScreen is favorite?', route.params.isFavorite);
     const { id, article_id } = item;
     
     // Extract and normalize title and content
     const title = typeof item.title === 'object' && item.title.rendered ? item.title.rendered : item.title;
     const content = typeof item.content === 'object' && item.content.rendered ? item.content.rendered : item.content;
 
-    const isFavorite = !!favorites[item.id || item.article_id];
 
-
-    console.log('is fave?', isFavorite);
-    console.log('is fave id?', !!favorites[article_id]);
     const handleToggleFavorite = () => {
         dispatch(toggleFavorite(user.id, item));
     };
@@ -65,6 +61,7 @@ export default function ArticleScreen({ navigation, route }: any) {
                 </View>
             ),
         });
+
     }, [navigation, isFavorite]);
 
     const { width } = Dimensions.get('window');

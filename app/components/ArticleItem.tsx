@@ -1,10 +1,17 @@
-import React from 'react';
+import React, { useEffect} from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { View, Pressable, Image, StyleSheet, Text} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { is } from 'ramda';
 
 const ArticleItem = ({ item, isFavorite, onToggleFavorite }:any) => {
     const navigation = useNavigation(); 
+    console.log('Article Item: ', isFavorite);
+    useEffect(() => {
+        console.log(`Article item: ${item.title?.rendered}, is fave?`)
+    },[isFavorite])
+
+
 
     return(
         <View key={item.id} style={styles.item}>

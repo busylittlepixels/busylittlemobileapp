@@ -186,14 +186,16 @@ const AccountScreen = ({ navigation }: any) => {
         <View style={styles.section}>
           <Text style={styles.articleSectionTitle}>Articles:</Text>
           <View>
-          {articles.map(item => (
-              <ArticleItem
+          {articles.map(item => {
+            
+              // console.log('inside articles map:', favorites[item.id]);
+              return(<ArticleItem
                 key={item.id}
                 item={item}
-                isFavorite={favorites[item.id]}
+                isFavorite={!!favorites[item.id]}
                 onToggleFavorite={handleToggleFavorite}
-              />
-            ))}
+              />)
+            })}
           </View>
         </View>
       </ScrollView>

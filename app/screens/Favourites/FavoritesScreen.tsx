@@ -75,7 +75,7 @@ const FavoritesScreen = ({ navigation }: any) => {
                         );
                     })
                 ) : (
-                    <Text style={styles.noCont}>No favorites as of yet</Text>
+                    <Text style={styles.noCont}>You have no favorites.</Text>
                 )}
                 
             </ScrollView>
