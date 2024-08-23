@@ -22,6 +22,18 @@ const AccountScreen = ({ navigation }: any) => {
 
   // Access Redux state
   const user = useSelector((state) => state.auth.user);
+
+  useEffect(() => {
+    if (!user || !user.id) {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      });
+      return;
+    }
+  }, [user, navigation]);
+
+
   const showAdverts = useSelector((state) => state.auth.showAdverts);
 
   const [refreshing, setRefreshing] = useState(false);
@@ -34,7 +46,7 @@ const AccountScreen = ({ navigation }: any) => {
 
   const avatarBlipImage = Asset.fromModule(require('../../../assets/images/marathon6.png')).uri;
   const avatarImage = Asset.fromModule(require('../../../assets/images/blp-splash.png')).uri;
-  const imageUrl = user.id === '3e70dd7c-735f-4b46-aeda-5c0996a2dbea' ? avatarImage : avatarBlipImage;
+  const imageUrl = user?.id === '3e70dd7c-735f-4b46-aeda-5c0996a2dbea' ? avatarImage : avatarBlipImage;
   // Fetch favorites from AsyncStorage
   const fetchFavorites = useCallback(async () => {
     try {
@@ -72,7 +84,7 @@ const AccountScreen = ({ navigation }: any) => {
   }, [user?.id]);
 
 
-  console.log(user?.id);
+
   // Fetch articles from external API
   const fetchArticles = useCallback(async () => {
     try {
@@ -102,6 +114,7 @@ const AccountScreen = ({ navigation }: any) => {
   );
 
   useEffect(() => {
+    console.log("user? :", user?.id);
     fetchData();
   }, [fetchData]);
 
@@ -133,7 +146,7 @@ const AccountScreen = ({ navigation }: any) => {
             <View style={styles.textContainer}>
               <Text style={styles.screenTitle}>Hey {profile?.username || user.user_metadata?.username}</Text>
               <Text style={styles.screenSub}>{profile?.email || user?.email}</Text>
-              <Text style={styles.screenMicro}>UserId: {user.id}</Text>
+              {/* <Text style={styles.screenMicro}>UserId: {user.id}</Text> */}
             </View>
             <ParallaxScrollAvatar
               imageUrl={avatarImage}

@@ -10,6 +10,7 @@ import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SplashScreen from '../screens/Login/SplashScreen';
 import LoginScreen from '../screens/Login/LoginScreen';
+import LogOutScreen from '../screens/General/LogOutScreen';
 import AccountScreen from '../screens/Account/AccountScreen';
 import ServicesScreen from '../screens/Services/ServicesScreen';
 import UpdateDetailsScreen from '../screens/Profile/UpdateDetailsScreen';
@@ -48,6 +49,7 @@ export type RootStackParamList = {
   TabEile: undefined;
   Onboarding: undefined;
   Profile: undefined;
+  LogOut: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -108,6 +110,7 @@ const AppNavigator = () => {
                 <Stack.Screen name="FavoriteArticles" component={FavoritesScreen} options={{ headerTitle: "Favorite Articles" }} />
                 <Stack.Screen name="Payment" component={PaymentScreen} />
                 <Stack.Screen name="TabEile" component={TabEileScreen} />
+                <Stack.Screen name="LogOut" component={LogOutScreen} options={{ headerShown: false }} />
               </>
             )}
           </>

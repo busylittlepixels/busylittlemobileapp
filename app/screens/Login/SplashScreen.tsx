@@ -9,19 +9,45 @@ const SplashScreen = () => {
   const user = useSelector((state) => state.auth.user); // Access user state from Redux store
   const loading = useSelector((state) => state.auth.loading); // Access loading state from Redux store
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (user) {
-        if (user) {
-          navigation.navigate('Account'); // Navigate to Account if user is authenticated
-        } else {
-          navigation.navigate('Login'); // Navigate to Login if not authenticated
-        }
-      }
-    }, 2000); // 2 seconds delay
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     if (user) {
+  //       if (user) {
+  //         navigation.navigate('Account'); // Navigate to Account if user is authenticated
+  //       } else {
+  //         navigation.navigate('Login'); // Navigate to Login if not authenticated
+  //       }
+  //     }
+  //   }, 2000); // 2 seconds delay
 
-    return () => clearTimeout(timer);
-  }, [loading, user, navigation]);
+  //   return () => clearTimeout(timer);
+  // }, [loading, user, navigation]);
+
+
+  useEffect(() => {
+    if (loading) {
+      console.log('loading');
+
+      return; // Do nothing if loading is true
+    }
+  
+    if (user && user.id) {
+      console.log('splash user', user); 
+      console.log('splash id', user?.id)
+      // Only navigate if user and user.id are defined
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Account' }],
+      });
+    } else {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      });
+    }
+
+
+  }, [loading, user]);
 
   return (
     <View style={styles.container}>

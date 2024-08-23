@@ -42,6 +42,8 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
     backgroundColor: '#CCCCCC', // Fallback color when there's no image
+    borderWidth: 2,
+    borderColor:'#fff'
   },
   avatarImage: {
     width: '100%',

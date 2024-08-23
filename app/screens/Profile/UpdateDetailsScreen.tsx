@@ -81,7 +81,7 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
   };
 
   const triggerRefresh = async () => {
-    console.log('refresh triggered');
+    // console.log('refresh triggered');
     try {
       await loadDataFromStorage();
       Toast.show({
@@ -235,7 +235,7 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
   useImperativeHandle(ref, () => ({
     triggerRefresh, // Expose the triggerRefresh method
   }));
-  
+
   return (
     <ScrollView
       style={{ flex: 1 }}

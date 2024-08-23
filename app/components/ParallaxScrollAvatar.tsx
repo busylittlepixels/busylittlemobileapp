@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import UserAvatar from './UserAvatar';
 
 const ParallaxScrollAvatar = ({ imageUrl, name }: any) => {
-  console.log('avatar img', imageUrl);
+  // console.log('avatar img', imageUrl);
   return (
     <View style={styles.avatarContainer}>
       <UserAvatar imageUrl={imageUrl} name={name} resizeMode="cover"/>
