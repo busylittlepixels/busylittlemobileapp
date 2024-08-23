@@ -38,19 +38,13 @@ export default function FavoriteArticleScreen({ navigation, route }: any) {
     const favorites = useSelector((state: any) => state.favorite.favorites);
 
     const { item } = route.params;
-    const { id, article_id, title, content } = item;
+    const { id, article_id } = item;
 
-    // Normalize title and content
-    // const _title = normalizeContent(title);
-    // const _content = normalizeContent(content);
+    const title = typeof item.title === 'object' && item.title.rendered ? item.title.rendered : item.title;
+    const content = typeof item.content === 'object' && item.content.rendered ? item.content.rendered : item.content;
 
     const isFavorite = !!favorites[article_id];
 
-
-
-    console.log('faves', favorites);
-    console.log('article_id', article_id);
-    console.log('is itme in favories?', isFavorite)
 
     const handleToggleFavorite = () => {
         dispatch(toggleFavorite(user.id, { ...item, title, content }));
@@ -58,7 +52,7 @@ export default function FavoriteArticleScreen({ navigation, route }: any) {
 
     useEffect(() => {
         navigation.setOptions({
-            title: `Fave: ${title}`,
+            title: title,
             headerRight: () => (
                 <View style={{ display: 'flex', flexDirection: 'row' }}>
                     <Pressable

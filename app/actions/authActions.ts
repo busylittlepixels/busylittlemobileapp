@@ -49,18 +49,18 @@ export const signUp = (
   }
 };
 
-export const logout = () => async (dispatch:Dispatch) => {
+export const logout = () => async (dispatch: Dispatch) => {
   try {
-    // Clear AsyncStorage
+    await authService.signOut();
+    await AsyncStorage.removeItem('user');
+    await AsyncStorage.removeItem('access_token');
+    await AsyncStorage.removeItem('refresh_token');
     await AsyncStorage.clear();
-
-    // Dispatch the action to clear user data from Redux
     dispatch({ type: LOGOUT_SUCCESS });
   } catch (error) {
     console.error('Error logging out:', error);
   }
 };
-
 
 export const checkFirstLaunch = () => async (dispatch: Dispatch) => {
   const hasLaunched = await AsyncStorage.getItem('hasLaunched');

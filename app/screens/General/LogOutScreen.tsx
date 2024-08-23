@@ -6,10 +6,12 @@ import { useNavigation } from '@react-navigation/native';
 const LogOutScreen = () => {
   const navigation = useNavigation();
 
-//   useEffect(() => {
-//     // Redirect to the login screen or any other screen
-//     navigation.navigate('Login'); // Assuming you have a 'Login' screen in your navigator
-//   }, [navigation]);
+  useEffect(() => {
+    setTimeout(() => {
+        // Redirect to the login screen or any other screen
+        navigation.navigate('Login'); // Assuming you have a 'Login' screen in your navigator
+    },2000) 
+  }, [navigation]);
 
   return (
     <View>

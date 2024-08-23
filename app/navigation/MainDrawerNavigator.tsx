@@ -13,7 +13,6 @@ import FavoritesScreen from '../screens/Favourites/FavoritesScreen';
 import CityScreen from '../screens/Cities/CityScreen';
 import CitiesScreen from '../screens/Cities/CitiesScreen';
 import MyEventsScreen from '../screens/MyScreens/MyEventsScreen';
-import LogOutScreen from '../screens/General/LogOutScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -22,7 +21,7 @@ const MainDrawerNavigator = () => {
   const navigation = useNavigation();
 
   const handleLogout = () => {
-    dispatch(logout()); // Simply dispatch the logout action
+    dispatch(logout()); // Dispatch the logout action
   };
 
   return (
@@ -54,7 +53,7 @@ const MainDrawerNavigator = () => {
       <Drawer.Screen name="My Events" component={MyEventsScreen} options={{ drawerLabel: 'My Events' }}/>
       <Drawer.Screen
         name="Logout"
-        component={LogOutScreen} // Or any dummy component
+        component={AccountScreen} // Or any dummy component
         options={{ drawerLabel: 'Logout' }}
         listeners={{
           drawerItemPress: () => {
