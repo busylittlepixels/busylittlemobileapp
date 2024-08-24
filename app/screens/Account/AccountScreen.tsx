@@ -138,6 +138,11 @@ const AccountScreen = ({ navigation }: any) => {
     fetchData();
   }, [fetchData]);
 
+
+  const goToProfile = () => {
+    navigation.navigate("UpdateDetails")
+  }
+
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     fetchData().finally(() => setRefreshing(false));
@@ -168,10 +173,12 @@ const AccountScreen = ({ navigation }: any) => {
               <Text style={styles.screenSub}>{profile?.email || user?.email}</Text>
               {/* <Text style={styles.screenMicro}>UserId: {user.id}</Text> */}
             </View>
+            <Pressable  onPress={goToProfile}>
             <Animated.Image
               source={{ uri: imageUrl }}
               style={[styles.tinyLogo, { width: avatarSize, height: avatarSize, paddingLeft: 5 }]}
             />
+            </Pressable>
           </View>
         )}
       </Animated.View>
