@@ -331,8 +331,10 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
               </View>
             )): <Text>No cities selected.</Text>}
           </View>
-          <UpdateButton title="Update" onPress={handleUpdate} />
-          <ProfileButton title="Back to Profile" onPress={() => navigation.replace('Account', { user })} style={{ marginBottom: 10, paddingBottom: 20 }} />
+          <View style={{ display: 'flex', flexDirection: 'row', gap: 4, width:'100%', position:'relative', paddingVertical: 10 }}>
+            <UpdateButton title="Update" onPress={handleUpdate} />
+            <ProfileButton title="Back to Profile" onPress={() => navigation.replace('Account', { user })} style={{ marginBottom: 10, paddingBottom: 20 }} />
+          </View>
         </View>
       </View>
     </ScrollView>
@@ -382,11 +384,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   button: {
-    paddingVertical: 10,
+    paddingVertical: 20,
     paddingHorizontal: 20,
     borderRadius: 5,
     alignItems: 'center',
-    marginTop: 10
+    marginTop: 0,
+    width: '50%'
   },
   buttonText: {
     color: '#FFFFFF', // White text

@@ -21,6 +21,22 @@ const BackButton = ({ title, onPress }) => {
   );
 };
 
+const ClearButton = ({ title, onPress }) => {
+  return (
+    <Pressable
+      style={({ pressed }) => [
+        {
+          backgroundColor: pressed ? '#ddd' : 'red', // Dim the color when pressed
+        },
+        styles.clearButton,
+      ]}
+      onPress={onPress}
+    >
+      <Text style={styles.pillText}>{title}</Text>
+    </Pressable>
+  );
+};
+
 const CityPills = ({ user }: any) => {
   const [cities, setCities] = useState([]);
   const [selectedCities, setSelectedCities] = useState([]);
@@ -96,6 +112,12 @@ const CityPills = ({ user }: any) => {
   const navigateToProfile = () => {
     navigation.navigate('Profile', { user });
   };
+
+
+  const clearCities = () => {
+    console.log('clear cities');
+    setSelectedCities([]);
+  }; 
   
 
   return (
@@ -132,7 +154,10 @@ const CityPills = ({ user }: any) => {
         <View><Text style={styles.title}>Fetching Cities...</Text></View>  // Handle case where cities array is empty
       )}
     </View>
-    <BackButton title="Back to Profile" onPress={navigateToProfile} />
+    <View style={{ display: 'flex', flexDirection: 'row', gap: 4 }}>
+      <BackButton title="Back to Profile" onPress={navigateToProfile} />
+      <ClearButton title="Clear Selection" onPress={clearCities} />
+    </View>
     </>
   );
 };
@@ -173,6 +198,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderColor: 'gray',
     borderWidth: 2,
+    color: '#fff',
+  },
+  clearButton: {
+    marginTop: 50,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    alignItems: 'center',
     color: '#fff',
   },
   buttonText: {

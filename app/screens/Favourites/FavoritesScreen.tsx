@@ -13,7 +13,7 @@ const ResetButton = ({ title, onPress }) => {
           {
             backgroundColor: pressed ? 'darkred' : 'red', // Dim the color when pressed
           },
-          styles.resetButton,
+          styles.button,
         ]}
         onPress={onPress}
       >
@@ -80,7 +80,11 @@ const FavoritesScreen = ({ navigation }: any) => {
                 
             </ScrollView>
             {Object.keys(favorites).length > 0 ? (
-            <ResetButton title="Clear All Favorites" onPress={handleResetFavorites} style={{ marginBottom: 10, paddingBottom: 50 }} />
+            <View style={{ display: 'flex', flexDirection: 'row', gap: 4, width:'100%', position:'relative', paddingVertical: 10 }}>
+                {/* <UpdateButton title="Update" onPress={handleUpdate} /> */}
+                <ResetButton title="Archive" onPress={handleResetFavorites} style={{ marginBottom: 10, paddingBottom: 50 }} />
+                <ResetButton title="Clear" onPress={handleResetFavorites} style={{ marginBottom: 10, paddingBottom: 50 }} />
+            </View>
             ) : null}
         </View>
     );
@@ -132,6 +136,14 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 16,
         fontWeight: 'bold',
+    },
+    button: {
+        paddingVertical: 20,
+        paddingHorizontal: 20,
+        borderRadius: 5,
+        alignItems: 'center',
+        marginTop: 0,
+        width: '50%'
     },
 });
 
