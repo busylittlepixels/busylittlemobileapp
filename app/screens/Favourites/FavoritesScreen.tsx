@@ -67,7 +67,7 @@ const FavoritesScreen = ({ navigation }: any) => {
                             <Pressable 
                                 key={index}
                                 onPress={() => {
-                                    navigation.navigate("FavoriteArticle", { item: { ...item, title, content } });
+                                    navigation.navigate("Article", { item: { ...item, title, content },  isFavorite: true });
                                 }}
                             >
                                 <Text style={styles.faveLinks}>{title}</Text>

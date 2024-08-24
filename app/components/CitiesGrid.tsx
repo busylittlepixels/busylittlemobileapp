@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Image,
@@ -14,6 +14,14 @@ import { useNavigation } from '@react-navigation/native';
 const CitiesGrid = ({ cities }: any) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const navigation = useNavigation(); // Get the navigation object
+
+  useEffect(() => {
+    if (cities && cities.length > 0) {
+      setIsLoading(false); // Stop loading once cities data is available
+    } else {
+      setIsLoading(true); // Start loading if cities is empty or undefined
+    }
+  }, [cities]);
 
   const getCityImage = (name: string) => {
     switch (name.toLowerCase()) {
@@ -37,6 +45,23 @@ const CitiesGrid = ({ cities }: any) => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <View style={styles.loading}>
+        <ActivityIndicator size="small" />
+        {/* <Text style={{ color: '#000'}}>Loading cities...</Text> */}
+      </View>
+    );
+  }
+
+  if (!cities || cities.length === 0) {
+    return (
+      <View style={styles.noCities}>
+        <Text style={styles.noCitiesText}>No cities available</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -47,7 +72,7 @@ const CitiesGrid = ({ cities }: any) => {
           !isLoading && { justifyContent: 'flex-start' }, // Ensure content alignment when not loading
         ]}
       >
-        {cities ? cities?.map((item:any, index:any) => (
+        {cities.map((item:any, index:any) => (
           <Pressable
             key={index}
             // @ts-ignore
@@ -60,11 +85,7 @@ const CitiesGrid = ({ cities }: any) => {
             />
             <Text style={styles.imageText}>{item}</Text>
           </Pressable>
-        )) : 
-        <View style={styles.loading}>
-          <ActivityIndicator size="small" />
-        </View>
-        }
+        ))}
       </ScrollView>
     </View>
   );
@@ -80,9 +101,20 @@ const styles = StyleSheet.create({
     alignItems: 'center', // Centers the content horizontally
   },
   loading: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 30
+    marginTop: 30,
+  },
+  noCities: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  noCitiesText: {
+    fontSize: 18,
+    color: 'gray',
   },
   imageContainer: {
     marginRight: 10, // Adjust spacing between items

@@ -8,6 +8,7 @@ import { ThemedText } from '@/app/components/ThemedText';
 import { ThemedView } from '@/app/components/ThemedView';
 import RenderHTML from 'react-native-render-html';
 import { toggleFavorite } from '../../actions/favoriteActions';
+import { decode } from 'html-entities'; // Import the html-entities package
 
 const baseStyles = {
     body: {
@@ -32,11 +33,15 @@ export default function ArticleScreen({ navigation, route }: any) {
 
     const { item, isFavorite } = route.params;
     const { id, article_id } = item;
+
+    console.log('article, is favorite?', route.params.isFavorite);
     
     // Extract and normalize title and content
     const title = typeof item.title === 'object' && item.title.rendered ? item.title.rendered : item.title;
     const content = typeof item.content === 'object' && item.content.rendered ? item.content.rendered : item.content;
 
+    // Decode and sanitize content
+    const decodedContent = decode(content).replace(/\\n/g, '<br/>').replace(/\\'/g, "'");
 
     const handleToggleFavorite = () => {
         dispatch(toggleFavorite(user.id, item));
@@ -60,7 +65,6 @@ export default function ArticleScreen({ navigation, route }: any) {
                 </View>
             ),
         });
-
     }, [navigation, isFavorite]);
 
     const { width } = Dimensions.get('window');
@@ -74,7 +78,7 @@ export default function ArticleScreen({ navigation, route }: any) {
             </ThemedView>
             <RenderHTML
                 contentWidth={width}
-                source={{ html: content }}
+                source={{ html: decodedContent }}
                 tagsStyles={baseStyles}  // Custom styling for HTML content
                 style={{ paddingHorizontal: 0, color: "white" }}
             />
