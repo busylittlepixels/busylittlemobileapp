@@ -61,7 +61,7 @@ const FavoritesScreen = ({ navigation }: any) => {
                         const title = item.title?.rendered || item.title;
                         const content = item.content?.rendered || item.content;
 
-                        console.log('Rendering favorite item:', title);
+                        // console.log('Rendering favorite item:', title);
                         
                         return (
                             <Pressable 

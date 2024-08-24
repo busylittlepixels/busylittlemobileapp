@@ -6,6 +6,7 @@ import { resetFavorites, getFavorites, toggleFavorite as toggleFavoriteService }
 export const SET_FAVORITES = 'SET_FAVORITES';
 export const TOGGLE_FAVORITE = 'TOGGLE_FAVORITE';
 export const RESET_FAVORITES = 'RESET_FAVORITES';
+
 // Action to set favorites in Redux state
 export const setFavorites = (favorites: any) => ({
     type: SET_FAVORITES,
@@ -22,7 +23,6 @@ export const fetchFavorites = (userId: any) => async (dispatch: Dispatch) => {
             return;
         }
 
-        // Assume result.data includes full article information like title, content, etc.
         const favorites = result.data?.reduce((acc: any, item: any) => {
             acc[item.article_id] = item;
             return acc;
@@ -37,39 +37,42 @@ export const fetchFavorites = (userId: any) => async (dispatch: Dispatch) => {
 
 // Action to toggle favorite status of an article
 export const toggleFavorite = (userId: any, article: any) => async (dispatch: Dispatch, getState: any) => {
-    const { id } = article;
+    const { article_id } = article; // Assume you're using article_id as the identifier
     const { favorites } = getState().favorite;
 
-    // Toggle the favorite in the backend
-    const result = await toggleFavoriteService(userId, id, article.title, article.slug, article.content);
+    try {
+        // Toggle the favorite in the backend
+        const result = await toggleFavoriteService(userId, article_id, article.title, article.slug, article.content);
 
-    if (result.error) {
-        console.error('Error toggling favorite:', result.error);
-        return;
+        if (result.error) {
+            console.error('Error toggling favorite:', result.error);
+            return;
+        }
+
+        // Update the Redux state
+        const updatedFavorites = { ...favorites };
+        if (favorites[article_id]) {
+            // Remove from favorites
+            delete updatedFavorites[article_id];
+        } else {
+            // Add to favorites - store the full article data
+            updatedFavorites[article_id] = article;
+        }
+
+        dispatch({
+            type: TOGGLE_FAVORITE,
+            payload: updatedFavorites,
+        });
+
+        // Update AsyncStorage
+        await AsyncStorage.setItem(`favorites_${userId}`, JSON.stringify(updatedFavorites));
+
+    } catch (error) {
+        console.error('Unexpected error while toggling favorite:', error);
     }
-
-    // Update the Redux state
-    let updatedFavorites;
-    if (favorites[id]) {
-        // Remove from favorites
-        updatedFavorites = { ...favorites };
-        delete updatedFavorites[id];
-    } else {
-        // Add to favorites - store the full article data
-        updatedFavorites = { ...favorites, [id]: article };
-    }
-
-    dispatch({
-        type: TOGGLE_FAVORITE,
-        payload: updatedFavorites,
-    });
-
-    // Update AsyncStorage
-    await AsyncStorage.setItem(`favorites_${userId}`, JSON.stringify(updatedFavorites));
 };
 
-
-export const clearFavorites = (userId:any) => async (dispatch:Dispatch) => {
+export const clearFavorites = (userId: any) => async (dispatch: Dispatch) => {
     try {
         const result = await resetFavorites(userId); // Call the resetFavorites service
         if (result.error) {

@@ -20,24 +20,29 @@ import { Asset } from 'expo-asset';
 const AccountScreen = ({ navigation }: any) => {
   const scrollY = useRef(new Animated.Value(0)).current;
   
-  const HEADER_MAX_HEIGHT = 150;
-  const HEADER_MIN_HEIGHT = 85;
-  const AVATAR_MAX_SIZE = 100;
-  const AVATAR_MIN_SIZE = 50;
+  const HEADER_MAX_HEIGHT = 120;
+  const HEADER_MIN_HEIGHT = 80;
+  const AVATAR_MAX_SIZE = 85;
+  const AVATAR_MIN_SIZE = 55;
 
-  // Derived values for animated header
-  const headerHeight = scrollY.interpolate({
+  const paddingVertical = scrollY.interpolate({
     inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
+    outputRange: [20, 5],  // Adjust padding from 20 to 5 as you scroll
+    extrapolate: 'clamp',
+  });
+  
+  const headerHeight = scrollY.interpolate({
+    inputRange: [0, (HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT) * 1.5],  // Throttle speed by adjusting input range
     outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
     extrapolate: 'clamp',
   });
-
+  
   const avatarSize = scrollY.interpolate({
-    inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
+    inputRange: [0, (HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT) * 1.5],  // Throttle speed by adjusting input range
     outputRange: [AVATAR_MAX_SIZE, AVATAR_MIN_SIZE],
     extrapolate: 'clamp',
   });
-
+  
   // Access Redux state
   const user = useSelector((state) => state.auth.user);
 
@@ -155,17 +160,17 @@ const AccountScreen = ({ navigation }: any) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <Animated.View style={[styles.avatarContainer, { height: headerHeight }]}>
+      <Animated.View style={[styles.avatarContainer, { height: headerHeight, paddingVertical }]}>
         {user && (
           <View style={styles.userInfoContainer}>
             <View style={styles.textContainer}>
               <Text style={styles.screenTitle}>Hey {profile?.username || user.user_metadata?.username}</Text>
               <Text style={styles.screenSub}>{profile?.email || user?.email}</Text>
-              <Text style={styles.screenMicro}>UserId: {user.id}</Text>
+              {/* <Text style={styles.screenMicro}>UserId: {user.id}</Text> */}
             </View>
             <Animated.Image
               source={{ uri: imageUrl }}
-              style={[styles.tinyLogo, { width: avatarSize, height: avatarSize }]}
+              style={[styles.tinyLogo, { width: avatarSize, height: avatarSize, paddingLeft: 5 }]}
             />
           </View>
         )}
@@ -255,7 +260,8 @@ const styles = StyleSheet.create({
     borderRadius: '50%',
     borderColor: '#fff',
     borderWidth: 2,
-    marginLeft: 2
+    paddingLeft: 2,
+    marginLeft: 5,
   },
   textContainer: {
     flex: 1,
@@ -273,7 +279,8 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   avatarContainer: {
-    padding: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 5,
     backgroundColor: '#000',
     justifyContent: 'center'
   },
@@ -281,6 +288,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    padding: 10,
   },
   screenTitle: {
     fontSize: 20,
