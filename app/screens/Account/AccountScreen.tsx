@@ -22,7 +22,7 @@ const AccountScreen = ({ navigation }: any) => {
   
   const HEADER_MAX_HEIGHT = 120;
   const HEADER_MIN_HEIGHT = 80;
-  const AVATAR_MAX_SIZE = 85;
+  const AVATAR_MAX_SIZE = 95;
   const AVATAR_MIN_SIZE = 55;
 
   const paddingVertical = scrollY.interpolate({
