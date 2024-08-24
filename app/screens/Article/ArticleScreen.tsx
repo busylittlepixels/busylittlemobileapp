@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useEffect } from 'react';
-import { StyleSheet, Dimensions, Pressable, View, Button } from 'react-native';
+import { StyleSheet, Dimensions, Pressable, View, Button, Image } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useSelector, useDispatch } from 'react-redux';
 import ParallaxScrollView from '@/app/components/ParallaxScrollView';
@@ -9,6 +9,7 @@ import { ThemedView } from '@/app/components/ThemedView';
 import RenderHTML from 'react-native-render-html';
 import { toggleFavorite } from '../../actions/favoriteActions';
 import { decode } from 'html-entities'; // Import the html-entities package
+import useSanitizeRender from '@/app/hooks/useSanitizeRender';
 
 const baseStyles = {
     body: {
@@ -40,8 +41,9 @@ export default function ArticleScreen({ navigation, route }: any) {
     const title = typeof item.title === 'object' && item.title.rendered ? item.title.rendered : item.title;
     const content = typeof item.content === 'object' && item.content.rendered ? item.content.rendered : item.content;
 
+    const sanitizedContent = useSanitizeRender(content);
     // Decode and sanitize content
-    const decodedContent = decode(content).replace(/\\n/g, '<br/>').replace(/\\'/g, "'");
+    // const decodedContent = decode(content).replace(/\\n/g, '<br/>').replace(/\\'/g, "'");
 
     const handleToggleFavorite = () => {
         dispatch(toggleFavorite(user.id, item));
@@ -68,6 +70,16 @@ export default function ArticleScreen({ navigation, route }: any) {
     }, [navigation, isFavorite]);
 
     const { width } = Dimensions.get('window');
+
+    const renderers = {
+        img: ({ src }) => (
+            <Image source={{ uri: src }} style={{ width: '100%', height: '200'}} />
+        )
+    };
+
+
+
+
     return (
         <ParallaxScrollView
             headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
@@ -78,7 +90,8 @@ export default function ArticleScreen({ navigation, route }: any) {
             </ThemedView>
             <RenderHTML
                 contentWidth={width}
-                source={{ html: decodedContent }}
+                source={{ html: sanitizedContent }}
+                renderers={renderers}
                 tagsStyles={baseStyles}  // Custom styling for HTML content
                 style={{ paddingHorizontal: 0, color: "white" }}
             />
