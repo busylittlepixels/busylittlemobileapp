@@ -45,19 +45,19 @@ const CitiesGrid = ({ cities }: any) => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <View style={styles.loading}>
-        <ActivityIndicator size="small" />
-        {/* <Text style={{ color: '#000'}}>Loading cities...</Text> */}
-      </View>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <View style={styles.loading}>
+  //       <ActivityIndicator size="small" />
+  //       <Text style={{ color: '#000'}}>Loading cities...</Text>
+  //     </View>
+  //   );
+  // }
 
   if (!cities || cities.length === 0) {
     return (
       <View style={styles.noCities}>
-        <Text style={styles.noCitiesText}>No cities available</Text>
+        <Text style={{ color: '#000', fontSize: 12 }}>You have no cities selected.</Text>
       </View>
     );
   }
