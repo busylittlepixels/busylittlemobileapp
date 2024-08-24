@@ -19,6 +19,24 @@ import { Asset } from 'expo-asset';
 
 const AccountScreen = ({ navigation }: any) => {
   const scrollY = useRef(new Animated.Value(0)).current;
+  
+  const HEADER_MAX_HEIGHT = 150;
+  const HEADER_MIN_HEIGHT = 85;
+  const AVATAR_MAX_SIZE = 100;
+  const AVATAR_MIN_SIZE = 50;
+
+  // Derived values for animated header
+  const headerHeight = scrollY.interpolate({
+    inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
+    outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
+    extrapolate: 'clamp',
+  });
+
+  const avatarSize = scrollY.interpolate({
+    inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
+    outputRange: [AVATAR_MAX_SIZE, AVATAR_MIN_SIZE],
+    extrapolate: 'clamp',
+  });
 
   // Access Redux state
   const user = useSelector((state) => state.auth.user);
@@ -33,7 +51,6 @@ const AccountScreen = ({ navigation }: any) => {
     }
   }, [user, navigation]);
 
-
   const showAdverts = useSelector((state) => state.auth.showAdverts);
 
   const [refreshing, setRefreshing] = useState(false);
@@ -43,10 +60,10 @@ const AccountScreen = ({ navigation }: any) => {
   const [articles, setArticles] = useState([]);
   const [favorites, setFavorites] = useState({});
 
-
   const avatarBlipImage = Asset.fromModule(require('../../../assets/images/marathon6.png')).uri;
   const avatarImage = Asset.fromModule(require('../../../assets/images/blp-splash.png')).uri;
   const imageUrl = user && user?.id === '3e70dd7c-735f-4b46-aeda-5c0996a2dbea' ? avatarBlipImage : avatarImage;
+
   // Fetch favorites from AsyncStorage
   const fetchFavorites = useCallback(async () => {
     try {
@@ -82,8 +99,6 @@ const AccountScreen = ({ navigation }: any) => {
       console.error('Failed to fetch user data:', err.message);
     }
   }, [user?.id]);
-
-
 
   // Fetch articles from external API
   const fetchArticles = useCallback(async () => {
@@ -140,7 +155,7 @@ const AccountScreen = ({ navigation }: any) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <Animated.View style={styles.avatarContainer}>
+      <Animated.View style={[styles.avatarContainer, { height: headerHeight }]}>
         {user && (
           <View style={styles.userInfoContainer}>
             <View style={styles.textContainer}>
@@ -148,9 +163,9 @@ const AccountScreen = ({ navigation }: any) => {
               <Text style={styles.screenSub}>{profile?.email || user?.email}</Text>
               <Text style={styles.screenMicro}>UserId: {user.id}</Text>
             </View>
-            <ParallaxScrollAvatar
-              imageUrl={imageUrl}
-              name={profile?.username || user.user_metadata?.username}
+            <Animated.Image
+              source={{ uri: imageUrl }}
+              style={[styles.tinyLogo, { width: avatarSize, height: avatarSize }]}
             />
           </View>
         )}
@@ -159,6 +174,10 @@ const AccountScreen = ({ navigation }: any) => {
         style={{ flex: 1 }}
         contentContainerStyle={styles.contentContainer}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: false }
+        )}
       >
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Latest:</Text>
@@ -180,15 +199,13 @@ const AccountScreen = ({ navigation }: any) => {
         </View>
 
         {showAdverts && (
-          <AdBanner color={'#008000'} image='https://placehold.co/500x100' subtitle="Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light?" />
+          <AdBanner color={'#008000'} image='https://placehold.co/500x100' subtitle="Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light?" />
         )}
 
         <View style={styles.section}>
           <Text style={styles.articleSectionTitle}>Articles:</Text>
           <View>
           {articles.map(item => {
-            
-              // console.log('inside articles map:', favorites[item.id]);
               return(<ArticleItem
                 key={item.id}
                 item={item}
@@ -235,14 +252,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   tinyLogo: {
-    width: 50,
-    height: 50,
-    marginRight: 10,
-    borderRadius: 5
+    borderRadius: '50%',
+    borderColor: '#fff',
+    borderWidth: 2,
+    marginLeft: 2
   },
   textContainer: {
     flex: 1,
     alignItems: 'flex-start',
+    paddingVertical: 10,
+    marginVertical: 5
   },
   title: {
     fontWeight: 'bold',
@@ -255,7 +274,8 @@ const styles = StyleSheet.create({
   },
   avatarContainer: {
     padding: 20,
-    backgroundColor: '#000'
+    backgroundColor: '#000',
+    justifyContent: 'center'
   },
   userInfoContainer: {
     flexDirection: 'row',

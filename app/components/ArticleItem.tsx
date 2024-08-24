@@ -6,12 +6,9 @@ import { is } from 'ramda';
 
 const ArticleItem = ({ item, isFavorite, onToggleFavorite }:any) => {
     const navigation = useNavigation(); 
-    useEffect(() => {
-        console.log(`Article item: ${item.title?.rendered}, is fave? ${isFavorite}`)
-    },[onToggleFavorite])
-
-    
-
+    // useEffect(() => {
+    //     console.log(`Article item: ${item.title?.rendered}, is fave? ${isFavorite}`)
+    // },[onToggleFavorite])
     return(
         <View key={item.id} style={styles.item}>
         {/* @ts-ignore */}
