@@ -21,21 +21,21 @@ type City = {
 const getCityImage = (name:string) => {
   switch (name.toLowerCase()) {
     case 'amsterdam':
-      return require('../../../assets/images/amsterdam.png');
+      return require('./../../assets/images/amsterdam.png');
     case 'dublin':
-      return require('../../../assets/images/dublin.png');
+      return require('./../../assets/images/dublin.png');
     case 'london':
-      return require('../../../assets/images/london.png');
+      return require('./../../assets/images/london.png');
     case 'bogota':
-      return require('../../../assets/images/bogota.png');
+      return require('./../../assets/images/bogota.png');
     case 'hamburg':
-      return require('../../../assets/images/hamburg.png');
+      return require('./../../assets/images/hamburg.png');
     case 'copenhagen':
-      return require('../../../assets/images/copenhagen.png');
+      return require('./../../assets/images/copenhagen.png');
     case 'new york':
-        return require('../../../assets/images/newyork.png');
+        return require('./../../assets/images/newyork.png');
     default:
-      return require('../../../assets/images/klingons.png'); // Fallback image
+      return require('./../../assets/images/klingons.png'); // Fallback image
   }
 };
 
@@ -90,7 +90,7 @@ const CityScreen = ({ navigation, route }: any) => {
 
   const { name, description, country, image, events } = city;
   const cityImage = getCityImage(name); // Get the image dynamically based on the city name
-  // const cityImage = headerImg || require('../../assets/images/dublin.png'); // Fallback image if the city is not in the mapping
+  // const cityImage = headerImg || require('.././../../assets/images/dublin.png'); // Fallback image if the city is not in the mapping
 
   return (
     

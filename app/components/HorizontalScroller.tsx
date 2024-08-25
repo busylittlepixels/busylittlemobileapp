@@ -18,12 +18,12 @@ const HorizontalScroller = () => {
   const scrollX = useRef(new Animated.Value(0)).current; // Scroll position
 
   const images = [
-    { id: 1, url: require('../../assets/images/marathon1.png') },
-    { id: 2, url: require('../../assets/images/marathon2.png') },
-    { id: 3, url: require('../../assets/images/marathon3.png') },
-    { id: 4, url: require('../../assets/images/marathon4.png') },
-    { id: 5, url: require('../../assets/images/marathon5.png') },
-    { id: 6, url: require('../../assets/images/marathon6.png') },
+    { id: 1, url: require('../assets/images/marathon1.png') },
+    { id: 2, url: require('../assets/images/marathon2.png') },
+    { id: 3, url: require('../assets/images/marathon3.png') },
+    { id: 4, url: require('../assets/images/marathon4.png') },
+    { id: 5, url: require('../assets/images/marathon5.png') },
+    { id: 6, url: require('../assets/images/marathon6.png') },
   ];
 
   return (
@@ -46,7 +46,7 @@ const HorizontalScroller = () => {
 
         const translateX = scrollX.interpolate({
           inputRange,
-          outputRange: [-10, 0, 10], // Subtle horizontal movement for parallax
+          outputRange: [-15, 0, 15], // Subtle horizontal movement for parallax
           extrapolate: 'clamp',
         });
 

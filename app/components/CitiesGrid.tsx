@@ -26,22 +26,22 @@ const CitiesGrid = ({ cities }: any) => {
   const getCityImage = (name: string) => {
     switch (name.toLowerCase()) {
       case 'amsterdam':
-        return require('../../assets/images/amsterdam.png');
+        return require('./../assets/images/amsterdam.png');
       case 'dublin':
-        return require('../../assets/images/dublin.png');
+        return require('./../assets/images/dublin.png');
       case 'london':
-        return require('../../assets/images/london.png');
+        return require('./../assets/images/london.png');
       case 'hamburg':
-        return require('../../assets/images/hamburg.png');
+        return require('./../assets/images/hamburg.png');
       case 'bogota':
-        return require('../../assets/images/bogota.png');
+        return require('./../assets/images/bogota.png');
       case 'new york':
-        return require('../../assets/images/newyork.png');
+        return require('./../assets/images/newyork.png');
       case 'copenhagen':
-        return require('../../assets/images/copenhagen.png');
+        return require('./../assets/images/copenhagen.png');
       // Add more cities as needed
       default:
-        return require('../../assets/images/klingons.png'); // Fallback image
+        return require('../assets/images/klingons.png'); // Fallback image
     }
   };
 
