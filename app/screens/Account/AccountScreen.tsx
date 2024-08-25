@@ -18,32 +18,37 @@ import { toggleFavorite as toggleFavoriteService } from '../../services/favourit
 import { Asset } from 'expo-asset';
 
 const AccountScreen = ({ navigation }: any) => {
+  // track vertical scroll
   const scrollY = useRef(new Animated.Value(0)).current;
   
+  // set values for scrolly header
   const HEADER_MAX_HEIGHT = 120;
   const HEADER_MIN_HEIGHT = 80;
   const AVATAR_MAX_SIZE = 95;
   const AVATAR_MIN_SIZE = 55;
 
+  // apply some additional padding when the thingy shrinks on scroll
   const paddingVertical = scrollY.interpolate({
     inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
-    outputRange: [20, 5],  // Adjust padding from 20 to 5 as you scroll
+    outputRange: [20, 5],  // Adjusts padding from 20 to 5 as you scroll
     extrapolate: 'clamp',
   });
   
+  // controls the headerHeight on scroll
   const headerHeight = scrollY.interpolate({
     inputRange: [0, (HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT) * 1.5],  // Throttle speed by adjusting input range
     outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
     extrapolate: 'clamp',
   });
   
+  // controls the avatar size on scroll
   const avatarSize = scrollY.interpolate({
     inputRange: [0, (HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT) * 1.5],  // Throttle speed by adjusting input range
     outputRange: [AVATAR_MAX_SIZE, AVATAR_MIN_SIZE],
     extrapolate: 'clamp',
   });
   
-  // Access Redux state
+  // Access Redux state and get the user
   const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
@@ -56,8 +61,10 @@ const AccountScreen = ({ navigation }: any) => {
     }
   }, [user, navigation]);
 
+  // duh
   const showAdverts = useSelector((state) => state.auth.showAdverts);
-
+  
+  // also duh
   const [refreshing, setRefreshing] = useState(false);
   const [tickets, setTickets] = useState([]);
   const [profile, setProfile] = useState(null);
@@ -80,7 +87,10 @@ const AccountScreen = ({ navigation }: any) => {
     }
   }, [user?.id]);
 
-  // Fetch user-related data
+  // Fetch user-related data.
+  // Gonna throw this into a callback because there's a few bits need hydrating and we don't want to be making 
+  // needless calls all over the place. 
+
   const fetchUserData = useCallback(async () => {
     if (!user || !user.id) return;
 
@@ -127,6 +137,8 @@ const AccountScreen = ({ navigation }: any) => {
     await fetchArticles();
   }, [fetchUserData, fetchFavorites, fetchArticles]);
 
+  // When user returns to the page, do a quick call to refresh the favorites
+  // in case anything has changed.  
   useFocusEffect(
     useCallback(() => {
       fetchFavorites();
@@ -134,7 +146,8 @@ const AccountScreen = ({ navigation }: any) => {
   );
 
   useEffect(() => {
-    console.log("user? :", user?.id);
+    // console.log("user? :", user?.id);
+    // Fetch the data on initial load. 
     fetchData();
   }, [fetchData]);
 
