@@ -3,7 +3,9 @@ import { View, StyleSheet, Pressable } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MySchedule from './../MyScreens/MyEventsFeed';
+import MySettings from './../MyScreens/MySettings';
 import UpdateDetailsScreen from './UpdateDetailsScreen';
+
 
 const Tab = createBottomTabNavigator();
 
@@ -57,7 +59,7 @@ const ProfileScreen = ({ navigation }:any) => {
         />
         <Tab.Screen
           name="Settings"
-          component={MySchedule}
+          component={MySettings}
           listeners={{
             focus: () => navigation.setOptions({ title: 'Settings' }),
           }}

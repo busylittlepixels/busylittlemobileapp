@@ -34,7 +34,7 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
   const [profile, setProfile] = useState<Profile | null>(null);
 
   // Access Redux state
-  const showAdverts = useSelector((state) => state.auth.showAdverts);
+
 
   const [username, setUsername] = useState('');
   const [website, setWebsite] = useState('');
@@ -262,7 +262,7 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
                   <Text>No cities selected</Text>
                 )}
               </View>
-              <Text><Text style={{ fontWeight: 'bold'}}>Show adverts: </Text> {showAdverts ? 'Active' : 'Inactive'}</Text>
+              {/* <Text><Text style={{ fontWeight: 'bold'}}>Show adverts: </Text> {showAdverts ? 'Active' : 'Inactive'}</Text> */}
             </View>
           </View>
         )}
@@ -309,19 +309,6 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
             />
           </View>
           
-          <View style={styles.inputWrapper}>
-            <Text style={styles.inlineLabel}>Show Adverts</Text>
-            <View style={styles.innerWrapper}>
-              <Switch
-                value={showAdverts}
-                trackColor={{ true: 'green', false: 'gray' }}
-                onValueChange={toggleAdverts}
-                style={styles.innerWrapperInputStyle}
-              />
-            </View>
-          </View>
-    
-
           <Text style={styles.label}>Manage cities:</Text>
           <View style={styles.inputStyle}>
             {filteredCities.length > 0 ? filteredCities.map((city) => (
