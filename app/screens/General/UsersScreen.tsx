@@ -2,9 +2,11 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList } from 'react-native';
 import { supabase } from '../../../supabase';// Import your configured Supabase client
+import { useSelector, useDispatch } from 'react-redux'; // Import useSelector and useDispatch
 
 const UsersScreen = ({ navigation }:any) => {
     const [users, setUsers] = useState([]); // State to hold all users
+    const user = useSelector((state) => state.auth.user);
 
     useEffect(() => {
         navigation.setOptions({ headerTitle: 'All Users' });
@@ -13,7 +15,8 @@ const UsersScreen = ({ navigation }:any) => {
             try {
                 const { data, error, status } = await supabase
                     .from('profiles')
-                    .select('*');
+                    .select('*')
+                    .neq('user_id', user.id); // Exclude the current user by user_id
                 
                 if (error && status !== 406) {
                     throw error;
@@ -30,11 +33,18 @@ const UsersScreen = ({ navigation }:any) => {
         getAllUsers(); // Call the function to fetch all users
     }, [navigation]);
 
-    const renderItem = ({ item }:any) => (
-        <View style={styles.userItem}>
-            <Text style={styles.userName}>{item?.full_name ? item.full_name : item.email}</Text>
-        </View>
-    );
+    const renderItem = ({ item }) => {
+        const displayText = item?.username ? item.username : (item?.full_name ? item.full_name : item.email);
+        const isEmailDisplayed = !item?.username && !item?.full_name;
+    
+        return (
+            <View style={styles.userItem}>
+                <Text style={[styles.userName, isEmailDisplayed && styles.emailText]}>
+                    {displayText}
+                </Text>
+            </View>
+        );
+    };
 
     return (
         <View style={styles.container}>
@@ -66,6 +76,9 @@ const styles = StyleSheet.create({
     userName: {
         fontSize: 16,
         color: '#000',
+    },
+    emailText: {
+        color: 'red', // Display the email in red if username and full_name are not set
     },
     noUsersText: {
         textAlign: 'center',

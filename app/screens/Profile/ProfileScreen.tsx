@@ -3,9 +3,9 @@ import { View, StyleSheet, Pressable } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MySchedule from './../MyScreens/MyEventsFeed';
-import MySettings from './../MyScreens/MySettings';
 import UpdateDetailsScreen from './UpdateDetailsScreen';
-
+import AnimatedTabs from '../../components/AnimatedTabs'; // Import your custom AnimatedTabs component
+import MySettings from '../MyScreens/MySettings';
 
 const Tab = createBottomTabNavigator();
 
@@ -14,7 +14,6 @@ const ProfileScreen = ({ navigation }:any) => {
 
   const triggerRefresh = () => {
     if (updateDetailsRef.current) {
-        // @ts-ignore
       updateDetailsRef.current.triggerRefresh(); // Call the refresh method on UpdateDetailsScreen
     }
   };
@@ -34,8 +33,9 @@ const ProfileScreen = ({ navigation }:any) => {
   return (
     <View style={{ flex: 1 }}>
       <Tab.Navigator
+        tabBar={(props) => <AnimatedTabs {...props} />} // Use the custom AnimatedTabs
         screenOptions={({ route }) => ({
-          headerShown: false,
+          headerShown: false, // Hide headers within individual screens
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
             if (route.name === 'My Profile') {
@@ -43,7 +43,6 @@ const ProfileScreen = ({ navigation }:any) => {
             } else if (route.name === 'Settings') {
               iconName = focused ? 'settings' : 'settings-outline';
             }
-            // @ts-ignore
             return <Ionicons name={iconName} size={size} color={color} />;
           },
           tabBarActiveTintColor: 'green',
@@ -51,11 +50,11 @@ const ProfileScreen = ({ navigation }:any) => {
         })}
       >
         <Tab.Screen
-            name="My Profile"
-            children={(props:any) => <UpdateDetailsScreen {...props} ref={updateDetailsRef} />} // Pass the ref and props
-            listeners={{
+          name="My Profile"
+          children={(props) => <UpdateDetailsScreen {...props} ref={updateDetailsRef} />} // Pass the ref and props
+          listeners={{
             focus: () => navigation.setOptions({ title: 'Update Profile' }),
-            }}
+          }}
         />
         <Tab.Screen
           name="Settings"
