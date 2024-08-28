@@ -42,8 +42,9 @@ const App = () => {
 
   return (
     <>
-      <StatusBar style="dark" backgroundColor="dark" />
+      
       <SafeAreaProvider>
+        <StatusBar style="dark" backgroundColor="dark" />
         <Provider store={store}>
           <SafeAreaView style={styles.safeArea}>
             <AppNavigator />

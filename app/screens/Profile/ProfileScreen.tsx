@@ -14,6 +14,7 @@ const ProfileScreen = ({ navigation }:any) => {
 
   const triggerRefresh = () => {
     if (updateDetailsRef.current) {
+      // @ts-ignore
       updateDetailsRef.current.triggerRefresh(); // Call the refresh method on UpdateDetailsScreen
     }
   };
@@ -43,6 +44,7 @@ const ProfileScreen = ({ navigation }:any) => {
             } else if (route.name === 'Settings') {
               iconName = focused ? 'settings' : 'settings-outline';
             }
+            // @ts-ignore
             return <Ionicons name={iconName} size={size} color={color} />;
           },
           tabBarActiveTintColor: 'green',
