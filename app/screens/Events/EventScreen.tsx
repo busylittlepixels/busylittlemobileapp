@@ -11,6 +11,7 @@ import React from 'react';
 export default function EventScreen({ navigation, route }: any) {
   const dispatch = useDispatch();
 
+  console.log('eventscreen', route.params?.item)
   // Access the user from Redux state
   // @ts-ignore
   const user = useSelector((state) => state.auth.user);
@@ -31,7 +32,7 @@ export default function EventScreen({ navigation, route }: any) {
           {route.params ? route.params.item.event_description : 'Body'}
         </ThemedText>
 
-        <EventSignupForm user={user}/>
+        <EventSignupForm user={user} hostcity={route.params ? route.params.item?.city : 'dublin'} />
 
         <View>
           <Button title="Back to List" onPress={() => navigation.navigate('Account')} />

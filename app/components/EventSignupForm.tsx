@@ -39,15 +39,25 @@ const Step1 = ({ nextStep, formData, setFormData }: any) => {
   );
 };
 
-const Step2 = ({ prevStep, nextStep, formData, setFormData }: any) => {
+const Step2 = ({ prevStep, nextStep, formData, setFormData, hostcity }: any) => {
+
+  // console.log('step2 formData', formData)
+  function capitalizeWords(str: string): string {
+    return str
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  }
+
+
   return (
     <View style={styles.stepContainer}>
       <Text style={styles.sectionTitle}>Step 2: Event Details</Text>
       <TextInput
         style={styles.inputStyle}
-        placeholder="City"
-        value={formData.city}
-        onChangeText={(value) => setFormData({ ...formData, city: value })}
+        placeholder={'City'}
+        value={capitalizeWords(formData.city)}
+        onChangeText={(value) => setFormData({ ...formData, city: hostcity })}
         placeholderTextColor='#000'
       />
       <TextInput
@@ -90,10 +100,10 @@ const Step3 = ({ prevStep, nextStep, formData }: any) => {
   return (
     <View style={styles.stepContainer}>
       <Text style={styles.sectionTitle}>Step 3: Confirm Details</Text>
-      <Text>Name: {formData.name}</Text>
-      <Text>Email: {formData.email}</Text>
-      <Text>Event: {formData.eventName}</Text>
-      <Text>Date: {formData.eventDate}</Text>
+      <Text style={{ color: '#fff', marginTop: 10 }}>Name: {formData.name}</Text>
+      <Text style={{ color: '#fff', marginTop: 10 }}>Email: {formData.email}</Text>
+      <Text style={{ color: '#fff', marginTop: 10 }}>Event: {formData.eventName}</Text>
+      <Text style={{ color: '#fff', marginTop: 10 }}>Date: {formData.eventDate}</Text>
       <View style={styles.buttonContainer}>
         <Pressable
           style={({ pressed }) => [
@@ -136,7 +146,8 @@ const Step4 = ({ prevStep, nextStep, formData }: any) => {
         body: JSON.stringify({
           amount: amount, // Amount in cents (1 Euro)
           email: formData.email,
-          name: formData.name
+          name: formData.name,
+          city: formData.city
         }),
       });
 
@@ -225,13 +236,14 @@ const Step5 = ({ formData }: any) => {
 };
 
 // In your main component
-const EventSignupForm = ({ user }: any) => {
+const EventSignupForm = ({ user, hostcity }: any) => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     name: user ? user.user_metadata.full_name : '',
     email: user ? user.email : '',
     eventName: '',
     eventDate: '',
+    city: hostcity,
   });
 
   const nextStep = (data = {}) => {
@@ -252,7 +264,7 @@ const EventSignupForm = ({ user }: any) => {
     case 1:
       return <Step1 nextStep={nextStep} formData={formData} setFormData={setFormData} />;
     case 2:
-      return <Step2 prevStep={prevStep} nextStep={nextStep} formData={formData} setFormData={setFormData} />;
+      return <Step2 prevStep={prevStep} nextStep={nextStep} formData={formData} setFormData={setFormData} hostcity={hostcity} />;
     case 3:
       return <Step3 prevStep={prevStep} nextStep={nextStep} formData={formData} />;
     case 4:
