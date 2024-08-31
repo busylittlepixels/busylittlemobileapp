@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Pressable } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Pressable, Alert } from 'react-native';
+import { CardField, useConfirmPayment } from '@stripe/stripe-react-native';
+
 
 const Step1 = ({ nextStep, formData, setFormData }:any) => {
 
@@ -169,15 +171,69 @@ const Step3 = ({ prevStep, nextStep, formData }:any) => {
 };
 
 const Step4 = ({ submitForm, formData }:any) => {
+  const { confirmPayment, loading } = useConfirmPayment();
+  const [cardDetails, setCardDetails] = useState(null);
+
+    // This function will handle the payment process
+    const submit = async () => {
+      console.log('test')
+      // @ts-ignore
+      if (!cardDetails?.complete) {
+        Alert.alert('Please enter complete card details');
+        return;
+      }
+  
+      try {
+        // Make a request to your Next.js API route to create a payment intent
+        const response = await fetch('https://blpwebsite-2-0.vercel.app/api/create-payment-intent', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            amount: 100, // Amount in cents (1 Euro)
+          }),
+        });
+  
+        const { clientSecret } = await response.json();
+  
+        // Confirm the payment with the client secret from the backend
+        const { paymentIntent, error } = await confirmPayment(clientSecret, {
+          //  @ts-ignore
+          type: 'Card',
+          billingDetails: {
+            email: 'test@busylittlepixels.com',
+          },
+        });
+  
+        if (error) {
+          Alert.alert(`Payment failed: ${error.message}`);
+        } else if (paymentIntent) {
+          Alert.alert('Payment successful!');
+        }
+      } catch (e) {
+        // @ts-ignore
+        Alert.alert(`Payment failed: ${e.message}`);
+      }
+  };
+
   return (
-    <View>
+    <View style={{ flexDirection: "column"}}>
       <Text>Payment Screen</Text>
-      
+        <CardField
+          postalCodeEnabled={false}
+          onCardChange={(cardDetails):any => {
+            console.log('card details', cardDetails);
+            // @ts-ignore
+            setCardDetails(cardDetails);
+          }}
+          style={{ width: '100%', height: 50 }}
+        />
         <Pressable style={({ pressed }) => [
             styles.button, 
             { opacity: pressed ? 0.8 : 1 } // Visual feedback on press
           ]} 
-          onPress={submitForm}>
+          onPress={submit}>
           <Text style={styles.buttonText}>Pay</Text>
         </Pressable>
       
