@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Pressable, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, StyleSheet, Pressable, Alert } from 'react-native';
 import { CardField, useConfirmPayment } from '@stripe/stripe-react-native';
 
-const Step1 = ({ nextStep, formData, setFormData }:any) => {
+const Step1 = ({ nextStep, formData, setFormData }: any) => {
   return (
-    <View style={{ display: 'flex', flex: 1 }}>
+    <View style={styles.stepContainer}>
       <Text style={styles.sectionTitle}>Step 1: Personal Information</Text>
       <TextInput
         style={styles.inputStyle}
@@ -12,10 +12,8 @@ const Step1 = ({ nextStep, formData, setFormData }:any) => {
         value={formData.name}
         onChangeText={(value) => setFormData({ ...formData, name: value })}
         placeholderTextColor='#000'
-        // @ts-ignore
-        placeholderPadding="5px"
         clearTextOnFocus={true}
-        autoCapitalize={"none"}
+        autoCapitalize="none"
       />
       <TextInput
         style={styles.inputStyle}
@@ -24,16 +22,14 @@ const Step1 = ({ nextStep, formData, setFormData }:any) => {
         onChangeText={(value) => setFormData({ ...formData, email: value })}
         keyboardType="email-address"
         placeholderTextColor='#000'
-        // @ts-ignore
-        placeholderPadding="5px"
         clearTextOnFocus={true}
-        autoCapitalize={"none"}
+        autoCapitalize="none"
       />
       <View style={styles.buttonContainer}>
         <Pressable
           style={({ pressed }) => [
             styles.button,
-            { opacity: pressed ? 0.8 : 1 } // Visual feedback on press
+            { opacity: pressed ? 0.8 : 1 }
           ]}
           onPress={nextStep}>
           <Text style={styles.buttonText}>Next</Text>
@@ -43,9 +39,9 @@ const Step1 = ({ nextStep, formData, setFormData }:any) => {
   );
 };
 
-const Step2 = ({ prevStep, nextStep, formData, setFormData }:any) => {
+const Step2 = ({ prevStep, nextStep, formData, setFormData }: any) => {
   return (
-    <View>
+    <View style={styles.stepContainer}>
       <Text style={styles.sectionTitle}>Step 2: Event Details</Text>
       <TextInput
         style={styles.inputStyle}
@@ -72,7 +68,7 @@ const Step2 = ({ prevStep, nextStep, formData, setFormData }:any) => {
         <Pressable
           style={({ pressed }) => [
             styles.button,
-            { opacity: pressed ? 0.8 : 1 } // Visual feedback on press
+            { opacity: pressed ? 0.8 : 1 }
           ]}
           onPress={prevStep}>
           <Text style={styles.buttonText}>Back</Text>
@@ -80,7 +76,7 @@ const Step2 = ({ prevStep, nextStep, formData, setFormData }:any) => {
         <Pressable
           style={({ pressed }) => [
             styles.button,
-            { opacity: pressed ? 0.8 : 1 } // Visual feedback on press
+            { opacity: pressed ? 0.8 : 1 }
           ]}
           onPress={nextStep}>
           <Text style={styles.buttonText}>Next</Text>
@@ -90,21 +86,19 @@ const Step2 = ({ prevStep, nextStep, formData, setFormData }:any) => {
   );
 };
 
-const Step3 = ({ prevStep, nextStep, formData }:any) => {
+const Step3 = ({ prevStep, nextStep, formData }: any) => {
   return (
-    <View>
-      <View style={{ display: 'flex', backgroundColor: '#fff', padding: 10 }}>
-        <Text>Step 4: Confirm Details</Text>
-        <Text>Name: {formData.name}</Text>
-        <Text>Email: {formData.email}</Text>
-        <Text>Event: {formData.eventName}</Text>
-        <Text>Date: {formData.eventDate}</Text>
-      </View>
+    <View style={styles.stepContainer}>
+      <Text style={styles.sectionTitle}>Step 3: Confirm Details</Text>
+      <Text>Name: {formData.name}</Text>
+      <Text>Email: {formData.email}</Text>
+      <Text>Event: {formData.eventName}</Text>
+      <Text>Date: {formData.eventDate}</Text>
       <View style={styles.buttonContainer}>
         <Pressable
           style={({ pressed }) => [
             styles.button,
-            { opacity: pressed ? 0.8 : 1 } // Visual feedback on press
+            { opacity: pressed ? 0.8 : 1 }
           ]}
           onPress={prevStep}>
           <Text style={styles.buttonText}>Back</Text>
@@ -112,7 +106,7 @@ const Step3 = ({ prevStep, nextStep, formData }:any) => {
         <Pressable
           style={({ pressed }) => [
             styles.button,
-            { opacity: pressed ? 0.8 : 1 } // Visual feedback on press
+            { opacity: pressed ? 0.8 : 1 }
           ]}
           onPress={nextStep}>
           <Text style={styles.buttonText}>Checkout</Text>
@@ -125,7 +119,7 @@ const Step3 = ({ prevStep, nextStep, formData }:any) => {
 const Step4 = ({ prevStep, nextStep, formData }: any) => {
   const { confirmPayment, loading } = useConfirmPayment();
   const [cardDetails, setCardDetails] = useState({});
-
+  const amount = 5000;
   const submit = async () => {
     // @ts-ignore
     if (!cardDetails?.complete) {
@@ -134,14 +128,15 @@ const Step4 = ({ prevStep, nextStep, formData }: any) => {
     }
 
     try {
-      // Create Payment Intent on the server
       const response = await fetch('https://blpwebsite-2-0.vercel.app/api/create-payment-intent', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          amount: 100, // Amount in cents (1 Euro)
+          amount: amount, // Amount in cents (1 Euro)
+          email: formData.email,
+          name: formData.name
         }),
       });
 
@@ -154,13 +149,14 @@ const Step4 = ({ prevStep, nextStep, formData }: any) => {
 
       const { clientSecret } = await response.json();
 
-      // Confirm the payment with the client secret
       const { paymentIntent, error } = await confirmPayment(clientSecret, {
         // @ts-ignore
         type: 'Card',
-        paymentMethodType: 'Card', // Adding paymentMethodType here
+        paymentMethodType: 'Card', // Correctly specifying paymentMethodType
         billingDetails: {
           email: formData.email,
+          name: formData.name,
+          // Add more billing details if needed
         },
       });
 
@@ -170,7 +166,7 @@ const Step4 = ({ prevStep, nextStep, formData }: any) => {
       } else if (paymentIntent) {
         console.log('Payment successful:', paymentIntent);
         Alert.alert('Payment successful!', 'Thank you for your payment.');
-        nextStep(); // Move to the next step after payment is successful
+        nextStep({ paymentIntent });
       }
     } catch (e) {
       console.error('Payment failed:', e);
@@ -180,8 +176,10 @@ const Step4 = ({ prevStep, nextStep, formData }: any) => {
   };
 
   return (
-    <View style={{ flexDirection: "column" }}>
+    <View style={styles.stepContainer}>
       <Text style={styles.sectionTitle}>Payment</Text>
+      <Text style={styles.sectionTitle}>Total Amount Due: €{amount}</Text>
+      
       <CardField
         postalCodeEnabled={false}
         onCardChange={(cardDetails) => setCardDetails(cardDetails)}
@@ -191,10 +189,10 @@ const Step4 = ({ prevStep, nextStep, formData }: any) => {
         style={({ pressed }) => [
           styles.button,
           { opacity: pressed ? 0.8 : 1 },
-          loading && { backgroundColor: '#ccc' } // Disable button during loading
+          loading && { backgroundColor: '#ccc' }
         ]}
         onPress={submit}
-        disabled={loading} // Disable button while loading
+        disabled={loading}
       >
         <Text style={styles.buttonText}>{loading ? 'Processing...' : 'Pay'}</Text>
       </Pressable>
@@ -203,16 +201,31 @@ const Step4 = ({ prevStep, nextStep, formData }: any) => {
 };
 
 
-const Step5 = ({ formData }:any) => {
+const Step5 = ({ formData }: any) => {
+  const { paymentIntent } = formData;
+
   return (
-    <View>
-      <Text>Payment Complete! Check 'My Entries' tab in your account</Text>
+    <View style={styles.stepContainer}>
+      <Text style={{ color: '#fff', fontSize: 20 }}>Payment Complete!</Text>
+      {paymentIntent && (
+        <>
+          <Text style={{ color: '#fff', marginTop: 10 }}>
+            Payment ID: {paymentIntent.id}
+          </Text>
+          <Text style={{ color: '#fff', marginTop: 10 }}>
+            Status: {paymentIntent.status}
+          </Text>
+        </>
+      )}
+      <Text style={{ color: '#fff', marginTop: 20 }}>
+        Check 'My Entries' tab in your account for more details.
+      </Text>
     </View>
   );
 };
 
 // In your main component
-const EventSignupForm = ({ user }:any) => {
+const EventSignupForm = ({ user }: any) => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     name: user ? user.user_metadata.full_name : '',
@@ -221,7 +234,11 @@ const EventSignupForm = ({ user }:any) => {
     eventDate: '',
   });
 
-  const nextStep = () => setStep(step + 1);
+  const nextStep = (data = {}) => {
+    setFormData(prevData => ({ ...prevData, ...data }));
+    setStep(step + 1);
+  };
+
   const prevStep = () => setStep(step - 1);
 
   const submitForm = () => {
@@ -248,24 +265,17 @@ const EventSignupForm = ({ user }:any) => {
 };
 
 const styles = StyleSheet.create({
-  main: {
+  stepContainer: {
     flex: 1,
-  },
-  label: {
-    paddingTop: 10,
-    fontWeight: 'bold'
-  },
-  formContainer: {
-    flex: 3,
-    marginTop: 20
-  },
-  innerContainer: {
-    flex: 1,
-    flexDirection: 'column',
     justifyContent: 'center',
-    paddingRight: 16,
-    paddingLeft: 16,
-    marginTop: 10,
+    padding: 16,
+    backgroundColor: '#333', // Example background color
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#fff'
   },
   inputStyle: {
     marginTop: 10,
@@ -276,42 +286,22 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     width: '100%'
   },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#fff'
-  },
-  selectedCity: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 10,
-    backgroundColor: '#f0f0f0',
-    padding: 10,
-    borderRadius: 5,
-  },
-  title: {
-    fontWeight: 'bold',
-    marginVertical: 5,
-    fontSize: 18
-  },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 10,
+    paddingVertical: 20,
   },
   button: {
     flex: 1,
-    borderWidth: 2, // Border thickness
-    borderColor: 'green', // Border color
-    borderRadius: 2, // Border radius
-    paddingVertical: 10, // Vertical padding for better touch target
-    alignItems: 'center', // Center text horizontally
-    marginHorizontal: 5, // Space between buttons
+    borderWidth: 2,
+    borderColor: 'green',
+    borderRadius: 2,
+    paddingVertical: 10,
+    alignItems: 'center',
+    marginHorizontal: 5,
   },
   buttonText: {
-    color: 'green', // Text color
+    color: 'green',
     fontWeight: 'bold',
   },
 });

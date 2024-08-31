@@ -20,26 +20,34 @@ export default function EventScreen({ navigation, route }: any) {
   }, [navigation]);
 
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={<Ionicons size={310} name="code-slash" style={styles.headerImage} />}>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">{route.params ? route.params.item.event_name : 'Title'}</ThemedText>
-      </ThemedView>
-      <ThemedText>
-        {route.params ? route.params.item.event_description : 'Body'}
-      </ThemedText>
+    <View style={styles.container}>
+      <ParallaxScrollView
+        headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
+        headerImage={<Ionicons size={310} name="code-slash" style={styles.headerImage} />}>
+        <ThemedView style={styles.titleContainer}>
+          <ThemedText type="title">{route.params ? route.params.item.event_name : 'Title'}</ThemedText>
+        </ThemedView>
+        <ThemedText>
+          {route.params ? route.params.item.event_description : 'Body'}
+        </ThemedText>
 
-      <EventSignupForm user={user}/>
+        <EventSignupForm user={user}/>
 
-      <View>
-        <Button title="Back to List" onPress={() => navigation.navigate('Account')} />
-      </View>
-    </ParallaxScrollView>
+        <View>
+          <Button title="Back to List" onPress={() => navigation.navigate('Account')} />
+        </View>
+      </ParallaxScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 16,
+    backgroundColor: '#333', // Example background color
+  },
   headerImage: {
     color: '#808080',
     bottom: -90,
