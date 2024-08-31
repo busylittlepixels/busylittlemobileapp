@@ -7,6 +7,7 @@ import Toast from 'react-native-toast-message';
 import { StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Provider } from 'react-redux';
+import { StripeProvider } from '@stripe/stripe-react-native';
 import store from './store'; // Import the Redux store
 
 // Method to clear all data from AsyncStorage
@@ -42,15 +43,17 @@ const App = () => {
 
   return (
     <>
-      <SafeAreaProvider>
-        <StatusBar style="dark" backgroundColor="dark" />
-        <Provider store={store}>
-          <SafeAreaView style={styles.safeArea}>
-            <AppNavigator />
-          </SafeAreaView>
-        </Provider>
-        <Toast />
-      </SafeAreaProvider>
+      <StripeProvider publishableKey="pk_test_51PQaYdBXlSvXkMpQNKlp1h4yvqCUsPhKdTP8ntBKLPt85MgUCvg9leRwKhnc5i4q8VvlZl6Finfu6hsKGYpDUoDd00W6scKuzG">
+        <SafeAreaProvider>
+          <StatusBar style="dark" backgroundColor="dark" />
+          <Provider store={store}>
+            <SafeAreaView style={styles.safeArea}>
+              <AppNavigator />
+            </SafeAreaView>
+          </Provider>
+          <Toast />
+        </SafeAreaProvider>
+      </StripeProvider>
     </>
   );
 };
