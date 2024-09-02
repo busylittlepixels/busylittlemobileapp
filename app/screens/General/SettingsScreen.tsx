@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useEffect} from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const SettingsScreen = ({ route }:any) => {
-
+  const navigation = useNavigation();
   const wtftitle = route.params?.item.title; 
+
+  useEffect(() => {
+    navigation.setOptions({ title: wtftitle });
+  }, [navigation]);
 
   return (
     <View style={styles.container}>
