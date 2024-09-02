@@ -14,6 +14,7 @@ import CityScreen from '../screens/Cities/CityScreen';
 import CitiesScreen from '../screens/Cities/CitiesScreen';
 import MySchedule from '../screens/MyScreens/MySchedule';
 import UsersScreen from '../screens/General/UsersScreen';
+import MyPersonalSchedule from '../screens/MyScreens/MyPersonalSchedule';
 
 const Drawer = createDrawerNavigator();
 
@@ -51,7 +52,8 @@ const MainDrawerNavigator = () => {
       <Drawer.Screen name="My Account" component={AccountScreen} />
       <Drawer.Screen name="Favorites" component={FavoritesScreen} />
       <Drawer.Screen name="Cities" component={CitiesScreen} />
-      <Drawer.Screen name="My Schedule" component={MySchedule} options={{ drawerLabel: 'My Schedule' }}/>
+      <Drawer.Screen name="My Schedule" component={MySchedule} options={{ drawerLabel: 'Events Schedule' }}/>
+      <Drawer.Screen name="Personal Schedule" component={MyPersonalSchedule} options={{ drawerLabel: 'Personal Schedule' }}/>
       <Drawer.Screen name="All Users" component={UsersScreen} options={{ drawerLabel: 'All Users' }}/>
       <Drawer.Screen
         name="Logout"
