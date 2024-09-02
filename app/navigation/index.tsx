@@ -29,6 +29,7 @@ import CityScreen from '../screens/Cities/CityScreen';
 import CitiesScreen from '../screens/Cities/CitiesScreen';
 import SearchScreen from '../screens/Search/SearchScreen';
 import OnboardingScreen from '../screens/Login/OnboardingScreen';
+import SettingsScreen from '../screens/General/SettingsScreen';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -47,6 +48,7 @@ export type RootStackParamList = {
   TabEile: undefined;
   Onboarding: undefined;
   Profile: undefined;
+  Calendar: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -83,6 +85,24 @@ const AppNavigator = () => {
                 <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerTintColor: '#000', headerShown: true }} />
                 <Stack.Screen name="Event" component={EventScreen} options={{ headerShown: true }} />
                 <Stack.Screen name="MyEvents" component={MyEventsScreen} options={{ headerShown: false }} />
+                <Stack.Screen name="Calendar" component={SettingsScreen} options={({ navigation }) => ({
+                  gestureEnabled: false,
+                  gestureDirection: 'vertical',
+                  cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
+                  headerTintColor: '#000',
+                  headerBackTitle: 'Go Back', // Change the back button text
+                  headerBackTitleVisible: true, // Ensures the back button text is visible
+                    headerRight: () => (
+                      <View style={{ display: 'flex', flexDirection: 'row' }}>
+                        <Pressable
+                        onPress={() => navigation.goBack()} // Navigate to the Search screen
+                        style={{ marginRight: 15 }}
+                      >
+                        <Ionicons name="close-outline" size={24} color="black" />
+                      </Pressable>
+                    </View>
+                  ),
+                })} />
                 <Stack.Screen name="Article" component={ArticleScreen} options={{ headerShown: true }} />
                 <Stack.Screen name="Cities" component={CitiesScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="City" component={CityScreen} options={{ headerShown: true }} />

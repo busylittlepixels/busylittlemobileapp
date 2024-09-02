@@ -2,7 +2,7 @@ import isEmpty from 'lodash/isEmpty';
 import React, {useCallback} from 'react';
 import {StyleSheet, Alert, View, Text, TouchableOpacity, Button} from 'react-native';
 import testIDs from './testIds';
-
+import { useNavigation } from 'expo-router';
 
 interface ItemProps {
   item: any;
@@ -10,13 +10,17 @@ interface ItemProps {
 
 const AgendaItem = (props: ItemProps) => {
   const {item} = props;
+  const navigation = useNavigation(); 
 
   const buttonPressed = useCallback(() => {
-    Alert.alert('Show me more');
+    // Alert.alert('Show me more');
+    // @ts-ignore
+    navigation.navigate("Calendar", { item })
   }, []);
 
   const itemPressed = useCallback(() => {
     Alert.alert(item.title);
+
   }, []);
 
   if (isEmpty(item)) {

@@ -1,11 +1,14 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const SettingsScreen = () => {
+const SettingsScreen = ({ route }:any) => {
+
+  const wtftitle = route.params?.item.title; 
+
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Settings Screen</Text>
-      <Text>Welcome to the Church of Noise!</Text>
+      <Text style={styles.header}>{wtftitle ? wtftitle : 'Screen'}</Text>
+      <Text>A smattering of generic text!</Text>
     </View>
   );
 };

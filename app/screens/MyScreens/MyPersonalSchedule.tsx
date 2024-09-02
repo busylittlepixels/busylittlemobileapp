@@ -2,11 +2,11 @@
 import React, {useRef, useCallback} from 'react';
 import {StyleSheet} from 'react-native';
 import {ExpandableCalendar, AgendaList, CalendarProvider, WeekCalendar} from 'react-native-calendars';
-import testIDs from './testIds';
+import testIDs from '../../components/testIds';
 // @ts-ignore
-import { agendaItems, getMarkedDates } from './agendaItems';
-import AgendaItem from './AgendaItem';
-import {getTheme, themeColor, lightThemeColor} from './theme';
+import { agendaItems, getMarkedDates } from '../../components/agendaItems';
+import AgendaItem from '../../components/AgendaItem';
+import {getTheme, themeColor, lightThemeColor} from '../../components/theme';
 
 const leftArrowIcon = require('../../assets/images/previous.png');
 const rightArrowIcon = require('../../assets/images/next.png');
