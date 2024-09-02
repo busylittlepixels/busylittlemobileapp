@@ -65,7 +65,7 @@ const MyPersonalSchedule = (props: Props) => {
           markedDates={marked.current}
           leftArrowImageSource={leftArrowIcon}
           rightArrowImageSource={rightArrowIcon}
-          // animateScroll
+          animateScroll
           // closeOnDayPress={false}
         />
       )}
