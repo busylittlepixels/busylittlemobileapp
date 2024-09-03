@@ -12,7 +12,7 @@ import {
 const initialState = {
   user: null,
   loading: false,
-  isFirstLaunch: false, // Default to true for first launch
+  isFirstLaunch: true, // Default to true for first launch
   showAdverts: null,  // Default to true or false based on your preference
 };
 

@@ -1,5 +1,6 @@
 {
   "expo": {
+    "owner":"dangerro",
     "name": "busylittlemobileapp",
     "slug": "busylittlemobileapp",
     "version": "1.0.0",
@@ -42,7 +43,6 @@
       "eas": {
         "projectId": "157ae5e2-48bc-4393-b3bf-fe5deb1a0980"
       }
-    },
-    "owner": "dangerro"
+    }
   }
 }
