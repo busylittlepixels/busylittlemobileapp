@@ -1,20 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, StyleSheet, Switch } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux'; // Import useSelector and useDispatch
-import { setAdvertPreference } from '../../actions/authActions'; // Import the action
+import { setPublicProfile, setAdvertPreference } from '../../actions/settingsActions'; // Import the action
 
 const MySettings = ({ navigation }: any) => {
     const [full_name, setFullname] = useState('');
-    const [enablePublic, setEnablePublic] = useState(false);
     const [enableConnections, setEnableConnections] = useState(false);
 
     const dispatch = useDispatch();
-    const showAdverts = useSelector((state: any) => state.auth.showAdverts);
+    const showAdverts = useSelector((state: any) => state.settings.showAdverts);
+    const showPublic = useSelector((state: any) => state.settings.enablePublicProfile);
 
     const toggleAdverts = (value: boolean) => {
         // @ts-ignore
         dispatch(setAdvertPreference(value));
     };
+
+    const togglePublic = (value: boolean) => {
+        // console.log('showPublic', showPublic);
+        // @ts-ignore
+        dispatch(setPublicProfile(value))
+    }; 
+
 
     useEffect(() => {
         navigation.setOptions({ headerTitle: 'My Settings' });
@@ -40,9 +47,9 @@ const MySettings = ({ navigation }: any) => {
                 <View style={styles.inputWrapper}>
                     <Text style={styles.inlineLabel}>Enable Public Profile?</Text>
                     <Switch
-                        value={enablePublic}
+                        value={showPublic}
                         trackColor={{ true: 'green', false: 'gray' }}
-                        onValueChange={setEnablePublic}
+                        onValueChange={togglePublic}
                     />
                 </View>
                 <View style={styles.inputWrapper}>

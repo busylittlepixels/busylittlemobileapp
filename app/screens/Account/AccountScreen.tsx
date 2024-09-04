@@ -62,7 +62,8 @@ const AccountScreen = ({ navigation }: any) => {
   }, [user, navigation]);
 
   // duh
-  const showAdverts = useSelector((state) => state.auth.showAdverts);
+  const showAdverts = useSelector((state) => state.settings.showAdverts);
+  const enablePublicProfile = useSelector((state) => state.settings.enablePublicProfile);
   
   // also duh
   const [refreshing, setRefreshing] = useState(false);
@@ -187,6 +188,7 @@ const AccountScreen = ({ navigation }: any) => {
               {/* <Text style={styles.screenMicro}>UserId: {user.id}</Text> */}
             </View>
             <Pressable  onPress={goToProfile}>
+            {enablePublicProfile ? <Text style={{ color: "green" }}>Public</Text> : <Text style={{ color: "red"}}>Private</Text> }
             <Animated.Image
               source={{ uri: imageUrl }}
               style={[styles.tinyLogo, { width: avatarSize, height: avatarSize, paddingLeft: 5 }]}

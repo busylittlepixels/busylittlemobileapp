@@ -6,14 +6,12 @@ import {
   SET_LOADING,
   SET_FIRST_LAUNCH,
   COMPLETE_ONBOARDING,
-  SET_ADVERT_PREFERENCE,
 } from '../actions/authActions';
 
 const initialState = {
   user: null,
   loading: false,
-  isFirstLaunch: true, // Default to true for first launch
-  showAdverts: null,  // Default to true or false based on your preference
+  isFirstLaunch: false, // Default to true for first launch
 };
 
 const authReducer = (state = initialState, action: any) => {
@@ -30,8 +28,6 @@ const authReducer = (state = initialState, action: any) => {
       return { ...state, isFirstLaunch: action.payload };
     case COMPLETE_ONBOARDING:
       return { ...state, user: action.payload };
-    case SET_ADVERT_PREFERENCE:
-      return { ...state, showAdverts: action.payload };
     default:
       return state;
   }
