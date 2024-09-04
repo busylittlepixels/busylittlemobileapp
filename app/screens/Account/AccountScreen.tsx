@@ -16,6 +16,7 @@ import ArticleItem from '../../components/ArticleItem';
 import Spacer from '../../components/Spacer';
 import { toggleFavorite as toggleFavoriteService } from '../../services/favouriteService';
 import { Asset } from 'expo-asset';
+import { enablePublicProfile } from '@/app/services/settingsService';
 
 const AccountScreen = ({ navigation }: any) => {
   // track vertical scroll
@@ -188,10 +189,10 @@ const AccountScreen = ({ navigation }: any) => {
               {/* <Text style={styles.screenMicro}>UserId: {user.id}</Text> */}
             </View>
             <Pressable  onPress={goToProfile}>
-            {enablePublicProfile ? <Text style={{ color: "green" }}>Public</Text> : <Text style={{ color: "red"}}>Private</Text> }
+            {/* {enablePublicProfile ? <Text style={{ color: "green" }}>Public</Text> : <Text style={{ color: "red"}}>Private</Text> } */}
             <Animated.Image
               source={{ uri: imageUrl }}
-              style={[styles.tinyLogo, { width: avatarSize, height: avatarSize, paddingLeft: 5 }]}
+              style={[styles.tinyLogo, { width: avatarSize, height: avatarSize, paddingLeft: 5, borderColor: enablePublicProfile ? 'green' : 'white', }]}
             />
             </Pressable>
           </View>
@@ -280,7 +281,6 @@ const styles = StyleSheet.create({
   },
   tinyLogo: {
     borderRadius: '50%',
-    borderColor: '#fff',
     borderWidth: 2,
     paddingLeft: 2,
     marginLeft: 5,
