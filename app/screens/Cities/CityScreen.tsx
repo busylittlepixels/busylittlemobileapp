@@ -1,24 +1,22 @@
+// @ts-nocheck
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useEffect, useState } from 'react';
-import { Image, View, Text, ActivityIndicator, StyleSheet, Dimensions, Button } from 'react-native';
+import { Image, View, Text, ActivityIndicator, StyleSheet, Button, Pressable } from 'react-native';
 import ParallaxScrollView from '@/app/components/ParallaxScrollView';
-import { supabase } from '../../../supabase'; // Ensure your Supabase client is correctly imported
+import { supabase } from '../../../supabase';
 import { ThemedText } from '@/app/components/ThemedText';
 import { ThemedView } from '@/app/components/ThemedView';
-// @ts-ignore
-import HTMLView from 'react-native-htmlview';
 
-// Define the City type
 type City = {
-  id: number;            // Unique identifier for the city
-  name: string;          // Name of the city
-  image: string;         // URL to an image representing the city
-  country: string;       // Country where the city is located
-  description: string;   // A brief description of the city
-  events: string;        // A comma-separated list of events associated with the city
+  id: number;
+  name: string;
+  image: string;
+  country: string;
+  description: string;
+  events: string;
 };
 
-const getCityImage = (name:string) => {
+const getCityImage = (name: string) => {
   switch (name.toLowerCase()) {
     case 'amsterdam':
       return require('./../../assets/images/amsterdam.png');
@@ -33,31 +31,54 @@ const getCityImage = (name:string) => {
     case 'copenhagen':
       return require('./../../assets/images/copenhagen.png');
     case 'new york':
-        return require('./../../assets/images/newyork.png');
+      return require('./../../assets/images/newyork.png');
     default:
-      return require('./../../assets/images/klingons.png'); // Fallback image
+      return require('./../../assets/images/klingons.png');
   }
 };
 
 const CityScreen = ({ navigation, route }: any) => {
   const [loading, setLoading] = useState(true);
-  const [city, setCity] = useState<City | null>(null); // Set the state to be of type City or null
-  
+  const [city, setCity] = useState<City | null>(null);
+
+  const OutlineButton = ({ title, onPress }: any) => {
+    return (
+      <Pressable
+        style={({ pressed }) => [
+          {
+            backgroundColor: pressed ? 'gray' : 'black', // Light green on press, green otherwise
+            borderColor: 'white', // White outline
+            borderWidth: 2, // Outline width
+            borderRadius: 5, // Rounded corners
+            padding: 10
+          },
+          styles.button, // Full-width button styles
+        ]}
+        onPress={onPress}
+      >
+        <Text style={styles.buttonText}>{title}</Text>
+      </Pressable>
+    );
+  };
+
+
+
   useEffect(() => {
     navigation.setOptions({ title: route.params?.city });
   }, [navigation]);
 
   useEffect(() => {
     const fetchCity = async () => {
-      const { data, error } = await supabase.from('cities')
+      const { data, error } = await supabase
+        .from('cities')
         .select('*')
         .eq('name', route.params?.city)
-        .single(); // Since you're fetching a single city, you can use .single() to return a single object
+        .single();
 
       if (error) {
         console.error(error.message);
       } else {
-        setCity(data); // Set the data to the city state
+        setCity(data);
       }
       setLoading(false);
     };
@@ -65,16 +86,10 @@ const CityScreen = ({ navigation, route }: any) => {
     fetchCity();
   }, [route.params?.city]);
 
-  useEffect(() => {
-    if (city) {
-      console.log('City details:', city.description);
-    }
-  }, [city]);
-
   if (loading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color="#fff" />
       </View>
     );
   }
@@ -82,70 +97,84 @@ const CityScreen = ({ navigation, route }: any) => {
   if (!city) {
     return (
       <View style={styles.container}>
-        <Text>No city found</Text>
+        <Text style={styles.text}>No city found</Text>
       </View>
     );
   }
 
-
-  const { name, description, country, image, events } = city;
-  const cityImage = getCityImage(name); // Get the image dynamically based on the city name
-  // const cityImage = headerImg || require('.././../../assets/images/dublin.png'); // Fallback image if the city is not in the mapping
+  const { name, description, country } = city;
+  const cityImage = getCityImage(name);
 
   return (
-    
-    <ParallaxScrollView
+    <View style={styles.container}>
+      <ParallaxScrollView
         headerBackgroundColor={{ light: '#353636', dark: '#D0D0D0' }}
-        headerImage={<Image source={cityImage} />}>
-      <ThemedView style={styles.titleContainer}>
-          <ThemedText type="title">{name}</ThemedText>
-          <Text style={{ color: '#fff'}}>{country}</Text>
-      </ThemedView>
-      <Text style={styles.content}>{description}</Text>
-      
-      
-      <View>
-          <Button title="Go Back" onPress={() => navigation.goBack()} />
-      </View>
-
+        backgroundColor="#353636" // Set the background color of the scroll view itself
+        contentBackgroundColor="#353636" // Set the content background color
+        headerImage={<Image source={cityImage} style={styles.headerImage} />}
+      >
+        <ThemedView style={styles.contentContainer}>
+          <ThemedText type="title" style={styles.text}>
+            {name}
+          </ThemedText>
+          <Text style={[styles.text,{ marginVertical: 10}]}>{country}</Text>
+          <Text style={styles.content}>{description}</Text>
+        </ThemedView>
       </ParallaxScrollView>
-    
 
+      {/* <View style={styles.buttonContainer}>
+        <Button title="Go Back" onPress={() => navigation.goBack()} color="#fff" />
+      </View> */}
+      <View style={[styles.buttonContaine, { display: 'flex', flexDirection: 'row', gap: 4, width:'100%', paddingVertical: 10, paddingHorizontal: 30, marginBottom: 10 }]}>
+        <OutlineButton title="Go Back" onPress={() => navigation.goBack()} color="#fff" />
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 20,
-  },
+    backgroundColor: '#000', // Ensure the container has a white background
+},
   headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+    width: '100%',
+    height: 250,
   },
-  titleContainer: {
-    flexDirection: 'column',
-    gap: 8,
-    color: '#fff',
+  contentContainer: {
+    flex: 1, 
+    // paddingHorizontal: 0, // Horizontal padding
+    justifyContent: 'center',
+    // backgroundColor: 'green'
+    height: '100%'
   },
-  link: {
-    color: '#ffffff'
-  },
-  buttons: {
-    display: 'flex',
-    left: 0,
+  text: {
+    color: 'white',
   },
   content: {
-    color: '#fff',
-    paddingVertical:10
-  }
+    color: 'white',
+    textAlign: 'left',
+  },
+  buttonContainer: {
+    padding: 10,
+    position: 'absolute', // Position the button at the bottom
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'black',
+  },
+  button: {
+    width: '100%', // Full width
+    paddingVertical: 12, // Vertical padding for the button
+    alignItems: 'center', // Center text horizontally
+    justifyContent: 'center', // Center text vertically
+    borderRadius: 5, // Rounded corners
+  },
+  buttonText: {
+    color: 'white', // White text
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });
 
 export default CityScreen;

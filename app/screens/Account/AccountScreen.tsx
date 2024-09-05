@@ -155,7 +155,7 @@ const AccountScreen = ({ navigation }: any) => {
 
 
   const goToProfile = () => {
-    navigation.navigate("UpdateDetails")
+    navigation.navigate("Profile")
   }
 
   const onRefresh = useCallback(() => {
@@ -221,7 +221,7 @@ const AccountScreen = ({ navigation }: any) => {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Events:</Text>
+          <Text style={styles.sectionTitle}>Featured Events:</Text>
           <EventsGrid tickets={tickets} />
         </View>
 
@@ -230,7 +230,7 @@ const AccountScreen = ({ navigation }: any) => {
         )}
 
         <View style={styles.section}>
-          <Text style={styles.articleSectionTitle}>Articles:</Text>
+          <Text style={styles.articleSectionTitle}>Latest Articles:</Text>
           <View>
           {articles.map(item => {
               return(<ArticleItem

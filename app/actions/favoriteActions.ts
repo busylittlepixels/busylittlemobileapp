@@ -6,6 +6,7 @@ import { resetFavorites, getFavorites, toggleFavorite as toggleFavoriteService }
 export const SET_FAVORITES = 'SET_FAVORITES';
 export const TOGGLE_FAVORITE = 'TOGGLE_FAVORITE';
 export const RESET_FAVORITES = 'RESET_FAVORITES';
+export const UPDATE_FAVORITES = 'UPDATE_FAVORITES'
 
 // Action to set favorites in Redux state
 export const setFavorites = (favorites: any) => ({

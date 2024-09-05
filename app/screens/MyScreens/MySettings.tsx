@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, StyleSheet, Switch } from 'react-native';
+import { View, Text, StyleSheet, Switch } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux'; // Import useSelector and useDispatch
 import { setPublicProfile, setAdvertPreference } from '../../actions/settingsActions'; // Import the action
+
 
 const MySettings = ({ navigation }: any) => {
     const [full_name, setFullname] = useState('');
     const [enableConnections, setEnableConnections] = useState(false);
 
     const dispatch = useDispatch();
+    const user = useSelector((state:any) => state.auth.user);
     const showAdverts = useSelector((state: any) => state.settings.showAdverts);
     const showPublic = useSelector((state: any) => state.settings.enablePublicProfile);
+
 
     const toggleAdverts = (value: boolean) => {
         // @ts-ignore
@@ -17,9 +20,8 @@ const MySettings = ({ navigation }: any) => {
     };
 
     const togglePublic = (value: boolean) => {
-        // console.log('showPublic', showPublic);
         // @ts-ignore
-        dispatch(setPublicProfile(value))
+        dispatch(setPublicProfile(value, user?.id))
     }; 
 
 
