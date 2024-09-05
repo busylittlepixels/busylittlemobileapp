@@ -280,8 +280,8 @@ const styles = StyleSheet.create({
   stepContainer: {
     flex: 1,
     justifyContent: 'center',
-    padding: 16,
-    backgroundColor: '#333', // Example background color
+    // padding: 16,
+    backgroundColor: '#000', // Example background color
   },
   sectionTitle: {
     fontSize: 20,

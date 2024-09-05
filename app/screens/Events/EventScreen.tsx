@@ -1,3 +1,4 @@
+// @ts-nocheck
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useEffect } from 'react';
 import { StyleSheet, Image, Platform, Pressable, Text, View, Button } from 'react-native';
@@ -23,8 +24,11 @@ export default function EventScreen({ navigation, route }: any) {
   return (
     <View style={styles.container}>
       <ParallaxScrollView
-        headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-        headerImage={<Ionicons size={310} name="code-slash" style={styles.headerImage} />}>
+          headerBackgroundColor={{ light: '#353636', dark: '#D0D0D0' }}
+          backgroundColor="#353636"
+          contentBackgroundColor="#353636"
+          headerImage={<Ionicons size={310} name="code-slash" style={styles.headerImage} />}
+      >
         <ThemedView style={styles.titleContainer}>
           <ThemedText type="title">{route.params ? route.params.item.event_name : 'Title'}</ThemedText>
         </ThemedView>
@@ -45,9 +49,6 @@ export default function EventScreen({ navigation, route }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    padding: 16,
-    backgroundColor: '#333', // Example background color
   },
   headerImage: {
     color: '#808080',

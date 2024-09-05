@@ -44,8 +44,9 @@ const App = () => {
   return (
     <>
       <StripeProvider publishableKey="pk_test_51PQaYdBXlSvXkMpQNKlp1h4yvqCUsPhKdTP8ntBKLPt85MgUCvg9leRwKhnc5i4q8VvlZl6Finfu6hsKGYpDUoDd00W6scKuzG">
+      <StatusBar style="dark" backgroundColor="dark" />
         <SafeAreaProvider>
-          <StatusBar style="dark" backgroundColor="dark" />
+          
           <Provider store={store}>
             <SafeAreaView style={styles.safeArea}>
               <AppNavigator />
