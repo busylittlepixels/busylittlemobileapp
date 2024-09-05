@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Dimensions, Pressable, View, Button, Image } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useSelector, useDispatch } from 'react-redux';
@@ -32,8 +32,8 @@ export default function ArticleScreen({ navigation, route }: any) {
     const dispatch = useDispatch();
     const user = useSelector((state: any) => state.auth.user);
     const favorites = useSelector((state: any) => state.favorite.favorites);
-    
-    const { item, isFavorite } = route.params;
+
+    const { item } = route.params;
     const { id, article_id } = item;
     const articleId = article_id || id; // Use article_id if available, otherwise fallback to id
 
@@ -41,46 +41,54 @@ export default function ArticleScreen({ navigation, route }: any) {
     const content = typeof item.content === 'object' && item.content.rendered ? item.content.rendered : item.content;
     const sanitizedContent = useSanitizeRender(content);
 
+    // Local state to track whether the article is a favorite
+    const [isFavorite, setIsFavorite] = useState(favorites[articleId]);
+
+    // Update local state when Redux favorites change
+    useEffect(() => {
+        setIsFavorite(favorites[articleId]);
+    }, [favorites, articleId]);
+
     const handleToggleFavorite = async () => {
-        const articleId = item.article_id || item.id;
-    
         if (!articleId) {
-          console.error('Error: article_id or id is missing');
-          return;
+            console.error('Error: article_id or id is missing');
+            return;
         }
-    
-        const isFavorite = favorites[articleId];
+
         const serializedContent = JSON.stringify(item.content);
-    
+
         try {
-          const result = await toggleFavoriteService(user?.id, articleId, item.title, item.slug, serializedContent);
-    
-          if (result.error) {
-            Toast.show({ type: 'error', text1: 'Error', text2: 'Failed to update favorites.' });
-          } else {
-            // Update Redux store with the updated favorites list
-            const updatedFavorites = { ...favorites, [articleId]: !isFavorite };
-            
-            dispatch({
-              type: 'UPDATE_FAVORITES', // The correct action type for updating Redux state
-              payload: updatedFavorites,
-            });
+            const result = await toggleFavoriteService(user?.id, articleId, item.title, item.slug, serializedContent);
 
-            // Persist updated favorites in AsyncStorage
-            await AsyncStorage.setItem(`favorites_${user?.id}`, JSON.stringify(updatedFavorites));
+            if (result.error) {
+                Toast.show({ type: 'error', text1: 'Error', text2: 'Failed to update favorites.' });
+            } else {
+                // Update Redux store with the updated favorites list
+                const updatedFavorites = { ...favorites, [articleId]: !isFavorite };
 
-            Toast.show({
-              type: 'success',
-              text1: 'Success',
-              text2: isFavorite ? 'Removed from favorites.' : 'Added to favorites.',
-            });
-          }
+                dispatch({
+                    type: 'UPDATE_FAVORITES',
+                    payload: updatedFavorites,
+                });
+
+                // Persist updated favorites in AsyncStorage
+                await AsyncStorage.setItem(`favorites_${user?.id}`, JSON.stringify(updatedFavorites));
+
+                // Update local state
+                setIsFavorite(!isFavorite);
+
+                Toast.show({
+                    type: 'success',
+                    text1: 'Success',
+                    text2: isFavorite ? 'Removed from favorites.' : 'Added to favorites.',
+                });
+            }
         } catch (error) {
-          console.error('Error toggling favorite:', error);
-          Toast.show({ type: 'error', text1: 'Error', text2: 'Failed to update favorites.' });
+            console.error('Error toggling favorite:', error);
+            Toast.show({ type: 'error', text1: 'Error', text2: 'Failed to update favorites.' });
         }
     };
-      
+
     useEffect(() => {
         navigation.setOptions({
             title: title,
@@ -96,7 +104,7 @@ export default function ArticleScreen({ navigation, route }: any) {
                 </View>
             ),
         });
-    }, [navigation, isFavorite]);
+    }, [navigation, isFavorite]); // Re-run the effect whenever `isFavorite` changes
 
     const { width } = Dimensions.get('window');
 
