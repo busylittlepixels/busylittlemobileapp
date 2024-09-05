@@ -33,17 +33,17 @@ export default function ArticleScreen({ navigation, route }: any) {
     const user = useSelector((state: any) => state.auth.user);
     const favorites = useSelector((state: any) => state.favorite.favorites);
 
-    const { item } = route.params;
+    const { item, isFavorite: initialIsFavorite } = route.params;
     const { id, article_id } = item;
-    const articleId = article_id || id; // Use article_id if available, otherwise fallback to id
+    const articleId = article_id || id;
 
-    // Restored: Ensure title/content are handled correctly with `rendered` fallback
-    const title = typeof item.title === 'object' && item.title.rendered ? item.title.rendered : item.title;
-    const content = typeof item.content === 'object' && item.content.rendered ? item.content.rendered : item.content;
+    // Handle both title and content rendered data
+    const title = item.title?.rendered || item.title;
+    const content = item.content?.rendered || item.content;
     const sanitizedContent = useSanitizeRender(content);
 
     // Local state to track whether the article is a favorite
-    const [isFavorite, setIsFavorite] = useState(favorites[articleId]);
+    const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
 
     // Update local state when Redux favorites change
     useEffect(() => {
@@ -56,7 +56,7 @@ export default function ArticleScreen({ navigation, route }: any) {
             return;
         }
 
-        const serializedContent = JSON.stringify(item.content);
+        const serializedContent = JSON.stringify(item.content?.rendered || item.content);
 
         try {
             const result = await toggleFavoriteService(user?.id, articleId, item.title, item.slug, serializedContent);
@@ -64,7 +64,6 @@ export default function ArticleScreen({ navigation, route }: any) {
             if (result.error) {
                 Toast.show({ type: 'error', text1: 'Error', text2: 'Failed to update favorites.' });
             } else {
-                // Update Redux store with the updated favorites list
                 const updatedFavorites = { ...favorites, [articleId]: !isFavorite };
 
                 dispatch({
@@ -72,10 +71,8 @@ export default function ArticleScreen({ navigation, route }: any) {
                     payload: updatedFavorites,
                 });
 
-                // Persist updated favorites in AsyncStorage
                 await AsyncStorage.setItem(`favorites_${user?.id}`, JSON.stringify(updatedFavorites));
 
-                // Update local state
                 setIsFavorite(!isFavorite);
 
                 Toast.show({
@@ -97,7 +94,7 @@ export default function ArticleScreen({ navigation, route }: any) {
                 <View style={{ display: 'flex', flexDirection: 'row' }}>
                     <Pressable onPress={handleToggleFavorite} style={{ marginRight: 15 }}>
                         <Ionicons
-                            name={isFavorite ? 'checkmark-circle-outline' : 'remove-outline'}
+                            name={isFavorite ? 'checkmark-circle-outline' : 'remove-circle-outline'}
                             size={24}
                             color={isFavorite ? 'green' : 'gray'}
                         />
