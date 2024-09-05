@@ -37,6 +37,7 @@ export default function ArticleScreen({ navigation, route }: any) {
     const { id, article_id } = item;
     const articleId = article_id || id; // Use article_id if available, otherwise fallback to id
 
+    // Restored: Ensure title/content are handled correctly with `rendered` fallback
     const title = typeof item.title === 'object' && item.title.rendered ? item.title.rendered : item.title;
     const content = typeof item.content === 'object' && item.content.rendered ? item.content.rendered : item.content;
     const sanitizedContent = useSanitizeRender(content);
