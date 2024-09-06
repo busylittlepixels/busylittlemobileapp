@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import Spacer from '../../components/Spacer';
 import * as ImagePicker from 'expo-image-picker'; // Import ImagePicker
+import { decode } from 'base64-arraybuffer'; // Import decode from base64-arraybuffer
 import { logout, setAdvertPreference } from '../../actions/authActions'; // Import the logout action if needed
 
 export interface Profile {
@@ -126,67 +127,115 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
     }
   };
 
-  // Image picker function for selecting and uploading profile picture
+
+
   const handleImageUpload = async () => {
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    console.log('Handling upload for user:', user.id);
 
-    if (!permissionResult.granted) {
-      alert('Permission to access gallery is required!');
-      return;
-    }
+    try {
+      // Request permission to access media library
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      // console.log('Permission result:', permissionResult);
 
-    const pickerResult = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      quality: 1,
-    });
+      if (!permissionResult.granted) {
+        console.log('Permission to access gallery was denied');
+        alert('Permission to access gallery is required!');
+        return;
+      }
 
-    if (pickerResult.cancelled) return;
+      console.log('Permission granted for media library access.');
 
-    const { uri } = pickerResult;
-
-    const fileName = `${Date.now()}-${user.id}.jpg`;
-    const response = await fetch(uri);
-    const blob = await response.blob();
-
-    // Upload image to Supabase storage
-    const { data, error } = await supabase.storage
-      .from('busylittleplatform') // Replace with your actual bucket name
-      .upload(fileName, blob);
-
-    if (error) {
-      console.error('Error uploading image:', error.message);
-      Toast.show({
-        type: 'error',
-        text1: 'Image Upload Failed',
-        text2: error.message,
+      // Launch the image picker
+      const pickerResult = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 1,
+        base64: true,
       });
-      return;
-    }
 
-    // Get public URL of uploaded image
-    const { publicUrl } = supabase.storage.from('busylittleplatform').getPublicUrl(fileName);
+      // console.log('Picker result:', pickerResult);
 
-    // Update profile with avatar URL
-    const { error: updateError } = await supabase
-      .from('profiles')
-      .update({ avatar_url: publicUrl })
-      .eq('id', user.id);
+      if (pickerResult.canceled) {
+        // console.log('User canceled image picker.');
+        return;
+      }
 
-    if (updateError) {
-      Toast.show({
-        type: 'error',
-        text1: 'Update Failed',
-        text2: updateError.message,
-      });
-    } else {
-      setAvatarUrl(publicUrl); // Set avatar URL to display image
-      Toast.show({
-        type: 'success',
-        text1: 'Profile Updated',
-      });
+      const { uri, base64 } = pickerResult.assets[0];
+
+      // console.log('Selected image URI:', uri);
+      // console.log('Base64 Data (first 50 chars):', base64?.slice(0, 50));
+
+      if (!base64) {
+        console.error('No base64 data found.');
+        return;
+      }
+
+      // Generate a file name based on the user ID and current timestamp
+      const fileName = `${Date.now()}-${user.id}.png`;
+
+      // Decode base64 to ArrayBuffer for upload
+      const fileData = decode(base64);
+
+      console.log('Decoded file data length:', fileData.byteLength);
+
+      // Upload the image to Supabase storage
+      const { data, error } = await supabase.storage
+        .from('busylittleplatform')
+        .upload(`public/${fileName}`, fileData, {
+          contentType: 'image/png',
+        });
+
+      if (error) {
+        console.error('Error uploading image:', error);
+        Toast.show({
+          type: 'error',
+          text1: 'Image Upload Failed',
+          text2: error.message,
+        });
+        return;
+      }
+
+      console.log('Image uploaded successfully:', data);
+
+      // Get the public URL of the uploaded image
+      const { data: publicUrlData, error: publicUrlError } = supabase
+        .storage
+        .from('busylittleplatform')
+        .getPublicUrl(`public/${fileName}`);
+
+      if (publicUrlError) {
+        console.error('Error getting public URL:', publicUrlError);
+        return;
+      }
+
+      const publicUrl = publicUrlData.publicUrl;
+      console.log('Public URL of uploaded image:', publicUrl);
+
+      // Update profile with avatar URL
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', user.id);
+
+      if (updateError) {
+        console.error('Error updating profile:', updateError);
+        Toast.show({
+          type: 'error',
+          text1: 'Profile Update Failed',
+          text2: updateError.message,
+        });
+      } else {
+        setAvatarUrl(publicUrl);
+        Toast.show({
+          type: 'success',
+          text1: 'Profile Updated',
+        });
+      }
+    } catch (error) {
+      console.error('Unexpected error during image upload:', error);
     }
   };
+    
 
   // Setting the header right icon to trigger loadDataFromStorage
   useEffect(() => {
@@ -248,6 +297,10 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
 
     if (selectedCities && selectedCities !== profile?.cities) {
       updates.cities = selectedCities;
+    }
+
+    if (avatarUrl && avatarUrl !== profile?.avatar_url) {
+      updates.avatar_url = avatarUrl;
     }
 
     if (Object.keys(updates).length === 0) {
