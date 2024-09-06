@@ -190,7 +190,7 @@ const AccountScreen = ({ navigation }: any) => {
             </View>
             <Pressable  onPress={goToProfile}>
             <Animated.Image
-              source={{ uri: imageUrl }}
+              source={{ uri: profile?.avatar_url ? profile?.avatar_url : imageUrl }}
               style={[styles.tinyLogo, { width: avatarSize, height: avatarSize, paddingLeft: 5, borderColor: enablePublicProfile ? 'green' : 'white', }]}
             />
             </Pressable>

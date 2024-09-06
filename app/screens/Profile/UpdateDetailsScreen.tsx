@@ -8,6 +8,7 @@ import { supabase } from '../../../supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import Spacer from '../../components/Spacer';
+import * as ImagePicker from 'expo-image-picker'; // Import ImagePicker
 import { logout, setAdvertPreference } from '../../actions/authActions'; // Import the logout action if needed
 
 export interface Profile {
@@ -15,6 +16,7 @@ export interface Profile {
   username?: string;
   full_name?: string;
   website?: string;
+  avatar_url?: string; // Added avatar_url for image upload
 }
 
 export interface User {
@@ -35,10 +37,10 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
 
   // Access Redux state
 
-
   const [username, setUsername] = useState('');
   const [website, setWebsite] = useState('');
   const [full_name, setFullname] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null); // Added state for avatar URL
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<any>([]);
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
@@ -124,6 +126,68 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
     }
   };
 
+  // Image picker function for selecting and uploading profile picture
+  const handleImageUpload = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (!permissionResult.granted) {
+      alert('Permission to access gallery is required!');
+      return;
+    }
+
+    const pickerResult = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (pickerResult.cancelled) return;
+
+    const { uri } = pickerResult;
+
+    const fileName = `${Date.now()}-${user.id}.jpg`;
+    const response = await fetch(uri);
+    const blob = await response.blob();
+
+    // Upload image to Supabase storage
+    const { data, error } = await supabase.storage
+      .from('busylittleplatform') // Replace with your actual bucket name
+      .upload(fileName, blob);
+
+    if (error) {
+      console.error('Error uploading image:', error.message);
+      Toast.show({
+        type: 'error',
+        text1: 'Image Upload Failed',
+        text2: error.message,
+      });
+      return;
+    }
+
+    // Get public URL of uploaded image
+    const { publicUrl } = supabase.storage.from('busylittleplatform').getPublicUrl(fileName);
+
+    // Update profile with avatar URL
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({ avatar_url: publicUrl })
+      .eq('id', user.id);
+
+    if (updateError) {
+      Toast.show({
+        type: 'error',
+        text1: 'Update Failed',
+        text2: updateError.message,
+      });
+    } else {
+      setAvatarUrl(publicUrl); // Set avatar URL to display image
+      Toast.show({
+        type: 'success',
+        text1: 'Profile Updated',
+      });
+    }
+  };
+
   // Setting the header right icon to trigger loadDataFromStorage
   useEffect(() => {
     navigation.setOptions({
@@ -163,6 +227,7 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
     setUsername(profile?.username || '');
     setFullname(profile?.full_name || '');
     setWebsite(profile?.website || '');
+    setAvatarUrl(profile?.avatar_url || ''); // Set avatar URL if available
     setSelectedCities(profile?.cities || []);
   }, [profile]);
 
@@ -262,11 +327,18 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
                   <Text>No cities selected</Text>
                 )}
               </View>
-              {/* <Text><Text style={{ fontWeight: 'bold'}}>Show adverts: </Text> {showAdverts ? 'Active' : 'Inactive'}</Text> */}
             </View>
           </View>
         )}
-        
+
+        {/* Display uploaded avatar */}
+        {avatarUrl && (
+          <Image source={{ uri: avatarUrl }} style={{ width: 100, height: 100, borderRadius: 50, alignSelf: 'center', marginVertical: 10 }} />
+        )}
+
+        {/* Button to trigger image picker */}
+        <Button title="Upload Profile Picture" onPress={handleImageUpload} />
+
         <View style={styles.formContainer}>
           <View style={styles.inputWrapper}>
             <Text style={styles.inlineLabel}>Username:</Text>
@@ -280,7 +352,7 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
               style={styles.innerWrapperInputStyle}
             />
           </View>
-          
+
           <View style={styles.inputWrapper}>
             <Text style={styles.inlineLabel}>Website:</Text>
             <TextInput
@@ -294,7 +366,6 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
             />
           </View>
 
-         
           <View style={styles.inputWrapper}>
             <Text style={styles.inlineLabel}>Full Name:</Text>
             <TextInput
@@ -302,13 +373,12 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
               placeholderTextColor='#000'
               clearTextOnFocus={true}
               value={full_name}
-              clearTextOnFocus={true}
               onChangeText={setFullname}
               autoCapitalize={"none"}
               style={styles.innerWrapperInputStyle}
             />
           </View>
-          
+
           <Text style={styles.label}>Manage cities:</Text>
           <View style={styles.inputStyle}>
             {filteredCities.length > 0 ? filteredCities.map((city) => (
@@ -415,7 +485,6 @@ const styles = StyleSheet.create({
     color: '#000',
     fontSize: 14,
   },
-  
 });
 
 export default UpdateDetailsScreen;
