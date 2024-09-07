@@ -10,7 +10,7 @@ const UsersScreen = ({ navigation }: any) => {
     const user = useSelector((state) => state.auth.user);
     const [refreshing, setRefreshing] = useState(false);
 
-    console.log('user', user);
+    // console.log('user', user);
 
     // Alert and log for pinging an online user
     const pingUser = (listedUserId, listedUsername) => {
@@ -83,8 +83,6 @@ const UsersScreen = ({ navigation }: any) => {
             : item?.full_name
             ? item.full_name
             : item.email
-            ? item.avatar_url
-            : item.avatar_url;
         const isEmailDisplayed = !item?.username && !item?.full_name;
     
         return (
@@ -132,17 +130,17 @@ const UsersScreen = ({ navigation }: any) => {
                         }}
                     >
                     <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 12}}>
-                        {item.avatar_url &&
                         
-                            <Image 
-                              source={{ uri: item.avatar_url }} 
-                              style={[
-                                styles.image, 
-                                {width: 40, height: 40, borderRadius: '50%'}
-                              ]} 
-                            />
-                            }
-                            
+                            {item.avatar_url ?
+                                
+                                <Image 
+                                source={{ uri: item.avatar_url }} 
+                                style={[
+                                    styles.image, 
+                                    {width: 40, height: 40, borderRadius: '50%'}
+                                ]} 
+                                />
+                                : null }
                             <Text
                                 style={[
                                     styles.userName,
