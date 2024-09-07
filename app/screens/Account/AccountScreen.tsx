@@ -143,8 +143,9 @@ const AccountScreen = ({ navigation }: any) => {
   // in case anything has changed.  
   useFocusEffect(
     useCallback(() => {
+      fetchData();
       fetchFavorites();
-    }, [fetchFavorites])
+    }, [fetchUserData, fetchFavorites])
   );
 
   useEffect(() => {

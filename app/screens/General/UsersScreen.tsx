@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useEffect, useState, useCallback } from "react";
-import { Alert, View, Text, StyleSheet, RefreshControl, FlatList, Pressable } from 'react-native';
+import { Alert, View, Text, StyleSheet, RefreshControl, Image, FlatList, Pressable } from 'react-native';
 import { supabase } from '../../../supabase'; 
 import { useSelector } from 'react-redux'; 
 import { useFocusEffect } from '@react-navigation/native';
@@ -82,7 +82,9 @@ const UsersScreen = ({ navigation }: any) => {
             ? item.username
             : item?.full_name
             ? item.full_name
-            : item.email;
+            : item.email
+            ? item.avatar_url
+            : item.avatar_url;
         const isEmailDisplayed = !item?.username && !item?.full_name;
     
         return (
@@ -97,6 +99,17 @@ const UsersScreen = ({ navigation }: any) => {
                             justifyContent: 'space-between',
                         }}
                     >
+                        <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 12}}>
+                        {item.avatar_url &&
+                        
+                            <Image 
+                              source={{ uri: item.avatar_url }} 
+                              style={[
+                                styles.image, 
+                                {width: 40, height: 40, borderRadius: '50%'}
+                              ]} 
+                            />
+                        }
                         <Text
                             style={[
                                 styles.userName,
@@ -105,6 +118,7 @@ const UsersScreen = ({ navigation }: any) => {
                         >
                             {displayText}
                         </Text>
+                        </View>
                         <GreenDot />
                     </Pressable>
                 ) : (
@@ -117,14 +131,27 @@ const UsersScreen = ({ navigation }: any) => {
                             justifyContent: 'space-between',
                         }}
                     >
-                        <Text
-                            style={[
-                                styles.userName,
-                                isEmailDisplayed && styles.emailText,
-                            ]}
-                        >
-                            {displayText}
-                        </Text>
+                    <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 12}}>
+                        {item.avatar_url &&
+                        
+                            <Image 
+                              source={{ uri: item.avatar_url }} 
+                              style={[
+                                styles.image, 
+                                {width: 40, height: 40, borderRadius: '50%'}
+                              ]} 
+                            />
+                            }
+                            
+                            <Text
+                                style={[
+                                    styles.userName,
+                                    isEmailDisplayed && styles.emailText,
+                                ]}
+                            >
+                                {displayText}
+                            </Text>
+                        </View>
                         <GrayDot />
                     </Pressable>
                 )}
@@ -172,6 +199,8 @@ const styles = StyleSheet.create({
     userName: {
         fontSize: 16,
         color: '#000',
+        textAlign: 'left',
+        alignItems: 'flex-start'
     },
     emailText: {
         color: 'red', 

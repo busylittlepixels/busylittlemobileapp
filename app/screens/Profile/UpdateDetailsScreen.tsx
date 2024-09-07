@@ -1,7 +1,7 @@
 // @ts-nocheck
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useState, useEffect, useCallback, useImperativeHandle, forwardRef } from 'react';
-import { Alert, ScrollView, View, TextInput, Text, Button, FlatList, StyleSheet, Pressable, RefreshControl, Switch, Image } from 'react-native';
+import { ActivityIndicator, Alert, ScrollView, View, TextInput, Text, Button, FlatList, StyleSheet, Pressable, Progress, RefreshControl, Switch, Image } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux'; // Import useSelector and useDispatch
 import { supabase } from '../../../supabase';
@@ -11,6 +11,7 @@ import Spacer from '../../components/Spacer';
 import * as ImagePicker from 'expo-image-picker'; // Import ImagePicker
 import { decode } from 'base64-arraybuffer'; // Import decode from base64-arraybuffer
 import { logout, setAdvertPreference } from '../../actions/authActions'; // Import the logout action if needed
+import ImageUploader from '../../components/ImageUploader';
 
 export interface Profile {
   id: string;
@@ -130,7 +131,7 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
 
 
   const handleImageUpload = async () => {
-    console.log('Handling upload for user:', user.id);
+    // console.log('Handling upload for user:', user.id);
 
     try {
       // Request permission to access media library
@@ -138,13 +139,13 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
       // console.log('Permission result:', permissionResult);
 
       if (!permissionResult.granted) {
-        console.log('Permission to access gallery was denied');
+        // console.log('Permission to access gallery was denied');
         alert('Permission to access gallery is required!');
         return;
       }
 
-      console.log('Permission granted for media library access.');
-
+      // console.log('Permission granted for media library access.');
+      
       // Launch the image picker
       const pickerResult = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -153,10 +154,12 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
         base64: true,
       });
 
+      setLoading(true);
       // console.log('Picker result:', pickerResult);
 
       if (pickerResult.canceled) {
         // console.log('User canceled image picker.');
+        setLoading(false);
         return;
       }
 
@@ -176,7 +179,7 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
       // Decode base64 to ArrayBuffer for upload
       const fileData = decode(base64);
 
-      console.log('Decoded file data length:', fileData.byteLength);
+      // console.log('Decoded file data length:', fileData.byteLength);
 
       // Upload the image to Supabase storage
       const { data, error } = await supabase.storage
@@ -195,7 +198,7 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
         return;
       }
 
-      console.log('Image uploaded successfully:', data);
+      // console.log('Image uploaded successfully:', data);
 
       // Get the public URL of the uploaded image
       const { data: publicUrlData, error: publicUrlError } = supabase
@@ -209,7 +212,7 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
       }
 
       const publicUrl = publicUrlData.publicUrl;
-      console.log('Public URL of uploaded image:', publicUrl);
+      // console.log('Public URL of uploaded image:', publicUrl);
 
       // Update profile with avatar URL
       const { error: updateError } = await supabase
@@ -224,6 +227,7 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
           text1: 'Profile Update Failed',
           text2: updateError.message,
         });
+        setLoading(false);
       } else {
         setAvatarUrl(publicUrl);
         Toast.show({
@@ -231,8 +235,10 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
           text1: 'Profile Updated',
         });
       }
+      setLoading(false);
     } catch (error) {
       console.error('Unexpected error during image upload:', error);
+      setLoading(false);
     }
   };
     
@@ -364,9 +370,9 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
       }
     >
       <View style={styles.innerContainer}>
-        <Text style={styles.title}>Update Profile Details</Text>
+        {/* <Text style={styles.title}>Update Profile Details</Text> */}
         <Spacer space={20} />
-        {user && (
+        {/* {user && (
           <View style={styles.profileHeader}>
             <Text><Text style={{ fontWeight: 'bold'}}>Email:</Text> {user.email}</Text>
             <View>
@@ -382,15 +388,17 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
               </View>
             </View>
           </View>
-        )}
+        )} */}
 
-        {/* Display uploaded avatar */}
-        {avatarUrl && (
-          <Image source={{ uri: avatarUrl }} style={{ width: 100, height: 100, borderRadius: 50, alignSelf: 'center', marginVertical: 10 }} />
-        )}
-
-        {/* Button to trigger image picker */}
-        <Button title="Upload Profile Picture" onPress={handleImageUpload} />
+        {avatarUrl && 
+          <View style={styles.profileHeader}>
+            <ImageUploader 
+              avatarUrl={avatarUrl} 
+              loading={loading} 
+            />
+            <Button style={{ color: '#000'}} title="Upload Profile Picture" onPress={handleImageUpload} />
+          </View>
+        }
 
         <View style={styles.formContainer}>
           <View style={styles.inputWrapper}>
@@ -402,6 +410,19 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
               onChangeText={setUsername}
               autoCapitalize="none"
               clearTextOnFocus={true}
+              style={styles.innerWrapperInputStyle}
+            />
+          </View>
+
+          <View style={styles.inputWrapper}>
+            <Text style={styles.inlineLabel}>Full Name:</Text>
+            <TextInput
+              placeholder={profile?.full_name}
+              placeholderTextColor='#000'
+              clearTextOnFocus={true}
+              value={full_name}
+              onChangeText={setFullname}
+              autoCapitalize={"none"}
               style={styles.innerWrapperInputStyle}
             />
           </View>
@@ -419,18 +440,7 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
             />
           </View>
 
-          <View style={styles.inputWrapper}>
-            <Text style={styles.inlineLabel}>Full Name:</Text>
-            <TextInput
-              placeholder={profile?.full_name}
-              placeholderTextColor='#000'
-              clearTextOnFocus={true}
-              value={full_name}
-              onChangeText={setFullname}
-              autoCapitalize={"none"}
-              style={styles.innerWrapperInputStyle}
-            />
-          </View>
+         
 
           <Text style={styles.label}>Manage cities:</Text>
           <View style={styles.inputStyle}>
@@ -537,6 +547,33 @@ const styles = StyleSheet.create({
     textAlign: 'right', // Align text to the right
     color: '#000',
     fontSize: 14,
+  },
+  imageContainer: {
+    position: 'relative',
+    marginVertical: 10,
+  },
+  image: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+  },
+  imageLoading: {
+    opacity: 0.5,
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 50,
+  },
+  loadingText: {
+    color: '#ffffff',
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  progressBar: {
+    marginTop: 10,
   },
 });
 
