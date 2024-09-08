@@ -30,6 +30,7 @@ import CitiesScreen from '../screens/Cities/CitiesScreen';
 import SearchScreen from '../screens/Search/SearchScreen';
 import OnboardingScreen from '../screens/Login/OnboardingScreen';
 import SettingsScreen from '../screens/General/SettingsScreen';
+import FriendProfileScreen from '../screens/Friends/FriendProfileScreen';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -49,6 +50,7 @@ export type RootStackParamList = {
   Onboarding: undefined;
   Profile: undefined;
   Calendar: undefined;
+  FriendProfile: undefined; 
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -125,6 +127,25 @@ const AppNavigator = () => {
                 <Stack.Screen name="UpdateDetails" component={UpdateDetailsScreen} options={{ headerShown: true }} />
                 <Stack.Screen name="Payment" component={PaymentScreen} />
                 <Stack.Screen name="TabEile" component={TabEileScreen} />
+                <Stack.Screen name="FriendProfile" component={FriendProfileScreen} options={({ navigation }) => ({
+                  // gestureEnabled: false,
+                  // gestureDirection: 'horizontal',
+                  // cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
+                  headerTintColor: '#000',
+                  headerTitle: 'Friend Profile',
+                  headerBackTitle: 'Back', // Change the back button text
+                  headerBackTitleVisible: true, // Ensures the back button text is visible
+                    headerRight: () => (
+                      <View style={{ display: 'flex', flexDirection: 'row' }}>
+                        <Pressable
+                        onPress={() => navigation.goBack()} // Navigate to the Search screen
+                        style={{ marginRight: 15 }}
+                      >
+                        <Ionicons name="close-outline" size={24} color="black" />
+                      </Pressable>
+                    </View>
+                  ),
+                })} />
               </>
             )}
           </>
