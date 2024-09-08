@@ -7,6 +7,7 @@ import MySchedule from './../MyScreens/MyEventsFeed';
 import UpdateDetailsScreen from './UpdateDetailsScreen';
 import AnimatedTabs from '../../components/AnimatedTabs'; // Import your custom AnimatedTabs component
 import MySettings from '../MyScreens/MySettings';
+import MessagesScreen from '../Chat/MessagesScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -43,18 +44,33 @@ const ProfileScreen = ({ navigation }:any) => {
               iconName = focused ? 'newspaper' : 'newspaper-outline';
             } else if (route.name === 'Settings') {
               iconName = focused ? 'settings' : 'settings-outline';
+            } else if (route.name === 'Messages') {
+              iconName = focused ? 'settings' : 'settings-outline';
             }
             return <Ionicons name={iconName} size={size} color={color} />;
           },
           tabBarActiveTintColor: 'green',
           tabBarInactiveTintColor: 'black',
+          tabBarStyle: {
+            paddingBottom: 10, // Adjust padding or margin as necessary
+            backgroundColor: '#fff', // Example of tab bar background color
+            borderTopWidth: 0, // Customize borders if necessary
+          }
         })}
       >
+         
         <Tab.Screen
           name="My Profile"
           children={(props) => <UpdateDetailsScreen {...props} ref={updateDetailsRef} />} // Pass the ref and props
           listeners={{
             focus: () => navigation.setOptions({ title: 'Update Profile' }),
+          }}
+        />
+        <Tab.Screen
+          name="Messages"
+          component={MessagesScreen}
+          listeners={{
+            focus: () => navigation.setOptions({ title: 'Messages' }),
           }}
         />
         <Tab.Screen

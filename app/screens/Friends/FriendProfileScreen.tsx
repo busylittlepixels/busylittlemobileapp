@@ -57,8 +57,22 @@ const FriendProfileScreen = ({ navigation, route }: any) => {
   const avatarImage = Asset.fromModule(require('./../../assets/images/blp-splash.png')).uri;
   const imageUrl = avatarImage;
 
-  // Fetch favorites from AsyncStorage
 
+  const ChatButton = ({ title, onPress }) => {
+    return (
+      <Pressable
+        style={({ pressed }) => [
+          {
+            backgroundColor: pressed ? '#90EE90' : 'green', // Dim the color when pressed
+          },
+          styles.button,
+        ]}
+        onPress={onPress}
+      >
+        <Text style={styles.buttonText}>{title}</Text>
+      </Pressable>
+    );
+  };
   // Fetch user-related data.
   // Gonna throw this into a callback because there's a few bits need hydrating and we don't want to be making 
   // needless calls all over the place. 
@@ -106,7 +120,7 @@ const FriendProfileScreen = ({ navigation, route }: any) => {
 
 
   const goToProfile = () => {
-    navigation.navigate("Users")
+    navigation.navigate("Chat", { senderId: user.id, receiverId: route.params.user.id });
   }
 
   const onRefresh = useCallback(() => {
@@ -114,7 +128,7 @@ const FriendProfileScreen = ({ navigation, route }: any) => {
     fetchData().finally(() => setRefreshing(false));
   }, [fetchData]);
 
-  // console.log(route.params.user.avatar)
+  console.log(route.params.user.id)
 
   return (
     <View style={{ flex: 1 }}>

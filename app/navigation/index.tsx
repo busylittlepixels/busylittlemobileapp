@@ -31,6 +31,8 @@ import SearchScreen from '../screens/Search/SearchScreen';
 import OnboardingScreen from '../screens/Login/OnboardingScreen';
 import SettingsScreen from '../screens/General/SettingsScreen';
 import FriendProfileScreen from '../screens/Friends/FriendProfileScreen';
+import ChatScreen from '../screens/Chat/ChatScreen';
+import MessagesScreen from '../screens/Chat/MessagesScreen';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -51,6 +53,7 @@ export type RootStackParamList = {
   Profile: undefined;
   Calendar: undefined;
   FriendProfile: undefined; 
+  Chat: undefined; 
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -146,6 +149,7 @@ const AppNavigator = () => {
                     </View>
                   ),
                 })} />
+                <Stack.Screen name="Chat" component={ChatScreen} options={{ headerShown: true }} />
               </>
             )}
           </>
