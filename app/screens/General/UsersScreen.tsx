@@ -13,14 +13,14 @@ const UsersScreen = ({ navigation }: any) => {
     // console.log('user', user);
 
     // Alert and log for pinging an online user
-    const pingUser = (listedUserId, listedUsername, listedUserAvatar) => {
+    const pingUser = (listedUserId, listedUsername, listedUserFullName, listedUserAvatar) => {
         // console.log('fuch yeah');
         // console.log('current user id', user.id);
         // console.log('current user name', user.user_metadata?.username);
         // console.log('Listed user id:', listedUserId);
         // console.log('Listed user name:', listedUsername);
 
-        navigation.navigate('FriendProfile', { user: { id: listedUserId, name: listedUsername, avatar: listedUserAvatar }  });
+        navigation.navigate('FriendProfile', { user: { id: listedUserId, name: listedUsername, full_name: listedUserFullName, avatar: listedUserAvatar }  });
 
 
         // Alert.alert(
@@ -30,13 +30,13 @@ const UsersScreen = ({ navigation }: any) => {
     };
 
     // Alert and log for pinging an offline user
-    const pingUserOffline = (listedUserId, listedUsername, listedUserAvatar) => {
+    const pingUserOffline = (listedUserId, listedUsername, listedUserFullName, listedUserAvatar) => {
         // console.log('derp');
         // console.log('user is offline', user.id);
         // console.log('current user name', user.user_metadata?.username);
         // console.log('Listed user id:', listedUserId);
         // console.log('Listed user name:', listedUsername);
-        navigation.navigate('FriendProfile', { user: { id: listedUserId, name: listedUsername, avatar: listedUserAvatar }  });
+        navigation.navigate('FriendProfile', { user: { id: listedUserId, name: listedUsername, full_name: listedUserFullName, avatar: listedUserAvatar }  });
 
         // Alert.alert(
         //     'User Pinged (Offline)',
@@ -93,7 +93,7 @@ const UsersScreen = ({ navigation }: any) => {
             <View style={styles.userItem}>
                 {item.enablepublicprofile ? (
                     <Pressable
-                        onPress={() => pingUser(item?.id, item?.username, item?.avatar_url)}  // Pass listed user id to pingUser
+                        onPress={() => pingUser(item?.id, item?.username, item?.full_name, item?.avatar_url)}  // Pass listed user id to pingUser
                         style={{
                             display: 'flex',
                             flexDirection: 'row',
@@ -125,7 +125,7 @@ const UsersScreen = ({ navigation }: any) => {
                     </Pressable>
                 ) : (
                     <Pressable
-                        onPress={() => pingUser(item?.id, item?.username, item?.avatar_url)}  // Pass listed user id to pingUserOffline
+                        onPress={() => pingUser(item?.id, item?.username, item?.full_name, item?.avatar_url)}  // Pass listed user id to pingUserOffline
                         style={{
                             display: 'flex',
                             flexDirection: 'row',

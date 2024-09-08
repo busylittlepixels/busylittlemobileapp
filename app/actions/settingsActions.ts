@@ -36,7 +36,7 @@ export const setPublicProfile = (isPublic: boolean, userId: string) => async (di
     }
 
     // Save the preference in AsyncStorage
-    await AsyncStorage.setItem('isPublicProfile', JSON.stringify(isPublic));
+    await AsyncStorage.setItem('enablePublicProfile', JSON.stringify(isPublic));
 
     // Dispatch the action to update Redux state
     dispatch({

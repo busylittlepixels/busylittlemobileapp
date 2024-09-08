@@ -114,6 +114,7 @@ const FriendProfileScreen = ({ navigation, route }: any) => {
     fetchData().finally(() => setRefreshing(false));
   }, [fetchData]);
 
+  // console.log(route.params.user.avatar)
 
   return (
     <View style={{ flex: 1 }}>
@@ -121,7 +122,8 @@ const FriendProfileScreen = ({ navigation, route }: any) => {
         {route.params.user && (
           <View style={styles.userInfoContainer}>
             <View style={styles.textContainer}>
-              <Text style={styles.screenTitle}>Hey {route.params.user.name || user.user_metadata?.name}</Text>
+            <Text style={styles.screenTitle}>{route.params.user.full_name || user.user_metadata?.full_name}</Text>
+              <Text style={[styles.screenTitle, { fontSize: 12}]}>{route.params.user.name || user.user_metadata?.name}</Text>
             </View>
             <Pressable  onPress={goToProfile}>
             <Animated.Image

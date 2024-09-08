@@ -6,6 +6,7 @@ import ParallaxScrollView from '@/app/components/ParallaxScrollView';
 import { supabase } from '../../../supabase';
 import { ThemedText } from '@/app/components/ThemedText';
 import { ThemedView } from '@/app/components/ThemedView';
+import { Collapsible } from '@/app/components/Collapsible';
 
 type City = {
   id: number;
@@ -120,12 +121,49 @@ const CityScreen = ({ navigation, route }: any) => {
           <Text style={[styles.text,{ marginVertical: 10}]}>{country}</Text>
           <Text style={styles.content}>{description}</Text>
         </ThemedView>
+
+        <Collapsible title="Travel Information">
+            <ThemedText style={styles.content}>
+              You can open this project on Android, iOS, and the web. To open the web version, press{' '}
+              <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
+            </ThemedText>
+        </Collapsible>
+
+        {/* <Collapsible title="Race Details & Conditions">
+            <ThemedText>
+              You can open this project on Android, iOS, and the web. To open the web version, press{' '}
+              <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
+            </ThemedText>
+        </Collapsible> */}
+
+        <Collapsible title="Upcoming Events">
+            <ThemedText style={styles.content}>
+              You can open this project on Android, iOS, and the web. To open the web version, press{' '}
+              <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
+            </ThemedText>
+        </Collapsible>
+
+        <Collapsible title="FAQ">
+            <ThemedText style={styles.content}>
+              You can open this project on Android, iOS, and the web. To open the web version, press{' '}
+              <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
+            </ThemedText>
+        </Collapsible>
+
+        <Collapsible title="Contact">
+            <ThemedText>
+              You can open this project on Android, iOS, and the web. To open the web version, press{' '}
+              <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
+            </ThemedText>
+        </Collapsible>
+
       </ParallaxScrollView>
 
       {/* <View style={styles.buttonContainer}>
         <Button title="Go Back" onPress={() => navigation.goBack()} color="#fff" />
       </View> */}
-      <View style={[styles.buttonContaine, { display: 'flex', flexDirection: 'row', gap: 4, width:'100%', paddingVertical: 10, paddingHorizontal: 30, marginBottom: 10 }]}>
+     
+      <View style={[styles.buttonContainer, { display: 'flex', flexDirection: 'row', gap: 4, width:'100%', paddingVertical: 10, paddingHorizontal: 30, marginBottom: 10 }]}>
         <OutlineButton title="Go Back" onPress={() => navigation.goBack()} color="#fff" />
       </View>
     </View>
