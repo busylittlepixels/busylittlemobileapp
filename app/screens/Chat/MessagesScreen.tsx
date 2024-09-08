@@ -1,26 +1,68 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, Pressable, StyleSheet } from 'react-native';
+import { View, Text, FlatList, Pressable, StyleSheet, Image } from 'react-native';
 import { supabase } from '@/supabase'; // Replace with your Supabase client
 import { useSelector } from 'react-redux';
 
-// Function to fetch user conversations
 const fetchUserConversations = async (userId: any) => {
-    const { data, error } = await supabase
+    // Fetch sent messages
+    const { data: sentMessages, error: sentError } = await supabase
         .from('messages')
-        .select('*, profiles!messages_sender_id_fkey(*)')
-        .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
+        .select(`
+            *,
+            sender_profile:profiles!messages_sender_id_fkey(full_name),
+            receiver_profile:profiles!messages_receiver_id_fkey(full_name)
+        `)
+        .eq('sender_id', userId)
         .order('created_at', { ascending: false });
 
-    if (error) {
-        console.error('Error fetching conversations:', error);
+    if (sentError) {
+        console.error('Error fetching sent messages:', sentError);
         return [];
     }
 
-    return data; // Return the list of messages
+    // Fetch received messages
+    const { data: receivedMessages, error: receivedError } = await supabase
+        .from('messages')
+        .select(`
+            *,
+            sender_profile:profiles!messages_sender_id_fkey(full_name),
+            receiver_profile:profiles!messages_receiver_id_fkey(full_name)
+        `)
+        .eq('receiver_id', userId)
+        .order('created_at', { ascending: false });
+
+    if (receivedError) {
+        console.error('Error fetching received messages:', receivedError);
+        return [];
+    }
+
+    // Merge sent and received messages and sort by date
+    const allMessages = [...sentMessages, ...receivedMessages];
+
+    // Remove duplicates and only keep the latest message between sender/receiver pairs
+    const uniqueConversations: any[] = [];
+    const seenPairs = new Set();
+
+    allMessages.forEach((message) => {
+        const conversationKey = [message.sender_id, message.receiver_id].sort().join('-');
+        if (!seenPairs.has(conversationKey)) {
+            uniqueConversations.push(message);
+            seenPairs.add(conversationKey);
+        }
+    });
+
+    // Sort conversations by the most recent message
+    // @ts-ignore
+    uniqueConversations.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    return uniqueConversations;
 };
 
 
+
 const MessagesScreen = ({ navigation, route }: any) => {
+
+    console.log('route params', route.params);
 
     const [conversations, setConversations] = useState([]);
     // Access Redux state and get the user
@@ -32,30 +74,32 @@ const MessagesScreen = ({ navigation, route }: any) => {
         // Fetch conversations when component mounts
         const loadConversations = async () => {
             const data = await fetchUserConversations(userId);
-            //   @ts-ignore
+            // @ts-ignore
             setConversations(data);
         };
 
         loadConversations();
     }, []);
 
+   
     // Handle navigation to individual chat
-    const handleChatPress = (receiverId: any) => {
-        navigation.navigate('Chat', { senderId: userId, receiverId });
+    const handleChatPress = (receiverId: any, otherUserName:any) => {
+        console.log('handlechat recid', receiverId);
+        navigation.navigate('Chat', { senderId: userId, receiverId: receiverId, otherUserName: otherUserName });
     };
 
-    // Render each conversation item
     const renderConversationItem = ({ item }: any) => {
+        console.log('render conv item', JSON.stringify(item, null, 2)); // Log the item structure
+
         const isSender = item.sender_id === userId;
         const otherUserId = isSender ? item.receiver_id : item.sender_id;
-        const otherUserName = isSender ? item.receiver_name : item.sender_name; // Replace with correct data
+        const otherUserName = isSender ? item.receiver_profile?.full_name : item.sender_profile?.full_name;
         const lastMessage = item.message;
-        
-
-        
+    
         return (
-            <Pressable onPress={() => handleChatPress(otherUserId)}>
+            <Pressable onPress={() => handleChatPress(otherUserId, otherUserName)}>
                 <View style={styles.conversationItem}>
+                        
                     <Text style={styles.userName}>{otherUserName || 'Unknown User'}</Text>
                     <Text style={styles.lastMessage}>{lastMessage}</Text>
                     <Text style={styles.timestamp}>{new Date(item.created_at).toLocaleString()}</Text>
@@ -63,7 +107,8 @@ const MessagesScreen = ({ navigation, route }: any) => {
             </Pressable>
         );
     };
-
+    
+    
     return (
         <View style={styles.container}>
             <FlatList

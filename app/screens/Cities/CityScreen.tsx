@@ -3,10 +3,12 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useEffect, useState } from 'react';
 import { Image, View, Text, ActivityIndicator, StyleSheet, Button, Pressable } from 'react-native';
 import ParallaxScrollView from '@/app/components/ParallaxScrollView';
+import Spacer from '@/app/components/Spacer';
 import { supabase } from '../../../supabase';
 import { ThemedText } from '@/app/components/ThemedText';
 import { ThemedView } from '@/app/components/ThemedView';
 import { Collapsible } from '@/app/components/Collapsible';
+
 
 type City = {
   id: number;
