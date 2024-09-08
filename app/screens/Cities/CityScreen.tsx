@@ -156,16 +156,17 @@ const CityScreen = ({ navigation, route }: any) => {
               <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
             </ThemedText>
         </Collapsible>
-
+        <Spacer space={20} />
+        <View style={[styles.buttonContainer, { display: 'flex', flexDirection: 'row', gap: 4, width:'100%', paddingVertical: 10, paddingHorizontal: 30, marginVertical: 10 }]}>
+          <OutlineButton title="Go Back" onPress={() => navigation.goBack()} color="#fff" />
+        </View>
       </ParallaxScrollView>
 
       {/* <View style={styles.buttonContainer}>
         <Button title="Go Back" onPress={() => navigation.goBack()} color="#fff" />
       </View> */}
      
-      <View style={[styles.buttonContainer, { display: 'flex', flexDirection: 'row', gap: 4, width:'100%', paddingVertical: 10, paddingHorizontal: 30, marginBottom: 10 }]}>
-        <OutlineButton title="Go Back" onPress={() => navigation.goBack()} color="#fff" />
-      </View>
+     
     </View>
   );
 };
