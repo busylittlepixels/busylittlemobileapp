@@ -23,10 +23,10 @@ const UsersScreen = ({ navigation }: any) => {
         navigation.navigate('FriendProfile', { user: { id: listedUserId, name: listedUsername, avatar: listedUserAvatar }  });
 
 
-        Alert.alert(
-            'User Pinged',
-            `Current user (ie, you: ${user.user_metadata?.username}) pinged user: ${listedUsername}`
-        );
+        // Alert.alert(
+        //     'User Pinged',
+        //     `Current user (ie, you: ${user.user_metadata?.username}) pinged user: ${listedUsername}`
+        // );
     };
 
     // Alert and log for pinging an offline user
@@ -38,10 +38,10 @@ const UsersScreen = ({ navigation }: any) => {
         // console.log('Listed user name:', listedUsername);
         navigation.navigate('FriendProfile', { user: { id: listedUserId, name: listedUsername, avatar: listedUserAvatar }  });
 
-        Alert.alert(
-            'User Pinged (Offline)',
-            `Current user (ie, you: ${user.user_metadata?.username}) pinged user: ${listedUsername ? listedUsername : listedUserId}, but their profile is not publically accessible`
-        );
+        // Alert.alert(
+        //     'User Pinged (Offline)',
+        //     `Current user (ie, you: ${user.user_metadata?.username}) pinged user: ${listedUsername ? listedUsername : listedUserId}, but their profile is not publically accessible`
+        // );
     };
 
     const getAllUsers = async () => {

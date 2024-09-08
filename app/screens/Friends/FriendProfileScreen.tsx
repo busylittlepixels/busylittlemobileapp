@@ -19,6 +19,7 @@ import { Asset } from 'expo-asset';
 import { enablePublicProfile } from '@/app/services/settingsService';
 
 const FriendProfileScreen = ({ navigation, route }: any) => {
+    const [profile, setProfile] = useState(''); 
   // track vertical scroll
   const scrollY = useRef(new Animated.Value(0)).current;
   
