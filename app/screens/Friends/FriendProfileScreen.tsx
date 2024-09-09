@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useFocusEffect } from '@react-navigation/native';
-import { View, Text, ScrollView, Animated, RefreshControl, Image, Pressable, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, Animated, RefreshControl, Image, Pressable, StyleSheet, Alert } from 'react-native';
 import { useSelector } from 'react-redux';
 import { supabase } from '../../../supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -123,6 +123,24 @@ const FriendProfileScreen = ({ navigation, route }: any) => {
     navigation.navigate("Chat", { senderId: user.id, receiverId: route.params.user.id });
   }
 
+
+  const sendConnectionRequest = async () => {
+      // navigation.navigate("Chat", { senderId: user.id, receiverId: route.params.user.id });
+      const { data, error } = await supabase
+        .from('connection_requests')
+        .insert([
+          { sender_id: user.id, receiver_id: route.params.user.id, status: 'pending' }
+        ]);
+
+        if (error) {
+          Toast.show({ type: 'error', text1: 'Error', text2: 'Failed to send connection rquestion' });
+        } else {
+          Toast.show({ type: 'success', text1: 'Success', text2: 'Connection request sent' });
+        }
+  }
+
+
+
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     fetchData().finally(() => setRefreshing(false));
@@ -148,7 +166,11 @@ const FriendProfileScreen = ({ navigation, route }: any) => {
           </View>
         )}
       </Animated.View>
-      
+      <View>
+        <Pressable  onPress={sendConnectionRequest}>
+          <Text>Connect</Text>
+        </Pressable>
+      </View>
     </View>
   );
 };

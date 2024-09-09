@@ -1,18 +1,19 @@
+// @ts-nocheck
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Switch } from 'react-native';
+import { View, Text, StyleSheet, Switch, Button, Alert } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux'; // Import useSelector and useDispatch
 import { setPublicProfile, setAdvertPreference } from '../../actions/settingsActions'; // Import the action
-
+import { supabase } from "@/supabase";
 
 const MySettings = ({ navigation }: any) => {
     const [full_name, setFullname] = useState('');
     const [enableConnections, setEnableConnections] = useState(false);
+    const [pendingRequests, setPendingRequests] = useState([]); // Changed to hold the pending requests
 
     const dispatch = useDispatch();
-    const user = useSelector((state:any) => state.auth.user);
+    const user = useSelector((state: any) => state.auth.user);
     const showAdverts = useSelector((state: any) => state.settings.showAdverts);
     const showPublic = useSelector((state: any) => state.settings.enablePublicProfile);
-
 
     const toggleAdverts = (value: boolean) => {
         // @ts-ignore
@@ -21,31 +22,84 @@ const MySettings = ({ navigation }: any) => {
 
     const togglePublic = (value: boolean) => {
         // @ts-ignore
-        dispatch(setPublicProfile(value, user?.id))
-    }; 
+        dispatch(setPublicProfile(value, user?.id));
+    };
 
+    // Fetch pending connection requests where the current user is the receiver
+    const fetchPendingRequests = async () => {
+        const { data, error } = await supabase
+            .from('connection_requests')
+            .select(`
+                id,
+                sender:profiles!fk_sender(username, avatar_url),   
+                receiver:profiles!fk_receiver(username, avatar_url)
+            `)
+            .eq('receiver_id', user?.id)  // Fetch requests where the current user is the receiver
+            .eq('status', 'pending');      // Only pending requests
+    
+        if (error) {
+            console.log('Error fetching pending requests:', error);
+            Alert.alert('Error fetching pending requests');
+        } else {
+            setPendingRequests(data); // Store the pending requests
+        }
+    };
+    
+
+    // Handle accepting a connection request
+    const acceptRequest = async (requestId: number) => {
+        const { error } = await supabase
+            .from('connection_requests')
+            .update({ status: 'accepted' })
+            .eq('id', requestId);
+
+        if (error) {
+            Alert.alert('Error accepting request');
+        } else {
+            fetchPendingRequests(); // Refresh the pending requests after accepting
+            Alert.alert('Connection request accepted');
+        }
+    };
+
+    // Handle rejecting a connection request
+    const rejectRequest = async (requestId: number) => {
+        const { error } = await supabase
+            .from('connection_requests')
+            .update({ status: 'rejected' })
+            .eq('id', requestId);
+
+        if (error) {
+            Alert.alert('Error rejecting request');
+        } else {
+            fetchPendingRequests(); // Refresh the pending requests after rejecting
+            Alert.alert('Connection request rejected');
+        }
+    };
 
     useEffect(() => {
+        fetchPendingRequests(); // Fetch pending requests when the component is mounted
         navigation.setOptions({ headerTitle: 'My Settings' });
     }, [navigation]);
 
     return (
         <View style={styles.innerContainer}>
-            <Text style={[styles.title, { paddingBottom: 5 }]}>Public Settings:</Text>
+            <Text style={[styles.title, { paddingVertical: 5 }]}>Connection Requests:</Text>
             <View>
-                {/* Uncomment this if you want to use the Full Name input */}
-                {/* <View style={styles.inputWrapper}>
-                    <Text style={styles.inlineLabel}>Full Name:</Text>
-                    <TextInput
-                        placeholder={full_name}
-                        placeholderTextColor='#000'
-                        clearTextOnFocus={true}
-                        value={full_name}
-                        onChangeText={setFullname}
-                        autoCapitalize={"none"}
-                        style={styles.innerWrapperInputStyle}
-                    />
-                </View> */}
+                {pendingRequests.length > 0 ? (
+                    pendingRequests.map((request) => (
+                        <View key={request.id} style={styles.requestContainer}>
+                            <Text>{request.sender.username}</Text>
+                            <Button title="Accept" onPress={() => acceptRequest(request.id)} />
+                            <Button title="Reject" onPress={() => rejectRequest(request.id)} />
+                        </View>
+                    ))
+                ) : (
+                    <Text>No pending connection requests</Text>
+                )}
+            </View>
+
+            <Text style={[styles.title, { paddingTop: 15, paddingBottom: 5 }]}>Public Settings:</Text>
+            <View>
                 <View style={styles.inputWrapper}>
                     <Text style={styles.inlineLabel}>Enable Public Profile?</Text>
                     <Switch
@@ -64,6 +118,8 @@ const MySettings = ({ navigation }: any) => {
                 </View>
             </View>
 
+            
+
             <Text style={[styles.title, { paddingVertical: 5 }]}>Advertising:</Text>
             <View>
                 <View style={styles.inputWrapper}>
@@ -72,7 +128,6 @@ const MySettings = ({ navigation }: any) => {
                         value={showAdverts}
                         trackColor={{ true: 'green', false: 'gray' }}
                         onValueChange={toggleAdverts}
-                        // style={styles.innerWrapperInputStyle}
                     />
                 </View>        
             </View>
@@ -81,88 +136,28 @@ const MySettings = ({ navigation }: any) => {
 };
 
 const styles = StyleSheet.create({
-    main: {
-        flex: 1,
-    },
-    label: {
-        paddingTop: 10,
-        fontWeight: 'bold',
-    },
-    formContainer: {
-        flex: 3,
-    },
     innerContainer: {
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'flex-start', // Align content to the top
-        paddingRight: 16,
-        paddingLeft: 16,
-        marginTop: 10,
-    },
-    inputStyle: {
-        marginTop: 10,
-        backgroundColor: 'lightgray',
-        borderWidth: 1,
-        color: '#000',
-        padding: 10,
-        borderRadius: 3,
-    },
-    selectedCity: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginVertical: 2,
-        backgroundColor: '#f0f0f0',
-        padding: 10,
-        borderRadius: 5,
+        padding: 16,
     },
     title: {
         fontWeight: 'bold',
-        marginVertical: 5,
         fontSize: 18,
-    },
-    button: {
-        paddingVertical: 20,
-        paddingHorizontal: 20,
-        borderRadius: 5,
-        alignItems: 'center',
-        marginTop: 0,
-        width: '50%'
-    },
-    buttonText: {
-        color: '#FFFFFF', // White text
-        fontSize: 16,
-        fontWeight: 'normal',
-    },
-    profileHeader: {
-        paddingVertical: 20,
-        paddingHorizontal: 15,
-        backgroundColor: '#FFFFFF',
-        borderWidth: 1,
-        borderRadius: 3,
-        marginBottom: 5
+        marginVertical: 10,
     },
     inputWrapper: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: 'lightgray',
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 5,
-        padding: 10,
-        marginVertical: 5,
-        justifyContent: 'space-between',
+        marginVertical: 10,
     },
     inlineLabel: {
-        color: '#000',
         fontWeight: 'bold',
-        fontSize: 14,
-        marginRight: 10, // Space between label and input
+        marginRight: 10,
     },
-    innerWrapperInputStyle: {
-        flex: 1,
-        color: '#000',
-        fontSize: 14,
+    requestContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 10,
     },
 });
 
