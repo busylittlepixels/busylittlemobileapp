@@ -99,7 +99,7 @@ const ChatScreen = ({ navigation, route }: RouteParams) => {
         data={messages}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
-        inverted // Display newest messages at the bottom
+        // inverted // Display newest messages at the bottom
         contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-end' }} // Stick the list to the bottom
       />
 
