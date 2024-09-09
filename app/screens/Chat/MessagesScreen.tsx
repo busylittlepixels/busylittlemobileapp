@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, Pressable, StyleSheet, Image } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { View, Text, FlatList, Pressable, StyleSheet, RefreshControl } from 'react-native';
 import { supabase } from '@/supabase'; // Replace with your Supabase client
 import { useSelector } from 'react-redux';
 
@@ -58,48 +59,57 @@ const fetchUserConversations = async (userId: any) => {
     return uniqueConversations;
 };
 
-
-
 const MessagesScreen = ({ navigation, route }: any) => {
-
-    console.log('route params', route.params);
-
     const [conversations, setConversations] = useState([]);
+    const [refreshing, setRefreshing] = useState(false);
     // Access Redux state and get the user
     // @ts-ignore
     const user = useSelector((state) => state.auth.user);
     const userId = user.id; // Replace with the logged-in user's ID
 
-    useEffect(() => {
-        // Fetch conversations when component mounts
-        const loadConversations = async () => {
+    // Load conversations function
+    const loadConversations = useCallback(async () => {
+        try {
             const data = await fetchUserConversations(userId);
             // @ts-ignore
             setConversations(data);
-        };
+        } catch (error) {
+            console.error('Error loading conversations:', error);
+        }
+    }, [userId]);
 
+    useEffect(() => {
+        // Fetch conversations when the component mounts
         loadConversations();
-    }, []);
+    }, [loadConversations]);
 
-   
+    // Refetch conversations when the screen regains focus
+    useFocusEffect(
+        useCallback(() => {
+            loadConversations();
+        }, [loadConversations])
+    );
+
+    // Pull-to-refresh function
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        loadConversations().finally(() => setRefreshing(false));
+    }, [loadConversations]);
+
     // Handle navigation to individual chat
-    const handleChatPress = (receiverId: any, otherUserName:any) => {
-        console.log('handlechat recid', receiverId);
-        navigation.navigate('Chat', { senderId: userId, receiverId: receiverId, otherUserName: otherUserName });
+    const handleChatPress = (receiverId: any, otherUserName: any) => {
+        navigation.navigate('Chat', { senderId: userId, receiverId, otherUserName });
     };
 
     const renderConversationItem = ({ item }: any) => {
-        console.log('render conv item', JSON.stringify(item, null, 2)); // Log the item structure
-
         const isSender = item.sender_id === userId;
         const otherUserId = isSender ? item.receiver_id : item.sender_id;
         const otherUserName = isSender ? item.receiver_profile?.full_name : item.sender_profile?.full_name;
         const lastMessage = item.message;
-    
+
         return (
             <Pressable onPress={() => handleChatPress(otherUserId, otherUserName)}>
                 <View style={styles.conversationItem}>
-                        
                     <Text style={styles.userName}>{otherUserName || 'Unknown User'}</Text>
                     <Text style={styles.lastMessage}>{lastMessage}</Text>
                     <Text style={styles.timestamp}>{new Date(item.created_at).toLocaleString()}</Text>
@@ -107,12 +117,12 @@ const MessagesScreen = ({ navigation, route }: any) => {
             </Pressable>
         );
     };
-    
-    
+
     return (
         <View style={styles.container}>
             <FlatList
                 data={conversations}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
                 // @ts-ignore
                 keyExtractor={(item) => item?.id.toString()}
                 renderItem={renderConversationItem}

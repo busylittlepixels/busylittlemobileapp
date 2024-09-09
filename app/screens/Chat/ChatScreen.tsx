@@ -1,6 +1,6 @@
 // @ts-nocheck
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TextInput, Button, StyleSheet } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, FlatList, TextInput, Button, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import { supabase } from '../../../supabase';  // Ensure supabase is properly initialized
 
 interface Message {
@@ -25,6 +25,8 @@ const ChatScreen = ({ navigation, route }: RouteParams) => {
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
+  const flatListRef = useRef<FlatList>(null);  // Step 1: Add ref to FlatList
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     navigation.setOptions({ title: route.params?.otherUserName });
@@ -67,22 +69,28 @@ const ChatScreen = ({ navigation, route }: RouteParams) => {
     };
   }, [senderId, receiverId]);
 
-  // Function to send a new message
   const handleSendMessage = async () => {
     if (newMessage.trim() !== '') {
+      setLoading(true);
       const { error } = await supabase
         .from('messages')
-        .insert([
-          { message: newMessage, sender_id: senderId, receiver_id: receiverId }
-        ]);
-
+        .insert([{ message: newMessage, sender_id: senderId, receiver_id: receiverId }]);
+  
       if (error) {
         console.error('Error sending message:', error);
       } else {
-        setNewMessage(''); // Clear the input field after sending
+        setNewMessage('');
       }
+      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (flatListRef.current && messages.length > 0) {
+      // Use a small delay to ensure the list has time to update before scrolling
+      setTimeout(() => flatListRef.current.scrollToEnd({ animated: true }), 100);
+    }
+  }, [messages]);
 
   // Render each message
   const renderItem = ({ item }: { item: Message }) => (
@@ -93,14 +101,21 @@ const ChatScreen = ({ navigation, route }: RouteParams) => {
   );
 
   return (
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Use 'padding' for iOS, 'height' for Android
+      keyboardVerticalOffset={90} // Adjust this value depending on your header height or layout
+    >
     <View style={styles.container}>
       {/* Chat Messages List */}
       <FlatList
+        ref={flatListRef}
         data={messages}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
-        // inverted // Display newest messages at the bottom
-        contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-end' }} // Stick the list to the bottom
+        contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-end' }}
+        initialNumToRender={10}  // Render the first 10 messages initially
+        windowSize={21}  // Increase performance with larger chat lists
       />
 
       {/* Message Input and Send Button */}
@@ -111,9 +126,10 @@ const ChatScreen = ({ navigation, route }: RouteParams) => {
           value={newMessage}
           onChangeText={setNewMessage}
         />
-        <Button title="Send" onPress={handleSendMessage} />
+        <Button title="Send" onPress={handleSendMessage} disabled={loading} />
       </View>
     </View>
+    </KeyboardAvoidingView>
   );
 };
 
