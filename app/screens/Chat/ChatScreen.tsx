@@ -3,36 +3,18 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, FlatList, TextInput, Button, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import { supabase } from '../../../supabase';  // Ensure supabase is properly initialized
 
-interface Message {
-  id: number;
-  sender_id: string;
-  receiver_id: string;
-  message: string;
-  created_at: string;
-}
-
-interface RouteParams {
-  route: {
-    params: {
-      senderId: string;
-      receiverId: string;
-    };
-  };
-}
-
-const ChatScreen = ({ navigation, route }: RouteParams) => {
+const ChatScreen = ({ navigation, route }) => {
   const { senderId, receiverId } = route.params;
 
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
-  const flatListRef = useRef<FlatList>(null);  // Step 1: Add ref to FlatList
+  const flatListRef = useRef(null);  // FlatList ref to handle scrolling
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     navigation.setOptions({ title: route.params?.otherUserName });
   }, [navigation]);
 
-  // Fetch existing chat messages between the two users
   const fetchMessages = async () => {
     const { data, error } = await supabase
       .from('messages')
@@ -43,19 +25,18 @@ const ChatScreen = ({ navigation, route }: RouteParams) => {
     if (error) {
       console.error('Error fetching messages:', error);
     } else {
-      setMessages(data as Message[]);
+      setMessages(data || []);
     }
   };
 
   useEffect(() => {
-    fetchMessages(); // Fetch initial messages when component mounts
+    fetchMessages();
 
-    // Set up real-time subscription for new messages
+    // Subscribe to new messages in real-time
     const channel = supabase
       .channel('messages')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
         const newMessage = payload.new;
-        // Check if the new message belongs to this conversation
         if ((newMessage.sender_id === senderId && newMessage.receiver_id === receiverId) ||
             (newMessage.sender_id === receiverId && newMessage.receiver_id === senderId)) {
           setMessages((prevMessages) => [...prevMessages, newMessage]);
@@ -63,7 +44,6 @@ const ChatScreen = ({ navigation, route }: RouteParams) => {
       })
       .subscribe();
 
-    // Cleanup the subscription on unmount
     return () => {
       supabase.removeChannel(channel);
     };
@@ -72,28 +52,50 @@ const ChatScreen = ({ navigation, route }: RouteParams) => {
   const handleSendMessage = async () => {
     if (newMessage.trim() !== '') {
       setLoading(true);
+
+      // Send message to Supabase
       const { error } = await supabase
         .from('messages')
         .insert([{ message: newMessage, sender_id: senderId, receiver_id: receiverId }]);
-  
+
       if (error) {
         console.error('Error sending message:', error);
       } else {
-        setNewMessage('');
+        setNewMessage(''); // Clear input field
       }
+
       setLoading(false);
     }
   };
 
+  // Scroll to the last message after messages load or when new messages are added
   useEffect(() => {
     if (flatListRef.current && messages.length > 0) {
-      // Use a small delay to ensure the list has time to update before scrolling
-      setTimeout(() => flatListRef.current.scrollToEnd({ animated: true }), 100);
+      const lastIndex = messages.length - 1;  // Last index in the messages array
+      if (lastIndex >= 0) {
+        setTimeout(() => {
+          flatListRef?.current?.scrollToIndex({ index: lastIndex, animated: true });
+        }, 100);
+      }
     }
-  }, [messages]);
+  }, [messages]);  // This runs both when the messages load initially and when a new message is added
 
-  // Render each message
-  const renderItem = ({ item }: { item: Message }) => (
+  // getItemLayout helps FlatList know the height of each item in the list
+  const getItemLayout = (data, index) => ({
+    length: 70,  // Approximate height of each message item (adjust to fit your design)
+    offset: 70 * index,
+    index
+  });
+
+  // Handle scroll failure when index is out of range or not rendered yet
+  const onScrollToIndexFailed = (info) => {
+    const wait = new Promise(resolve => setTimeout(resolve, 500)); // Wait for 500ms
+    wait.then(() => {
+      flatListRef.current?.scrollToIndex({ index: info.index, animated: true });
+    });
+  };
+
+  const renderItem = ({ item }) => (
     <View style={item.sender_id === senderId ? styles.sentMessage : styles.receivedMessage}>
       <Text>{item.message}</Text>
       <Text style={styles.timestamp}>{new Date(item.created_at).toLocaleTimeString()}</Text>
@@ -103,32 +105,38 @@ const ChatScreen = ({ navigation, route }: RouteParams) => {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Use 'padding' for iOS, 'height' for Android
-      keyboardVerticalOffset={90} // Adjust this value depending on your header height or layout
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={90}
     >
-    <View style={styles.container}>
-      {/* Chat Messages List */}
-      <FlatList
-        ref={flatListRef}
-        data={messages}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderItem}
-        contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-end' }}
-        initialNumToRender={10}  // Render the first 10 messages initially
-        windowSize={21}  // Increase performance with larger chat lists
-      />
-
-      {/* Message Input and Send Button */}
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Type a message..."
-          value={newMessage}
-          onChangeText={setNewMessage}
+      <View style={styles.container}>
+        <FlatList
+          ref={flatListRef}
+          data={messages}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderItem}
+          contentContainerStyle={{ flexGrow: 1 }}
+          initialNumToRender={10}
+          windowSize={21}
+          getItemLayout={getItemLayout}  // Provide item layout info to FlatList
+          onScrollToIndexFailed={onScrollToIndexFailed}  // Handle failures to scroll
+          onContentSizeChange={() => {
+            const lastIndex = messages.length - 1;
+            if (lastIndex >= 0) {
+              flatListRef.current?.scrollToIndex({ index: lastIndex });
+            }
+          }}  // Scroll to last message when content size changes
         />
-        <Button title="Send" onPress={handleSendMessage} disabled={loading} />
+
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Type a message..."
+            value={newMessage}
+            onChangeText={setNewMessage}
+          />
+          <Button title="Send" onPress={handleSendMessage} disabled={loading} />
+        </View>
       </View>
-    </View>
     </KeyboardAvoidingView>
   );
 };
