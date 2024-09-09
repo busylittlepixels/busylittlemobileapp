@@ -1,9 +1,42 @@
 // @ts-nocheck
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Switch, Button, Alert } from 'react-native';
+import { View, Text, StyleSheet, Switch, Button, Alert, Pressable } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux'; // Import useSelector and useDispatch
 import { setPublicProfile, setAdvertPreference } from '../../actions/settingsActions'; // Import the action
 import { supabase } from "@/supabase";
+
+
+const AcceptButton = ({ title, onPress }) => {
+    return (
+      <Pressable
+        style={({ pressed }) => [
+          {
+            backgroundColor: pressed ? '#90EE90' : 'green', // Dim the color when pressed
+          },
+          styles.button,
+        ]}
+        onPress={onPress}
+      >
+        <Text style={styles.buttonText}>{title}</Text>
+      </Pressable>
+    );
+  };
+
+  const RejectButton = ({ title, onPress }) => {
+    return (
+      <Pressable
+        style={({ pressed }) => [
+          {
+            backgroundColor: pressed ? '#000' : 'red', // Dim the color when pressed
+          },
+          styles.button,
+        ]}
+        onPress={onPress}
+      >
+        <Text style={styles.buttonText}>{title}</Text>
+      </Pressable>
+    );
+  };
 
 const MySettings = ({ navigation }: any) => {
     const [full_name, setFullname] = useState('');
@@ -88,9 +121,11 @@ const MySettings = ({ navigation }: any) => {
                 {pendingRequests.length > 0 ? (
                     pendingRequests.map((request) => (
                         <View key={request.id} style={styles.requestContainer}>
-                            <Text>{request.sender.username}</Text>
-                            <Button title="Accept" onPress={() => acceptRequest(request.id)} />
-                            <Button title="Reject" onPress={() => rejectRequest(request.id)} />
+                            <Text style={{ fontWeight: 'bold'}}>{request.sender.username}</Text>
+                            <View style={{ display: 'flex', flexDirection: 'row', gap: 5}}>
+                                <AcceptButton title="Accept" onPress={() => acceptRequest(request.id)} />
+                                <RejectButton title="Reject" onPress={() => acceptRequest(request.id)} />
+                            </View>
                         </View>
                     ))
                 ) : (
@@ -159,6 +194,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 10,
     },
+    button:{
+        padding: 10,
+        borderRadius: 5,
+    },
+    buttonText:{
+        color: 'white',
+    }
 });
 
 export default MySettings;
