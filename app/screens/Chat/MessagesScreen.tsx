@@ -85,32 +85,32 @@ const MessagesScreen = ({ navigation, route }: any) => {
         setRefreshing(false);  // Stop the refresh
     }, [loadConversations]);
 
-    const handleChatPress = (receiverId: any, otherUserName: any) => {
-        navigation.navigate('Chat', { senderId: userId, receiverId, otherUserName });
+    const handleChatPress = (receiverId: any, otherUserName: any, otherUserAvatar: any) => {
+        navigation.navigate('Chat', { senderId: userId, receiverId, otherUserName, otherUserAvatar });
     };
 
-    const handleDeleteAllChats = async (item: any, receiverId: any) => {
-        Alert.alert('Delete', 'Are you sure you want to delete the entire conversation?', [
-            { text: 'Cancel', style: 'cancel' },
-            {
-                text: 'Delete',
-                onPress: async () => {
-                    const { error } = await supabase
-                        .from('messages')
-                        .delete()
-                        .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
-                        .or(`sender_id.eq.${receiverId},receiver_id.eq.${receiverId}`);
+    // const handleDeleteAllChats = async (item: any, receiverId: any) => {
+    //     Alert.alert('Delete', 'Are you sure you want to delete the entire conversation?', [
+    //         { text: 'Cancel', style: 'cancel' },
+    //         {
+    //             text: 'Delete',
+    //             onPress: async () => {
+    //                 const { error } = await supabase
+    //                     .from('messages')
+    //                     .delete()
+    //                     .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
+    //                     .or(`sender_id.eq.${receiverId},receiver_id.eq.${receiverId}`);
 
-                    if (error) {
-                        console.error('Error deleting conversation:', error);
-                    } else {
-                        loadConversations();  // Reload after deletion
-                    }
-                },
-                style: 'destructive',
-            },
-        ]);
-    };
+    //                 if (error) {
+    //                     console.error('Error deleting conversation:', error);
+    //                 } else {
+    //                     loadConversations();  // Reload after deletion
+    //                 }
+    //             },
+    //             style: 'destructive',
+    //         },
+    //     ]);
+    // };
 
     const handleDelete = async (itemId: any) => {
         Alert.alert('Delete', 'Are you sure you want to delete this message?', [
@@ -158,7 +158,7 @@ const MessagesScreen = ({ navigation, route }: any) => {
 
         return (
             <Swipeable renderRightActions={(progress, dragX) => renderRightActions(progress, dragX, item, otherUserId)}>
-                <Pressable onPress={() => handleChatPress(otherUserId, otherUserName)}>
+                <Pressable onPress={() => handleChatPress(otherUserId, otherUserName, otherUserAvatar)}>
                     <View style={styles.conversationItem}>
                         {/* Display the user's avatar */}
                         <View style={styles.outerTextContainer}>

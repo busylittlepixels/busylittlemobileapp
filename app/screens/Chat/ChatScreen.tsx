@@ -1,7 +1,7 @@
 // @ts-nocheck
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, FlatList, TextInput, Button, StyleSheet, KeyboardAvoidingView, Platform, Pressable } from 'react-native';
+import { View, Text, FlatList, TextInput, Button, StyleSheet, KeyboardAvoidingView, Platform, Pressable, Image } from 'react-native';
 import { supabase } from '../../../supabase';  // Ensure supabase is properly initialized
 
 
@@ -32,7 +32,17 @@ const ChatScreen = ({ navigation, route }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    navigation.setOptions({ title: route.params?.otherUserName });
+    navigation.setOptions({ 
+      headerTitle: () => (
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
+          <Image
+              source={{ uri: route.params?.otherUserAvatar || 'https://via.placeholder.com/50' }} // Fallback to a placeholder if no avatar
+              style={{ width: 30, height: 30, borderRadius: 20, paddingVertical: 10, marginRight:5 }} // Style for the avatar image
+          />
+          <Text style={{ fontWeight: 'bold' }}>{route.params?.otherUserName}</Text>
+        </View>
+    ),
+  });
   }, [navigation]);
 
   const fetchMessages = async () => {
