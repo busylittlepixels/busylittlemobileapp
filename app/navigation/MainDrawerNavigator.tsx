@@ -50,7 +50,7 @@ const MainDrawerNavigator = () => {
         ),
       }}
     >
-      <Drawer.Screen name="My Account" component={AccountScreen} />
+      <Drawer.Screen name="Home" component={AccountScreen} />
       <Drawer.Screen name="Messages" component={MessagesScreen} />
       <Drawer.Screen name="Favorites" component={FavoritesScreen} />
       <Drawer.Screen name="Cities" component={CitiesScreen} />
