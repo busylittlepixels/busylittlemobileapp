@@ -149,7 +149,24 @@ const AppNavigator = () => {
                     </View>
                   ),
                 })} />
-                <Stack.Screen name="Chat" component={ChatScreen} options={{ headerShown: true }} />
+                <Stack.Screen name="Chat" component={ChatScreen} options={({ navigation }) => ({
+                  // gestureEnabled: false,
+                  // gestureDirection: 'horizontal',
+                  // cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
+                  headerTintColor: '#000',
+                  headerBackTitle: 'Back', // Change the back button text
+                  headerBackTitleVisible: true, // Ensures the back button text is visible
+                    headerRight: () => (
+                      <View style={{ display: 'flex', flexDirection: 'row' }}>
+                        <Pressable
+                        onPress={() => navigation.goBack()} // Navigate to the Search screen
+                        style={{ marginRight: 15 }}
+                      >
+                        <Ionicons name="close-outline" size={24} color="black" />
+                      </Pressable>
+                    </View>
+                  ),
+                })} />
               </>
             )}
           </>

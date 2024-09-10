@@ -1,14 +1,34 @@
 // @ts-nocheck
+import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, FlatList, TextInput, Button, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, FlatList, TextInput, Button, StyleSheet, KeyboardAvoidingView, Platform, Pressable } from 'react-native';
 import { supabase } from '../../../supabase';  // Ensure supabase is properly initialized
+
+
+const SendButton = ({ title, onPress }) => {
+  return (
+    <Pressable
+      style={({ pressed }) => [
+        {
+          backgroundColor: pressed ? '#0b6623' : 'green',
+          padding: 5,
+          borderRadius: 5 // Dim the color when pressed
+        },
+        styles.button,
+      ]}
+      onPress={onPress}
+    >
+      <Text style={styles.buttonText}><Ionicons name={'chevron-forward-circle-outline'} size={24} color={'white'} /></Text>
+    </Pressable>
+  );
+};
+
 
 const ChatScreen = ({ navigation, route }) => {
   const { senderId, receiverId } = route.params;
-
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
-  const flatListRef = useRef(null);
+  const flatListRef = useRef(null);  // FlatList ref to handle scrolling
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -25,7 +45,21 @@ const ChatScreen = ({ navigation, route }) => {
     if (error) {
       console.error('Error fetching messages:', error);
     } else {
-      setMessages(data.reverse() || []);  // Reverse the messages to load from the bottom
+      setMessages(data || []);
+    }
+
+    markMessagesAsRead(); // Mark messages as read after fetching
+  };
+
+  const markMessagesAsRead = async () => {
+    const { error } = await supabase
+      .from('messages')
+      .update({ read: true }) // Set the read field to true
+      .or(`and(sender_id.eq.${senderId},receiver_id.eq.${receiverId}),and(sender_id.eq.${receiverId},receiver_id.eq.${senderId})`)
+      .eq('read', false); // Only update unread messages
+
+    if (error) {
+      console.error('Error marking messages as read:', error);
     }
   };
 
@@ -39,7 +73,7 @@ const ChatScreen = ({ navigation, route }) => {
         const newMessage = payload.new;
         if ((newMessage.sender_id === senderId && newMessage.receiver_id === receiverId) ||
             (newMessage.sender_id === receiverId && newMessage.receiver_id === senderId)) {
-          setMessages((prevMessages) => [newMessage, ...prevMessages]);  // Prepend new message
+          setMessages((prevMessages) => [...prevMessages, newMessage]);
         }
       })
       .subscribe();
@@ -53,25 +87,51 @@ const ChatScreen = ({ navigation, route }) => {
     if (newMessage.trim() !== '') {
       setLoading(true);
 
-      // Send message to Supabase
       const { error } = await supabase
         .from('messages')
-        .insert([{ message: newMessage, sender_id: senderId, receiver_id: receiverId }]);
+        .insert([{ message: newMessage, sender_id: senderId, receiver_id: receiverId, read: false }]); // Insert a new message with read: false
 
       if (error) {
         console.error('Error sending message:', error);
       } else {
-        setNewMessage(''); // Clear input field
+        setNewMessage('');
       }
 
       setLoading(false);
     }
   };
 
+  // Scroll to the last message after messages load or when new messages are added
+  useEffect(() => {
+    if (flatListRef.current && messages.length > 0) {
+      const lastIndex = messages.length - 1;  // Last index in the messages array
+      if (lastIndex >= 0) {
+        setTimeout(() => {
+          flatListRef?.current?.scrollToIndex({ index: lastIndex, animated: true });
+        }, 100);
+      }
+    }
+  }, [messages]);  // This runs both when the messages load initially and when a new message is added
+
+  // getItemLayout helps FlatList know the height of each item in the list
+  const getItemLayout = (data, index) => ({
+    length: 70,  // Approximate height of each message item (adjust to fit your design)
+    offset: 70 * index,
+    index
+  });
+
+  // Handle scroll failure when index is out of range or not rendered yet
+  const onScrollToIndexFailed = (info) => {
+    const wait = new Promise(resolve => setTimeout(resolve, 500)); // Wait for 500ms
+    wait.then(() => {
+      flatListRef.current?.scrollToIndex({ index: info.index, animated: true });
+    });
+  };
+
   const renderItem = ({ item }) => (
     <View style={item.sender_id === senderId ? styles.sentMessage : styles.receivedMessage}>
       <Text>{item.message}</Text>
-      <Text style={styles.timestamp}>{new Date(item.created_at).toLocaleTimeString()}</Text>
+      <Text style={styles.timestamp}>{new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
     </View>
   );
 
@@ -82,16 +142,27 @@ const ChatScreen = ({ navigation, route }) => {
       keyboardVerticalOffset={90}
     >
       <View style={styles.container}>
-        <FlatList
-          ref={flatListRef}
-          data={messages}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={renderItem}
-          inverted={true}  // Invert the list to load from the bottom
-          contentContainerStyle={{ flexGrow: 1 }}
-          initialNumToRender={10}
-          windowSize={21}
-        />
+      <FlatList
+        ref={flatListRef}
+        data={messages}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={renderItem}
+        contentContainerStyle={{ flexGrow: 1 }}
+        initialNumToRender={10}
+        windowSize={21}
+        getItemLayout={getItemLayout}  // Provide item layout info to FlatList
+        onScrollToIndexFailed={onScrollToIndexFailed}  // Handle failures to scroll
+        
+        // Scroll directly to the bottom when the FlatList loads
+        initialScrollIndex={messages.length > 0 ? messages.length - 1 : 0}  // This ensures that the FlatList starts at the last message on load
+
+        onContentSizeChange={() => {
+          const lastIndex = messages.length - 1;
+          if (lastIndex >= 0) {
+            flatListRef.current?.scrollToIndex({ index: lastIndex, animated: true });
+          }
+        }}  // Scroll to the last message when content size changes
+      />
 
         <View style={styles.inputContainer}>
           <TextInput
@@ -99,8 +170,9 @@ const ChatScreen = ({ navigation, route }) => {
             placeholder="Type a message..."
             value={newMessage}
             onChangeText={setNewMessage}
+            multiline={true}  // Allows text input to grow vertically if needed
           />
-          <Button title="Send" onPress={handleSendMessage} disabled={loading} />
+          <SendButton title="Send" onPress={handleSendMessage} disabled={loading} />
         </View>
       </View>
     </KeyboardAvoidingView>
@@ -140,9 +212,9 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    padding: 10,
+    padding: 9,
     backgroundColor: '#ffffff',
-    borderRadius: 20,
+    borderRadius: 10,
     marginRight: 10,
   },
 });

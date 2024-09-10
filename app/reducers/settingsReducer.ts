@@ -5,8 +5,8 @@ import {
   } from '../actions/settingsActions';
   
   const initialState = {
-    enablePublicProfile: null,  // Default to true or false based on your preference
-    showAdverts: null,  // Default to true or false based on your preference
+    enablePublicProfile: true,  // Default to true or false based on user preference
+    showAdverts: false,  // Default to true or false based on user preference
   };
   
   

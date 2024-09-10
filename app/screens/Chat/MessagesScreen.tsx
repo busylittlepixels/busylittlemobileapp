@@ -1,60 +1,42 @@
 // @ts-nocheck
 import React, { useState, useEffect, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { View, Text, FlatList, Pressable, StyleSheet, RefreshControl, ActivityIndicator, Alert, TouchableOpacity, Image } from 'react-native';
+import { View, Text, FlatList, Pressable, StyleSheet, RefreshControl, ActivityIndicator, Alert, Image } from 'react-native';
 import { supabase } from '@/supabase'; // Replace with your Supabase client
 import { useSelector } from 'react-redux';
 import { Swipeable } from 'react-native-gesture-handler'; // Import from gesture handler
 
 const fetchUserConversations = async (userId: any) => {
-    // Fetch sent and received messages with avatar URL
-    const { data: sentMessages, error: sentError } = await supabase
+    // Fetch the latest message for each conversation
+    const { data: messages, error } = await supabase
         .from('messages')
         .select(`
             *,
             sender_profile:profiles!messages_sender_id_fkey(full_name, avatar_url),
             receiver_profile:profiles!messages_receiver_id_fkey(full_name, avatar_url)
         `)
-        .eq('sender_id', userId)
+        .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
         .order('created_at', { ascending: false });
 
-    if (sentError) {
-        console.error('Error fetching sent messages:', sentError);
+    if (error) {
+        console.error('Error fetching messages:', error);
         return [];
     }
 
-    const { data: receivedMessages, error: receivedError } = await supabase
-        .from('messages')
-        .select(`
-            *,
-            sender_profile:profiles!messages_sender_id_fkey(full_name, avatar_url),
-            receiver_profile:profiles!messages_receiver_id_fkey(full_name, avatar_url)
-        `)
-        .eq('receiver_id', userId)
-        .order('created_at', { ascending: false });
-
-    if (receivedError) {
-        console.error('Error fetching received messages:', receivedError);
-        return [];
-    }
-
-    const allMessages = [...sentMessages, ...receivedMessages];
-
-    const uniqueConversations: any[] = [];
+    const uniqueConversations = [];
     const seenPairs = new Set();
 
-    allMessages.forEach((message) => {
+    messages.forEach((message) => {
         const conversationKey = [message.sender_id, message.receiver_id].sort().join('-');
         if (!seenPairs.has(conversationKey)) {
-            uniqueConversations.push(message);
+            uniqueConversations.push(message); // Only push the latest message for each conversation
             seenPairs.add(conversationKey);
         }
     });
 
-    uniqueConversations.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-
     return uniqueConversations;
 };
+
 
 
 const MessagesScreen = ({ navigation, route }: any) => {
@@ -82,9 +64,11 @@ const MessagesScreen = ({ navigation, route }: any) => {
         }, [loadConversations])
     );
 
-    const onRefresh = useCallback(() => {
-        setRefreshing(true);
-        loadConversations().finally(() => setRefreshing(false));
+    const onRefresh = useCallback(async () => {
+        // console.log('Pull-to-refresh triggered');
+        setRefreshing(true);  // Start the refresh
+        await loadConversations();  // Fetch new data
+        setRefreshing(false);  // Stop the refresh
     }, [loadConversations]);
 
     const handleChatPress = (receiverId: any, otherUserName: any) => {
@@ -145,33 +129,55 @@ const MessagesScreen = ({ navigation, route }: any) => {
     };
 
     const renderConversationItem = ({ item }) => {
+        // Determine who the other user is
         const isSender = item.sender_id === userId;
         const otherUserId = isSender ? item.receiver_id : item.sender_id;
         const otherUserProfile = isSender ? item.receiver_profile : item.sender_profile;
         const otherUserName = otherUserProfile?.full_name || 'Unknown User';
         const otherUserAvatar = otherUserProfile?.avatar_url;
-        const lastMessage = item.message;
+    
+        // Get the last message details
+        const lastMessage = item.message || 'No messages yet'; // Fallback if no messages
+        const lastSenderName = item.sender_id === userId ? 'You' : otherUserProfile?.full_name;
+    
+        // Display the last message preview as "LastSender: last message"
+        const lastMessagePreview = `${lastSenderName}: ${lastMessage}`;
     
         return (
             <Swipeable renderRightActions={(progress, dragX) => renderRightActions(progress, dragX, item, otherUserId)}>
                 <Pressable onPress={() => handleChatPress(otherUserId, otherUserName)}>
                     <View style={styles.conversationItem}>
                         {/* Display the user's avatar */}
-                        
-                        <Image
-                            source={{ uri: otherUserAvatar }} // Fallback to placeholder if no avatar
-                            style={styles.avatar}
-                        />
-                        <View style={styles.textContainer}>
-                            <Text style={styles.userName}>{otherUserName}</Text>
-                            <Text style={styles.lastMessage}>{lastMessage}</Text>
-                            <Text style={styles.timestamp}>{new Date(item.created_at).toLocaleString()}</Text>
+                        <View style={styles.outerTextContainer}>
+                            <Image
+                                source={{ uri: otherUserAvatar || 'https://via.placeholder.com/50' }} // Fallback to placeholder if no avatar
+                                style={styles.avatar}
+                            />
+                            {/* Text Container */}
+                            <View style={styles.textContainer}>
+                                <Text style={styles.userName}>{otherUserName}</Text>
+                                {/* Last message preview: Last sender + last message */}
+                                <Text style={styles.lastMessage} numberOfLines={1} ellipsizeMode="tail">
+                                    {lastMessagePreview}
+                                </Text>
+                                <Text style={styles.timestamp}>{new Date(item.created_at).toLocaleDateString()}</Text>
+                            </View>
+                        </View>
+            
+                        <View style={styles.timestampContainer}>
+                            <Text style={styles.timestamp}>
+                                {new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </Text>
                         </View>
                     </View>
                 </Pressable>
             </Swipeable>
         );
     };
+    
+    
+    
+    
 
     return (
         <View style={styles.container}>
@@ -192,29 +198,47 @@ const MessagesScreen = ({ navigation, route }: any) => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
+    container:{
+        flex: 1
     },
     conversationItem: {
-        padding: 15,
+        padding: 20,
         borderBottomWidth: 1,
         borderBottomColor: '#ddd',
-        display: 'flex',
+        flexDirection: 'row', // Arrange items in a row
+        alignItems: 'center',
+        justifyContent: 'space-between', // Ensure spacing between avatar, text, and timestamp
+        flex: 1, // Take up the available width
+    },
+    avatar: {
+        width: 50,
+        height: 50,
+        borderRadius: 25, // Circular avatar
+        marginRight: 10,
+    },
+    outerTextContainer: {
         flexDirection: 'row',
-        gap: 10
-        // justifyContent: 'space-between'
+        flex: 1, // Take up remaining space to prevent overflow
+    },
+    textContainer: {
+        flex: 1, // Take up remaining space
+        flexShrink: 1, // Allow the text container to shrink and wrap
+        marginRight: 10, // Space between text and timestamp
+        alignItems: 'flex-start'
     },
     userName: {
         fontWeight: 'bold',
+        marginBottom: 5,
     },
     lastMessage: {
         color: '#888',
+        flexWrap: 'wrap', // Ensure text wraps within the available space
     },
     timestamp: {
         fontSize: 12,
         color: '#aaa',
         marginTop: 5,
+        textAlign: 'right', // Align the timestamp to the right
     },
     deleteButton: {
         backgroundColor: 'red',
@@ -226,22 +250,7 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontWeight: 'bold',
     },
-    loadingContainer: {
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'column',
-    },
-    title: {
-        fontSize: 14,
-        marginVertical: 20,
-        fontWeight: 'bold',
-    },
-    avatar: {
-        width: 50,
-        height: 50,
-        borderRadius: '50%'
-    }
 });
+
 
 export default MessagesScreen;

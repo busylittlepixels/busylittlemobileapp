@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
@@ -6,7 +7,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 
 const { width } = Dimensions.get('window');
 
-const AnimatedTabs = ({ state, descriptors, navigation }:any) => {
+const AnimatedTabs = ({ state, descriptors, navigation, unreadMessagesCount }:any) => {
   const animatedValue = useSharedValue(0);
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -22,8 +23,7 @@ const AnimatedTabs = ({ state, descriptors, navigation }:any) => {
   return (
     <View style={styles.tabBar}>
       <Animated.View style={[styles.indicator, animatedStyle]} />
-      {/* @ts-ignore */}
-      {state.routes.map((route, index) => {
+      {state.routes.map((route: { key: string | number; name: string; }, index: React.Key | null | undefined) => {
         const { options } = descriptors[route.key];
         const label =
           options.tabBarLabel !== undefined
@@ -67,8 +67,14 @@ const AnimatedTabs = ({ state, descriptors, navigation }:any) => {
             onPress={onPress}
             style={styles.tab}
           >
-            {/* @ts-ignore */}
-            <Ionicons name={iconName} size={24} color={isFocused ? 'green' : 'black'} />
+            <View style={{ position: 'relative' }}>
+              <Ionicons name={iconName} size={24} color={isFocused ? 'green' : 'black'} />
+              {route.name === 'Messages' && unreadMessagesCount > 0 && (
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>{unreadMessagesCount}</Text>
+                </View>
+              )}
+            </View>
             <Text style={{ color: isFocused ? 'green' : 'black' }}>{label}</Text>
           </Pressable>
         );
@@ -97,7 +103,23 @@ const styles = StyleSheet.create({
     width: width / 3, // Adjust based on the number of tabs
     backgroundColor: 'green',
     bottom: 0,
-    left: 0, // Ensure it starts from the left
+    left: 0,
+  },
+  badge: {
+    position: 'absolute',
+    right: -10,
+    top: -5,
+    backgroundColor: 'red',
+    borderRadius: 10,
+    width: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  badgeText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
 });
 
