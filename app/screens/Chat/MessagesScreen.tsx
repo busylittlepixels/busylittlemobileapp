@@ -37,7 +37,21 @@ const fetchUserConversations = async (userId: any) => {
     return uniqueConversations;
 };
 
+const markMessagesAsRead = async (userId) => {
+    try {
+        const { error } = await supabase
+            .from('messages')
+            .update({ read: true }) // Assuming you have a 'read' field in your messages schema
+            .eq('receiver_id', userId)
+            .eq('read', false); // Mark only unread messages as read
 
+        if (error) {
+            console.error('Error marking messages as read:', error);
+        }
+    } catch (err) {
+        console.error('Error:', err);
+    }
+};
 
 const MessagesScreen = ({ navigation, route }: any) => {
     const [conversations, setConversations] = useState([]);
@@ -61,11 +75,11 @@ const MessagesScreen = ({ navigation, route }: any) => {
     useFocusEffect(
         useCallback(() => {
             loadConversations();
-        }, [loadConversations])
+            markMessagesAsRead(userId); // Mark messages as read when returning to this screen
+        }, [loadConversations, userId])
     );
 
     const onRefresh = useCallback(async () => {
-        // console.log('Pull-to-refresh triggered');
         setRefreshing(true);  // Start the refresh
         await loadConversations();  // Fetch new data
         setRefreshing(false);  // Stop the refresh
@@ -75,8 +89,7 @@ const MessagesScreen = ({ navigation, route }: any) => {
         navigation.navigate('Chat', { senderId: userId, receiverId, otherUserName });
     };
 
-
-    const handleDeleteAllChats = async (item:any, receiverId: any) => {
+    const handleDeleteAllChats = async (item: any, receiverId: any) => {
         Alert.alert('Delete', 'Are you sure you want to delete the entire conversation?', [
             { text: 'Cancel', style: 'cancel' },
             {
@@ -87,7 +100,7 @@ const MessagesScreen = ({ navigation, route }: any) => {
                         .delete()
                         .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
                         .or(`sender_id.eq.${receiverId},receiver_id.eq.${receiverId}`);
-                    
+
                     if (error) {
                         console.error('Error deleting conversation:', error);
                     } else {
@@ -98,7 +111,7 @@ const MessagesScreen = ({ navigation, route }: any) => {
             },
         ]);
     };
-    
+
     const handleDelete = async (itemId: any) => {
         Alert.alert('Delete', 'Are you sure you want to delete this message?', [
             { text: 'Cancel', style: 'cancel' },
@@ -135,14 +148,14 @@ const MessagesScreen = ({ navigation, route }: any) => {
         const otherUserProfile = isSender ? item.receiver_profile : item.sender_profile;
         const otherUserName = otherUserProfile?.full_name || 'Unknown User';
         const otherUserAvatar = otherUserProfile?.avatar_url;
-    
+
         // Get the last message details
         const lastMessage = item.message || 'No messages yet'; // Fallback if no messages
         const lastSenderName = item.sender_id === userId ? 'You' : otherUserProfile?.full_name;
-    
+
         // Display the last message preview as "LastSender: last message"
         const lastMessagePreview = `${lastSenderName}: ${lastMessage}`;
-    
+
         return (
             <Swipeable renderRightActions={(progress, dragX) => renderRightActions(progress, dragX, item, otherUserId)}>
                 <Pressable onPress={() => handleChatPress(otherUserId, otherUserName)}>
@@ -163,7 +176,7 @@ const MessagesScreen = ({ navigation, route }: any) => {
                                 <Text style={styles.timestamp}>{new Date(item.created_at).toLocaleDateString()}</Text>
                             </View>
                         </View>
-            
+
                         <View style={styles.timestampContainer}>
                             <Text style={styles.timestamp}>
                                 {new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -174,10 +187,6 @@ const MessagesScreen = ({ navigation, route }: any) => {
             </Swipeable>
         );
     };
-    
-    
-    
-    
 
     return (
         <View style={styles.container}>
@@ -198,8 +207,8 @@ const MessagesScreen = ({ navigation, route }: any) => {
 };
 
 const styles = StyleSheet.create({
-    container:{
-        flex: 1
+    container: {
+        flex: 1,
     },
     conversationItem: {
         padding: 20,
@@ -224,7 +233,7 @@ const styles = StyleSheet.create({
         flex: 1, // Take up remaining space
         flexShrink: 1, // Allow the text container to shrink and wrap
         marginRight: 10, // Space between text and timestamp
-        alignItems: 'flex-start'
+        alignItems: 'flex-start',
     },
     userName: {
         fontWeight: 'bold',
@@ -251,6 +260,5 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
 });
-
 
 export default MessagesScreen;
