@@ -5,7 +5,6 @@ const AdBanner = ({ color, image, text, subtitle }: any) => {
   const col = color ? color : 'transparent';
   
   return (
-    
     <View style={styles.container}>
       <Image 
         // source={{ uri: image }} 

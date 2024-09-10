@@ -9,7 +9,6 @@ const { width } = Dimensions.get('window');
 
 const AnimatedTabs = ({ state, descriptors, navigation, unreadMessagesCount }:any) => {
   const animatedValue = useSharedValue(0);
-
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [
@@ -69,6 +68,7 @@ const AnimatedTabs = ({ state, descriptors, navigation, unreadMessagesCount }:an
           >
             <View style={{ position: 'relative' }}>
               <Ionicons name={iconName} size={24} color={isFocused ? 'green' : 'black'} />
+              {/* for messages count; render only on Messages tab and if count is greater than 0 */}
               {route.name === 'Messages' && unreadMessagesCount > 0 && (
                 <View style={styles.badge}>
                   <Text style={styles.badgeText}>{unreadMessagesCount}</Text>

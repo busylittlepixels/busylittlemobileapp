@@ -246,6 +246,7 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
   // Setting the header right icon to trigger loadDataFromStorage
   useEffect(() => {
     navigation.setOptions({
+      headerBackTitleVisible: false, // Ensures the back button text is visible
       headerRight: () => (
         <View style={{ flexDirection: 'row', marginRight: 15 }}>
           <Pressable onPress={triggerRefresh}>

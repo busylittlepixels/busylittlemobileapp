@@ -90,6 +90,9 @@ export default function ArticleScreen({ navigation, route }: any) {
     useEffect(() => {
         navigation.setOptions({
             title: title,
+            headerTintColor: '#000',
+            headerBackTitle: 'Go Back', // Change the back button text
+            headerBackTitleVisible: false, // Ensures the back button text is visible
             headerRight: () => (
                 <View style={{ display: 'flex', flexDirection: 'row' }}>
                     <Pressable onPress={handleToggleFavorite} style={{ marginRight: 15 }}>

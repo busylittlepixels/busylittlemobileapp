@@ -52,8 +52,8 @@ export type RootStackParamList = {
   Onboarding: undefined;
   Profile: undefined;
   Calendar: undefined;
-  FriendProfile: undefined; 
-  Chat: undefined; 
+  FriendProfile: undefined;
+  Chat: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -87,7 +87,7 @@ const AppNavigator = () => {
             ) : (
               <>
                 <Stack.Screen name="Account" component={MainDrawerNavigator} options={{ headerShown: false }} />
-                <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerTintColor: '#000', headerShown: true }} />
+                <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerTintColor: '#000', headerShown: true, headerBackTitle: 'Back', headerBackTitleVisible: true }} />
                 <Stack.Screen name="Event" component={EventScreen} options={{ headerShown: true }} />
                 <Stack.Screen name="MyEvents" component={MyEventsScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="Calendar" component={SettingsScreen} options={({ navigation }) => ({
@@ -97,9 +97,9 @@ const AppNavigator = () => {
                   headerTintColor: '#000',
                   headerBackTitle: 'Go Back', // Change the back button text
                   headerBackTitleVisible: true, // Ensures the back button text is visible
-                    headerRight: () => (
-                      <View style={{ display: 'flex', flexDirection: 'row' }}>
-                        <Pressable
+                  headerRight: () => (
+                    <View style={{ display: 'flex', flexDirection: 'row' }}>
+                      <Pressable
                         onPress={() => navigation.goBack()} // Navigate to the Search screen
                         style={{ marginRight: 15 }}
                       >
@@ -110,12 +110,12 @@ const AppNavigator = () => {
                 })} />
                 <Stack.Screen name="Article" component={ArticleScreen} options={{ headerShown: true }} />
                 <Stack.Screen name="Cities" component={CitiesScreen} options={{ headerShown: false }} />
-                <Stack.Screen name="City" component={CityScreen} options={{ headerShown: true }} />
+                <Stack.Screen name="City" component={CityScreen} options={{ headerTintColor: '#000', headerShown: true, headerBackTitle: 'Back', headerBackTitleVisible: true }} />
                 <Stack.Screen name="Search" component={SearchScreen} options={({ navigation }) => ({
                   gestureEnabled: false,
                   gestureDirection: 'vertical',
                   cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
-                  headerTintColor: '#000', // 
+                  headerTintColor: '#000',  
                   headerRight: () => (
                     <View style={{ display: 'flex', flexDirection: 'row' }}>
                       <Pressable
@@ -138,10 +138,10 @@ const AppNavigator = () => {
                   headerTitle: 'Friend Profile',
                   headerBackTitle: 'Back', // Change the back button text
                   headerBackTitleVisible: true, // Ensures the back button text is visible
-                    headerRight: () => (
-                      <View style={{ display: 'flex', flexDirection: 'row' }}>
-                        <Pressable
-                        onPress={() => navigation.goBack()} // Navigate to the Search screen
+                  headerRight: () => (
+                    <View style={{ display: 'flex', flexDirection: 'row' }}>
+                      <Pressable
+                        onPress={() => navigation.goBack()} 
                         style={{ marginRight: 15 }}
                       >
                         <Ionicons name="close-outline" size={24} color="black" />
@@ -156,10 +156,10 @@ const AppNavigator = () => {
                   headerTintColor: '#000',
                   headerBackTitle: 'Back', // Change the back button text
                   headerBackTitleVisible: true, // Ensures the back button text is visible
-                    headerRight: () => (
-                      <View style={{ display: 'flex', flexDirection: 'row' }}>
-                        <Pressable
-                        onPress={() => navigation.goBack()} // Navigate to the Search screen
+                  headerRight: () => (
+                    <View style={{ display: 'flex', flexDirection: 'row' }}>
+                      <Pressable
+                        onPress={() => navigation.goBack()}
                         style={{ marginRight: 15 }}
                       >
                         <Ionicons name="close-outline" size={24} color="black" />

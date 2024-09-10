@@ -54,9 +54,9 @@ const MainDrawerNavigator = () => {
       <Drawer.Screen name="Messages" component={MessagesScreen} />
       <Drawer.Screen name="Favorites" component={FavoritesScreen} />
       <Drawer.Screen name="Cities" component={CitiesScreen} />
-      <Drawer.Screen name="Personal Schedule" component={MyPersonalSchedule} options={{ drawerLabel: 'Schedule' }}/>
-      <Drawer.Screen name="My Schedule" component={MySchedule} options={{ drawerLabel: 'Events' }}/>
-      <Drawer.Screen name="All Users" component={UsersScreen} options={{ drawerLabel: 'All Users' }}/>
+      <Drawer.Screen name="Personal Schedule" component={MyPersonalSchedule} options={{ drawerLabel: 'Schedule' }} />
+      <Drawer.Screen name="My Schedule" component={MySchedule} options={{ drawerLabel: 'Events' }} />
+      <Drawer.Screen name="All Users" component={UsersScreen} options={{ drawerLabel: 'All Users' }} />
       <Drawer.Screen
         name="Logout"
         component={AccountScreen} // Or any dummy component

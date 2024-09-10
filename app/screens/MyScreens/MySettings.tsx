@@ -48,9 +48,8 @@ const MySettings = ({ navigation }: any) => {
     const showAdverts = useSelector((state: any) => state.settings.showAdverts);
     const showPublic = useSelector((state: any) => state.settings.enablePublicProfile);
 
-    console.log('showPublic', showPublic);
-    // console.log('showPublic2', showPublic);
-
+    // console.log('showPublic', showPublic);
+    
     const toggleAdverts = (value: boolean) => {
         // @ts-ignore
         dispatch(setAdvertPreference(value));
