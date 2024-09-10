@@ -40,13 +40,16 @@ const AcceptButton = ({ title, onPress }) => {
 
 const MySettings = ({ navigation }: any) => {
     const [full_name, setFullname] = useState('');
-    const [enableConnections, setEnableConnections] = useState(false);
+    const [enableConnections, setEnableConnections] = useState(true);
     const [pendingRequests, setPendingRequests] = useState([]); // Changed to hold the pending requests
 
     const dispatch = useDispatch();
     const user = useSelector((state: any) => state.auth.user);
     const showAdverts = useSelector((state: any) => state.settings.showAdverts);
     const showPublic = useSelector((state: any) => state.settings.enablePublicProfile);
+
+    console.log('showPublic', showPublic);
+    // console.log('showPublic2', showPublic);
 
     const toggleAdverts = (value: boolean) => {
         // @ts-ignore
@@ -183,6 +186,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginVertical: 10,
+        justifyContent: 'space-between',
+       
     },
     inlineLabel: {
         fontWeight: 'bold',

@@ -4,7 +4,7 @@ import { ScrollView, View, Text, StyleSheet, Pressable, ActivityIndicator } from
 import { useSelector, useDispatch } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 import { fetchFavorites, clearFavorites } from '../../actions/favoriteActions';
-
+import ArticleItem from '@/app/components/ArticleItem';
 
 const ResetButton = ({ title, onPress }) => {
     return (
@@ -63,16 +63,23 @@ const FavoritesScreen = ({ navigation }: any) => {
 
                         // console.log('Rendering favorite item:', title);
                         
-                        return (
-                            <Pressable 
-                                key={index}
-                                onPress={() => {
-                                    navigation.navigate("Article", { item: { ...item, title, content },  isFavorite: true });
-                                }}
-                            >
-                                <Text style={styles.faveLinks}>{title}</Text>
-                            </Pressable>
-                        );
+                        // return (
+                        //     <Pressable 
+                        //         key={index}
+                        //         onPress={() => {
+                        //             navigation.navigate("Article", { item: { ...item, title, content },  isFavorite: true });
+                        //         }}
+                        //     >
+                        //         <Text style={styles.faveLinks}>{title}</Text>
+                        //     </Pressable>
+                        // );
+
+                        return(<ArticleItem
+                            key={item.id}
+                            item={item}
+                            isFavorite={true}
+                            />
+                        )
                     })
                 ) : (
                     <Text style={styles.noCont}>You have no favorites.</Text>

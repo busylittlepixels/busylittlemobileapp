@@ -8,7 +8,7 @@ const ChatScreen = ({ navigation, route }) => {
 
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
-  const flatListRef = useRef(null);  // FlatList ref to handle scrolling
+  const flatListRef = useRef(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -25,7 +25,7 @@ const ChatScreen = ({ navigation, route }) => {
     if (error) {
       console.error('Error fetching messages:', error);
     } else {
-      setMessages(data || []);
+      setMessages(data.reverse() || []);  // Reverse the messages to load from the bottom
     }
   };
 
@@ -39,7 +39,7 @@ const ChatScreen = ({ navigation, route }) => {
         const newMessage = payload.new;
         if ((newMessage.sender_id === senderId && newMessage.receiver_id === receiverId) ||
             (newMessage.sender_id === receiverId && newMessage.receiver_id === senderId)) {
-          setMessages((prevMessages) => [...prevMessages, newMessage]);
+          setMessages((prevMessages) => [newMessage, ...prevMessages]);  // Prepend new message
         }
       })
       .subscribe();
@@ -68,33 +68,6 @@ const ChatScreen = ({ navigation, route }) => {
     }
   };
 
-  // Scroll to the last message after messages load or when new messages are added
-  useEffect(() => {
-    if (flatListRef.current && messages.length > 0) {
-      const lastIndex = messages.length - 1;  // Last index in the messages array
-      if (lastIndex >= 0) {
-        setTimeout(() => {
-          flatListRef?.current?.scrollToIndex({ index: lastIndex, animated: true });
-        }, 100);
-      }
-    }
-  }, [messages]);  // This runs both when the messages load initially and when a new message is added
-
-  // getItemLayout helps FlatList know the height of each item in the list
-  const getItemLayout = (data, index) => ({
-    length: 70,  // Approximate height of each message item (adjust to fit your design)
-    offset: 70 * index,
-    index
-  });
-
-  // Handle scroll failure when index is out of range or not rendered yet
-  const onScrollToIndexFailed = (info) => {
-    const wait = new Promise(resolve => setTimeout(resolve, 500)); // Wait for 500ms
-    wait.then(() => {
-      flatListRef.current?.scrollToIndex({ index: info.index, animated: true });
-    });
-  };
-
   const renderItem = ({ item }) => (
     <View style={item.sender_id === senderId ? styles.sentMessage : styles.receivedMessage}>
       <Text>{item.message}</Text>
@@ -114,17 +87,10 @@ const ChatScreen = ({ navigation, route }) => {
           data={messages}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderItem}
+          inverted={true}  // Invert the list to load from the bottom
           contentContainerStyle={{ flexGrow: 1 }}
           initialNumToRender={10}
           windowSize={21}
-          getItemLayout={getItemLayout}  // Provide item layout info to FlatList
-          onScrollToIndexFailed={onScrollToIndexFailed}  // Handle failures to scroll
-          onContentSizeChange={() => {
-            const lastIndex = messages.length - 1;
-            if (lastIndex >= 0) {
-              flatListRef.current?.scrollToIndex({ index: lastIndex });
-            }
-          }}  // Scroll to last message when content size changes
         />
 
         <View style={styles.inputContainer}>

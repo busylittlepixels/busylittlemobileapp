@@ -1,17 +1,19 @@
+// @ts-nocheck
 import React, { useState, useEffect, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { View, Text, FlatList, Pressable, StyleSheet, RefreshControl } from 'react-native';
+import { View, Text, FlatList, Pressable, StyleSheet, RefreshControl, ActivityIndicator, Alert, TouchableOpacity, Image } from 'react-native';
 import { supabase } from '@/supabase'; // Replace with your Supabase client
 import { useSelector } from 'react-redux';
+import { Swipeable } from 'react-native-gesture-handler'; // Import from gesture handler
 
 const fetchUserConversations = async (userId: any) => {
-    // Fetch sent messages
+    // Fetch sent and received messages with avatar URL
     const { data: sentMessages, error: sentError } = await supabase
         .from('messages')
         .select(`
             *,
-            sender_profile:profiles!messages_sender_id_fkey(full_name),
-            receiver_profile:profiles!messages_receiver_id_fkey(full_name)
+            sender_profile:profiles!messages_sender_id_fkey(full_name, avatar_url),
+            receiver_profile:profiles!messages_receiver_id_fkey(full_name, avatar_url)
         `)
         .eq('sender_id', userId)
         .order('created_at', { ascending: false });
@@ -21,13 +23,12 @@ const fetchUserConversations = async (userId: any) => {
         return [];
     }
 
-    // Fetch received messages
     const { data: receivedMessages, error: receivedError } = await supabase
         .from('messages')
         .select(`
             *,
-            sender_profile:profiles!messages_sender_id_fkey(full_name),
-            receiver_profile:profiles!messages_receiver_id_fkey(full_name)
+            sender_profile:profiles!messages_sender_id_fkey(full_name, avatar_url),
+            receiver_profile:profiles!messages_receiver_id_fkey(full_name, avatar_url)
         `)
         .eq('receiver_id', userId)
         .order('created_at', { ascending: false });
@@ -37,10 +38,8 @@ const fetchUserConversations = async (userId: any) => {
         return [];
     }
 
-    // Merge sent and received messages and sort by date
     const allMessages = [...sentMessages, ...receivedMessages];
 
-    // Remove duplicates and only keep the latest message between sender/receiver pairs
     const uniqueConversations: any[] = [];
     const seenPairs = new Set();
 
@@ -52,26 +51,21 @@ const fetchUserConversations = async (userId: any) => {
         }
     });
 
-    // Sort conversations by the most recent message
-    // @ts-ignore
     uniqueConversations.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
     return uniqueConversations;
 };
 
+
 const MessagesScreen = ({ navigation, route }: any) => {
     const [conversations, setConversations] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
-    // Access Redux state and get the user
-    // @ts-ignore
     const user = useSelector((state) => state.auth.user);
-    const userId = user.id; // Replace with the logged-in user's ID
+    const userId = user?.id;
 
-    // Load conversations function
     const loadConversations = useCallback(async () => {
         try {
             const data = await fetchUserConversations(userId);
-            // @ts-ignore
             setConversations(data);
         } catch (error) {
             console.error('Error loading conversations:', error);
@@ -79,42 +73,103 @@ const MessagesScreen = ({ navigation, route }: any) => {
     }, [userId]);
 
     useEffect(() => {
-        // Fetch conversations when the component mounts
         loadConversations();
     }, [loadConversations]);
 
-    // Refetch conversations when the screen regains focus
     useFocusEffect(
         useCallback(() => {
             loadConversations();
         }, [loadConversations])
     );
 
-    // Pull-to-refresh function
     const onRefresh = useCallback(() => {
         setRefreshing(true);
         loadConversations().finally(() => setRefreshing(false));
     }, [loadConversations]);
 
-    // Handle navigation to individual chat
     const handleChatPress = (receiverId: any, otherUserName: any) => {
         navigation.navigate('Chat', { senderId: userId, receiverId, otherUserName });
     };
 
-    const renderConversationItem = ({ item }: any) => {
+
+    const handleDeleteAllChats = async (item:any, receiverId: any) => {
+        Alert.alert('Delete', 'Are you sure you want to delete the entire conversation?', [
+            { text: 'Cancel', style: 'cancel' },
+            {
+                text: 'Delete',
+                onPress: async () => {
+                    const { error } = await supabase
+                        .from('messages')
+                        .delete()
+                        .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
+                        .or(`sender_id.eq.${receiverId},receiver_id.eq.${receiverId}`);
+                    
+                    if (error) {
+                        console.error('Error deleting conversation:', error);
+                    } else {
+                        loadConversations();  // Reload after deletion
+                    }
+                },
+                style: 'destructive',
+            },
+        ]);
+    };
+    
+    const handleDelete = async (itemId: any) => {
+        Alert.alert('Delete', 'Are you sure you want to delete this message?', [
+            { text: 'Cancel', style: 'cancel' },
+            {
+                text: 'Delete',
+                onPress: async () => {
+                    const { error } = await supabase
+                        .from('messages')
+                        .delete()
+                        .eq('id', itemId);
+                    if (error) {
+                        console.error('Error deleting message:', error);
+                    } else {
+                        loadConversations();  // Reload conversations after deletion
+                    }
+                },
+                style: 'destructive',
+            },
+        ]);
+    };
+
+    const renderRightActions = (progress, dragX, item) => {
+        return (
+            <Pressable style={styles.deleteButton} onPress={() => handleDelete(item.id)}>
+                <Text style={styles.deleteButtonText}>Delete</Text>
+            </Pressable>
+        );
+    };
+
+    const renderConversationItem = ({ item }) => {
         const isSender = item.sender_id === userId;
         const otherUserId = isSender ? item.receiver_id : item.sender_id;
-        const otherUserName = isSender ? item.receiver_profile?.full_name : item.sender_profile?.full_name;
+        const otherUserProfile = isSender ? item.receiver_profile : item.sender_profile;
+        const otherUserName = otherUserProfile?.full_name || 'Unknown User';
+        const otherUserAvatar = otherUserProfile?.avatar_url;
         const lastMessage = item.message;
-
+    
         return (
-            <Pressable onPress={() => handleChatPress(otherUserId, otherUserName)}>
-                <View style={styles.conversationItem}>
-                    <Text style={styles.userName}>{otherUserName || 'Unknown User'}</Text>
-                    <Text style={styles.lastMessage}>{lastMessage}</Text>
-                    <Text style={styles.timestamp}>{new Date(item.created_at).toLocaleString()}</Text>
-                </View>
-            </Pressable>
+            <Swipeable renderRightActions={(progress, dragX) => renderRightActions(progress, dragX, item, otherUserId)}>
+                <Pressable onPress={() => handleChatPress(otherUserId, otherUserName)}>
+                    <View style={styles.conversationItem}>
+                        {/* Display the user's avatar */}
+                        
+                        <Image
+                            source={{ uri: otherUserAvatar }} // Fallback to placeholder if no avatar
+                            style={styles.avatar}
+                        />
+                        <View style={styles.textContainer}>
+                            <Text style={styles.userName}>{otherUserName}</Text>
+                            <Text style={styles.lastMessage}>{lastMessage}</Text>
+                            <Text style={styles.timestamp}>{new Date(item.created_at).toLocaleString()}</Text>
+                        </View>
+                    </View>
+                </Pressable>
+            </Swipeable>
         );
     };
 
@@ -123,10 +178,14 @@ const MessagesScreen = ({ navigation, route }: any) => {
             <FlatList
                 data={conversations}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-                // @ts-ignore
                 keyExtractor={(item) => item?.id.toString()}
                 renderItem={renderConversationItem}
-                ListEmptyComponent={<Text>No conversations found.</Text>}
+                ListEmptyComponent={
+                    <View style={styles.loadingContainer}>
+                        <Text style={styles.title}>Loading messages...</Text>
+                        <ActivityIndicator size="large" />
+                    </View>
+                }
             />
         </View>
     );
@@ -141,6 +200,10 @@ const styles = StyleSheet.create({
         padding: 15,
         borderBottomWidth: 1,
         borderBottomColor: '#ddd',
+        display: 'flex',
+        flexDirection: 'row',
+        gap: 10
+        // justifyContent: 'space-between'
     },
     userName: {
         fontWeight: 'bold',
@@ -153,6 +216,32 @@ const styles = StyleSheet.create({
         color: '#aaa',
         marginTop: 5,
     },
+    deleteButton: {
+        backgroundColor: 'red',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 80,
+    },
+    deleteButtonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+    },
+    loadingContainer: {
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'column',
+    },
+    title: {
+        fontSize: 14,
+        marginVertical: 20,
+        fontWeight: 'bold',
+    },
+    avatar: {
+        width: 50,
+        height: 50,
+        borderRadius: '50%'
+    }
 });
 
 export default MessagesScreen;
