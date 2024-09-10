@@ -19,10 +19,10 @@ import { Asset } from 'expo-asset';
 import { enablePublicProfile } from '@/app/services/settingsService';
 
 const FriendProfileScreen = ({ navigation, route }: any) => {
-    const [profile, setProfile] = useState(''); 
+  const [profile, setProfile] = useState('');
   // track vertical scroll
   const scrollY = useRef(new Animated.Value(0)).current;
-  
+
   // set values for scrolly header
   const HEADER_MAX_HEIGHT = 120;
   const HEADER_MIN_HEIGHT = 80;
@@ -35,21 +35,21 @@ const FriendProfileScreen = ({ navigation, route }: any) => {
     outputRange: [20, 5],  // Adjusts padding from 20 to 5 as you scroll
     extrapolate: 'clamp',
   });
-  
+
   // controls the headerHeight on scroll
   const headerHeight = scrollY.interpolate({
     inputRange: [0, (HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT) * 1.5],  // Throttle speed by adjusting input range
     outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
     extrapolate: 'clamp',
   });
-  
+
   // controls the avatar size on scroll
   const avatarSize = scrollY.interpolate({
     inputRange: [0, (HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT) * 1.5],  // Throttle speed by adjusting input range
     outputRange: [AVATAR_MAX_SIZE, AVATAR_MIN_SIZE],
     extrapolate: 'clamp',
   });
-  
+
   // Access Redux state and get the user
   const user = useSelector((state) => state.auth.user);
 
@@ -83,7 +83,7 @@ const FriendProfileScreen = ({ navigation, route }: any) => {
     try {
       const [{ data: userDetails, error: userError }] = await Promise.all([
         supabase.from('profiles').select('*').eq('id', route.params.user.id).single(),
-       
+
       ]);
 
       if (userError) throw new Error(userError.message);
@@ -108,7 +108,7 @@ const FriendProfileScreen = ({ navigation, route }: any) => {
   useFocusEffect(
     useCallback(() => {
       fetchData();
-      
+
     }, [fetchUserData])
   );
 
@@ -120,23 +120,26 @@ const FriendProfileScreen = ({ navigation, route }: any) => {
 
 
   const goToProfile = () => {
-    navigation.navigate("Chat", { senderId: user.id, receiverId: route.params.user.id });
+    // special consideration for this screen. N
+    const paramsUser = route.params.user.full_name;
+    const paramsAvatar = route.params.user.avatar;
+    navigation.navigate("Chat", { senderId: user.id, receiverId: route.params.user.id, otherUserName: paramsUser, otherUserAvatar: paramsAvatar });
   }
 
 
   const sendConnectionRequest = async () => {
-      // navigation.navigate("Chat", { senderId: user.id, receiverId: route.params.user.id });
-      const { data, error } = await supabase
-        .from('connection_requests')
-        .insert([
-          { sender_id: user.id, receiver_id: route.params.user.id, status: 'pending' }
-        ]);
+    // navigation.navigate("Chat", { senderId: user.id, receiverId: route.params.user.id });
+    const { data, error } = await supabase
+      .from('connection_requests')
+      .insert([
+        { sender_id: user.id, receiver_id: route.params.user.id, status: 'pending' }
+      ]);
 
-        if (error) {
-          Toast.show({ type: 'error', text1: 'Error', text2: 'Failed to send connection rquestion' });
-        } else {
-          Toast.show({ type: 'success', text1: 'Success', text2: 'Connection request sent' });
-        }
+    if (error) {
+      Toast.show({ type: 'error', text1: 'Error', text2: 'Failed to send connection rquestion' });
+    } else {
+      Toast.show({ type: 'success', text1: 'Success', text2: 'Connection request sent' });
+    }
   }
 
 
@@ -154,20 +157,20 @@ const FriendProfileScreen = ({ navigation, route }: any) => {
         {route.params.user && (
           <View style={styles.userInfoContainer}>
             <View style={styles.textContainer}>
-            <Text style={styles.screenTitle}>{route.params.user.full_name || user.user_metadata?.full_name}</Text>
-              <Text style={[styles.screenTitle, { fontSize: 12}]}>{route.params.user.name || user.user_metadata?.name}</Text>
+              <Text style={styles.screenTitle}>{route.params.user.full_name || user.user_metadata?.full_name}</Text>
+              <Text style={[styles.screenTitle, { fontSize: 12 }]}>{route.params.user.name || user.user_metadata?.name}</Text>
             </View>
-            <Pressable  onPress={goToProfile}>
-            <Animated.Image
-              source={{ uri: route.params.user.avatar ? route.params.user.avatar : imageUrl }}
-              style={[styles.tinyLogo, { width: avatarSize, height: avatarSize, paddingLeft: 5, borderColor: enablePublicProfile ? 'green' : 'white', }]}
-            />
+            <Pressable onPress={goToProfile}>
+              <Animated.Image
+                source={{ uri: route.params.user.avatar ? route.params.user.avatar : imageUrl }}
+                style={[styles.tinyLogo, { width: avatarSize, height: avatarSize, paddingLeft: 5, borderColor: enablePublicProfile ? 'green' : 'white', }]}
+              />
             </Pressable>
           </View>
         )}
       </Animated.View>
       <View>
-        <Pressable  onPress={sendConnectionRequest}>
+        <Pressable onPress={sendConnectionRequest}>
           <Text>Connect</Text>
         </Pressable>
       </View>
