@@ -1,6 +1,6 @@
 // @ts-nocheck
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Switch, Button, Alert, Pressable } from 'react-native';
+import React, { useEffect, useState, useCallback } from "react";
+import { ScrollView, View, Text, StyleSheet, Switch, Button, Alert, Pressable, RefreshControl } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux'; // Import useSelector and useDispatch
 import { setPublicProfile, setAdvertPreference } from '../../actions/settingsActions'; // Import the action
 import { supabase } from "@/supabase";
@@ -42,6 +42,7 @@ const MySettings = ({ navigation }: any) => {
     const [full_name, setFullname] = useState('');
     const [enableConnections, setEnableConnections] = useState(true);
     const [pendingRequests, setPendingRequests] = useState([]); // Changed to hold the pending requests
+    const [refreshing, setRefreshing] = useState(false);
 
     const dispatch = useDispatch();
     const user = useSelector((state: any) => state.auth.user);
@@ -111,13 +112,32 @@ const MySettings = ({ navigation }: any) => {
         }
     };
 
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        // Sync data from AsyncStorage
+        fetchPendingRequests().then(() => setRefreshing(false));
+        
+        setTimeout(() => {
+            setRefreshing(false);
+            // console.log('should refresh user details');
+        }, 2000);
+    }, []);
+
     useEffect(() => {
         fetchPendingRequests(); // Fetch pending requests when the component is mounted
         navigation.setOptions({ headerTitle: 'My Settings' });
     }, [navigation]);
 
     return (
-        <View style={styles.innerContainer}>
+        // <View style={styles.innerContainer}>
+            <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={styles.innerContainer}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        >
             <Text style={[styles.title, { paddingVertical: 5 }]}>Connection Requests:</Text>
             <View>
                 {pendingRequests.length > 0 ? (
@@ -126,7 +146,7 @@ const MySettings = ({ navigation }: any) => {
                             <Text style={{ fontWeight: 'bold'}}>{request.sender.username}</Text>
                             <View style={{ display: 'flex', flexDirection: 'row', gap: 5}}>
                                 <AcceptButton title="Accept" onPress={() => acceptRequest(request.id)} />
-                                <RejectButton title="Reject" onPress={() => acceptRequest(request.id)} />
+                                <RejectButton title="Reject" onPress={() => rejectRequest(request.id)} />
                             </View>
                         </View>
                     ))
@@ -168,7 +188,8 @@ const MySettings = ({ navigation }: any) => {
                     />
                 </View>        
             </View>
-        </View>
+            </ScrollView>
+        // </View>
     );
 };
 

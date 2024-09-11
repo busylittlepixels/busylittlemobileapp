@@ -12,12 +12,13 @@ import { enablePublicProfile } from '@/app/services/settingsService';
 
 const FriendProfileScreen = ({ navigation, route }: any) => {
   const [profile, setProfile] = useState('');
+  const [isPending, setIsPending] = useState(false);
   const scrollY = useRef(new Animated.Value(0)).current;
 
   const HEADER_MAX_HEIGHT = 120;
   const HEADER_MIN_HEIGHT = 80;
-  const AVATAR_MAX_SIZE = 95;
-  const AVATAR_MIN_SIZE = 55;
+  const AVATAR_MAX_SIZE = 100;
+  const AVATAR_MIN_SIZE = 75;
 
   const paddingVertical = scrollY.interpolate({
     inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
@@ -77,20 +78,90 @@ const FriendProfileScreen = ({ navigation, route }: any) => {
   };
 
   const sendConnectionRequest = async () => {
-    const { data, error } = await supabase
-      .from('connection_requests')
-      .insert([{ sender_id: user.id, receiver_id: route.params.user.id, status: 'pending' }]);
-
-    if (error) {
-      Toast.show({ type: 'error', text1: 'Error', text2: 'Connection request already sent' });
-    } else {
-      Toast.show({ type: 'success', text1: 'Success', text2: 'Connection request sent' });
+    try {
+      const { data, error } = await supabase
+        .from('connection_requests')
+        .insert([{ sender_id: user.id, receiver_id: route.params.user.id, status: 'pending' }]);
+  
+      if (error) {
+        // Error during sending the request
+        Toast.show({ type: 'error', text1: 'Error', text2: error.message || 'Failed to send connection request' });
+      } else {
+        // Request successfully sent
+        Toast.show({ type: 'success', text1: 'Success', text2: 'Connection request sent' });
+        setIsPending(true);  // Mark request as pending
+      }
+    } catch (err) {
+      console.error('Error sending connection request:', err.message);
+      Toast.show({ type: 'error', text1: 'Error', text2: 'An unexpected error occurred' });
     }
   };
+  
+  const cancelConnectionRequest = async () => {
+    try {
+      const response = await supabase
+        .from('connection_requests')
+        .delete()
+        .eq('sender_id', user.id)
+        .eq('receiver_id', route.params.user.id)
+        .eq('status', 'pending');
+  
+      if (response.error) {
+        // Handle error from Supabase
+        Toast.show({ type: 'error', text1: 'Error', text2: error.message || 'Failed to cancel connection request' });
+      } else if (response.data && response.data.length > 0) {
+        // Request successfully canceled
+        Toast.show({ type: 'success', text1: 'Success', text2: 'No pending request to cancel' });
+        setIsPending(false);  // Update the state to reflect no pending request
+      } else {
+        // No matching request to cancel
+        setIsPending(false);  // No pending request
+        Toast.show({ type: 'error', text1: 'Request Cancelled' });
+      }
+    } catch (err) {
+      console.error('Failed to cancel request:', err.message);
+      Toast.show({ type: 'error', text1: 'Error', text2: 'An unexpected error occurred' });
+    }
+  };
+  
+  const checkIsPending = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('connection_requests')
+        .select('*')
+        .eq('sender_id', user.id)
+        .eq('receiver_id', route.params.user.id)
+        .eq('status', 'pending');
+  
+      if (error) {
+        console.error('Error checking pending request:', error);
+        return false;  // Assuming no pending request if there's an error.
+      }
+  
+      if (data && data.length > 0) {
+        // console.log('Pending request exists:', data);
+        setIsPending(true)
+        return true;  // Pending request found.
+      } else {
+        // console.log('No pending request.');
+        setIsPending(false)
+        return false;  // No pending request.
+      }
+    } catch (err) {
+      console.error('Failed to check pending request:', err.message);
+      return false;  // Return false on any other failure.
+    }
+  };
+  
+  useEffect(() => {
+    checkIsPending(); 
+  },[])
 
-  const sendMessage = () => {
-    Alert.alert('navigate to message screen')
-  }
+  useFocusEffect(
+    useCallback(() => {
+      checkIsPending(); 
+    }, [])
+  );
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -110,9 +181,14 @@ const FriendProfileScreen = ({ navigation, route }: any) => {
         )}
       </Animated.View>
       <View style={{ display: 'flex', flexDirection: 'row', gap: 10, marginTop: 10, }}>
-        <Pressable style={styles.connectButton} onPress={sendConnectionRequest}>
-          <Text style={styles.connectButtonText}>Connect</Text>
+        {isPending ? 
+          <Pressable style={styles.pendingButton} onPress={cancelConnectionRequest}>
+          <Text style={styles.pendingButtonText}>{'Cancel Pending Request'}</Text>
         </Pressable>
+        :
+        <Pressable style={styles.connectButton} onPress={sendConnectionRequest}>
+          <Text style={styles.connectButtonText}>{'Connect'}</Text>
+        </Pressable>}
         <Pressable style={styles.messageButton} onPress={goToProfile}>
           <Text style={styles.messageButtonText}>Message</Text>
         </Pressable>
@@ -124,7 +200,7 @@ const FriendProfileScreen = ({ navigation, route }: any) => {
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
     backgroundColor: '#000000',
@@ -168,19 +244,30 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginTop: 20,
   },
+  pendingButton:{
+    backgroundColor: 'red',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 20,
+  },
   connectButtonText: {
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
   },
+  pendingButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
   messageButton: {
-    backgroundColor: 'lightgray',
+    backgroundColor: 'gray',
     padding: 10,
     borderRadius: 5,
     marginTop: 20,
   },
   messageButtonText: {
-    color: 'green',
+    color: 'white',
     fontWeight: 'bold',
     fontSize: 16,
   },

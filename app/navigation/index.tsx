@@ -131,9 +131,9 @@ const AppNavigator = () => {
                 <Stack.Screen name="Payment" component={PaymentScreen} />
                 <Stack.Screen name="TabEile" component={TabEileScreen} />
                 <Stack.Screen name="FriendProfile" component={FriendProfileScreen} options={({ navigation }) => ({
-                  // gestureEnabled: false,
-                  // gestureDirection: 'horizontal',
-                  // cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
+                  gestureEnabled: false,
+                  gestureDirection: 'horizontal',
+                  cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
                   headerTintColor: '#000',
                   headerTitle: 'Contact Info',
                   headerBackTitle: 'Back', // Change the back button text
