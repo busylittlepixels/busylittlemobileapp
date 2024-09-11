@@ -76,7 +76,7 @@ const AccountScreen = ({ navigation }: any) => {
 
   const avatarBlipImage = Asset.fromModule(require('./../../assets/images/marathon6.png')).uri;
   const avatarImage = Asset.fromModule(require('./../../assets/images/blp-splash.png')).uri;
-  const imageUrl = user && user?.id === '3e70dd7c-735f-4b46-aeda-5c0996a2dbea' ? avatarBlipImage : avatarImage;
+  const imageUrl =  avatarBlipImage ? avatarBlipImage : avatarImage;
 
   // Fetch favorites from AsyncStorage
   const fetchFavorites = useCallback(async () => {
