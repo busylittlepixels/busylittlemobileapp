@@ -135,7 +135,7 @@ const AppNavigator = () => {
                   // gestureDirection: 'horizontal',
                   // cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
                   headerTintColor: '#000',
-                  headerTitle: 'Friend Profile',
+                  headerTitle: 'Contact Info',
                   headerBackTitle: 'Back', // Change the back button text
                   headerBackTitleVisible: true, // Ensures the back button text is visible
                   headerRight: () => (
