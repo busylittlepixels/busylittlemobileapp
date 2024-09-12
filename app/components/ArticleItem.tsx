@@ -6,6 +6,9 @@ import { useNavigation } from '@react-navigation/native';
 const ArticleItem = ({ item, isFavorite, onToggleFavorite }: any) => {
   const navigation = useNavigation();
 
+  // Safely access the source_url from the embedded featured media
+  const featuredMediaUrl = item?._embedded?.['wp:featuredmedia']?.[0]?.source_url;
+
   return (
     <View key={item.id} style={styles.item}>
       {/* Navigate to ArticleScreen */}
@@ -14,7 +17,13 @@ const ArticleItem = ({ item, isFavorite, onToggleFavorite }: any) => {
         onPress={() => navigation.navigate('Article', { item, isFavorite })}
         style={styles.articlePressable}
       >
-        <Image style={styles.tinyLogo} source={{ uri: 'https://via.placeholder.com/50/800080/FFFFFF' }} />
+        {/* Use the source_url from embedded media or fallback to a placeholder */}
+        <Image
+          style={styles.tinyLogo}
+          source={{
+            uri: featuredMediaUrl ? featuredMediaUrl : 'https://via.placeholder.com/50/800080/FFFFFF',
+          }}
+        />
         <View style={styles.textContainer}>
           <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
             {item.title?.rendered || item.title}

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Dimensions, Pressable, View, Button, Image } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -7,10 +6,10 @@ import ParallaxScrollView from '@/app/components/ParallaxScrollView';
 import { ThemedText } from '@/app/components/ThemedText';
 import { ThemedView } from '@/app/components/ThemedView';
 import RenderHTML from 'react-native-render-html';
-import { toggleFavorite as toggleFavoriteService } from '../../services/favouriteService';
-import useSanitizeRender from '@/app/hooks/useSanitizeRender';
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import useSanitizeRender from '@/app/hooks/useSanitizeRender';
+import { toggleFavorite as toggleFavoriteService } from '../../services/favouriteService';
 
 const baseStyles = {
     body: {
@@ -37,27 +36,21 @@ export default function ArticleScreen({ navigation, route }: any) {
     const { id, article_id } = item;
     const articleId = article_id || id;
 
-    // Handle both title and content rendered data
     const title = item.title?.rendered || item.title;
     const content = item.content?.rendered || item.content;
     const sanitizedContent = useSanitizeRender(content);
 
-    // Local state to track whether the article is a favorite
+    // Correctly fetch the featured media URL
+    const featuredMedia = item?._embedded?.['wp:featuredmedia']?.[0]?.source_url;
+
     const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
 
-    // Update local state when Redux favorites change
     useEffect(() => {
         setIsFavorite(favorites[articleId]);
     }, [favorites, articleId]);
 
     const handleToggleFavorite = async () => {
-        if (!articleId) {
-            console.error('Error: article_id or id is missing');
-            return;
-        }
-
         const serializedContent = JSON.stringify(item.content?.rendered || item.content);
-
         try {
             const result = await toggleFavoriteService(user?.id, articleId, item.title, item.slug, serializedContent);
 
@@ -90,9 +83,6 @@ export default function ArticleScreen({ navigation, route }: any) {
     useEffect(() => {
         navigation.setOptions({
             title: title,
-            headerTintColor: '#000',
-            headerBackTitle: 'Go Back', // Change the back button text
-            headerBackTitleVisible: false, // Ensures the back button text is visible
             headerRight: () => (
                 <View style={{ display: 'flex', flexDirection: 'row' }}>
                     <Pressable onPress={handleToggleFavorite} style={{ marginRight: 15 }}>
@@ -105,21 +95,28 @@ export default function ArticleScreen({ navigation, route }: any) {
                 </View>
             ),
         });
-    }, [navigation, isFavorite]); // Re-run the effect whenever `isFavorite` changes
+    }, [navigation, isFavorite]);
 
     const { width } = Dimensions.get('window');
 
     const renderers = {
-        img: ({ src }) => <Image source={{ uri: src }} style={{ width: '100%', height: 200 }} />,
+        img: ({ src }:any) => <Image source={{ uri: src }} style={{ width: '100%', height: 200 }} />,
     };
 
     return (
         <View style={styles.container}>
             <ParallaxScrollView
-                headerBackgroundColor={{ light: '#353636', dark: '#D0D0D0' }}
+                // @ts-ignore
+                headerBackgroundColor="#353636"
                 backgroundColor="#353636"
                 contentBackgroundColor="#353636"
-                headerImage={<Ionicons size={310} name="code-slash" style={styles.headerImage} />}
+                // Pass the Image component itself as the value of headerImage
+                headerImage={
+                    <Image 
+                        source={{ uri: featuredMedia || 'https://via.placeholder.com/600x400/808080/FFFFFF' }} 
+                        style={styles.headerImage}
+                    />
+                }
             >
                 <ThemedView style={{ flex: 1 }}>
                     <ThemedText type="title" style={{ color: '#fff' }}>{title}</ThemedText>
@@ -128,8 +125,9 @@ export default function ArticleScreen({ navigation, route }: any) {
                     contentWidth={width}
                     source={{ html: sanitizedContent }}
                     renderers={renderers}
-                    tagsStyles={baseStyles}
-                    baseStyle={{ color: "#000" }}
+                    // @ts-ignores
+                    tagsStyles={baseStyles}  // <--- baseStyles is here
+                    baseStyle={{ color: "#fff" }}
                 />
                 <View style={styles.buttonContainer}>
                     <Button title="Back to Articles" onPress={() => navigation.navigate('Account')} />
@@ -144,9 +142,8 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     headerImage: {
-        color: '#808080',
-        bottom: -90,
-        left: -35,
+        width: '100%',
+        height: 200, // Adjust height as needed
     },
     buttonContainer: {
         padding: 16,

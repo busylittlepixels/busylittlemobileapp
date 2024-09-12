@@ -10,7 +10,7 @@ const AnimatedMenuIcon = ({ navigation }: any) => {
   return (
     <Pressable
       onPress={() => {
-        console.log('Menu Pressed');
+        // console.log('Menu Pressed');
         navigation.toggleDrawer();
       }}
       onPressIn={() => {

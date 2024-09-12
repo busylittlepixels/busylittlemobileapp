@@ -120,7 +120,7 @@ const AppNavigator = () => {
                     </View>
                   ),
                 })} />
-                <Stack.Screen name="Article" component={ArticleScreen} options={{ headerShown: true }} />
+                <Stack.Screen name="Article" component={ArticleScreen} options={{ headerTintColor: '#000', headerShown: true, headerBackTitle: 'Back', headerBackTitleVisible: true }} />
                 <Stack.Screen name="Cities" component={CitiesScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="City" component={CityScreen} options={{ headerTintColor: '#000', headerShown: true, headerBackTitle: 'Back', headerBackTitleVisible: true }} />
                 <Stack.Screen name="Search" component={SearchScreen} options={({ navigation }) => ({

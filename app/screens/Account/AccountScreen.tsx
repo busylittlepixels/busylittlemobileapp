@@ -120,7 +120,7 @@ const AccountScreen = ({ navigation }: any) => {
   // Fetch articles from external API
   const fetchArticles = useCallback(async () => {
     try {
-      const response = await fetch('https://blpwp.frb.io/wp-json/wp/v2/news', {
+      const response = await fetch('https://blpwp.frb.io/wp-json/wp/v2/news?_embed&per_page=20', {
         headers: {
           'Content-Type': 'application/json',
         }
