@@ -67,9 +67,15 @@ const fetchUserConversations = async (userId) => {
 
 
  
- const markMessagesAsRead = async (userId, otherUserId) => {
+const markMessagesAsRead = async (userId, otherUserId) => {
+    // Check if userId and otherUserId are valid before proceeding
+    if (!userId || !otherUserId) {
+    //   console.error('Invalid user IDs:', { userId, otherUserId });
+      return;
+    }
+  
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('messages')
         .update({ read: true })
         .eq('receiver_id', userId)
@@ -77,12 +83,14 @@ const fetchUserConversations = async (userId) => {
         .eq('read', false);
   
       if (error) {
-        console.error('Error marking messages as read:', error);
+        throw error;
       }
+  
+      console.log(`Marked ${data.length} messages as read`);
     } catch (err) {
-      console.error('Error:', err);
+    //   console.error('Error marking messages as read:', err);
     }
-};
+  };
 
 const MessagesScreen = ({ navigation, route }: any) => {
     const [conversations, setConversations] = useState([]);

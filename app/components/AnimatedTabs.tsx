@@ -1,5 +1,4 @@
-// @ts-nocheck
-import React from 'react';
+import React, { useEffect, useImperativeHandle, forwardRef } from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { Pressable } from 'react-native';
@@ -7,7 +6,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 
 const { width } = Dimensions.get('window');
 
-const AnimatedTabs = ({ state, descriptors, navigation, unreadMessagesCount }:any) => {
+const AnimatedTabs = forwardRef(({ state, descriptors, navigation, unreadMessagesCount }: any, ref) => {
   const animatedValue = useSharedValue(0);
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -19,10 +18,20 @@ const AnimatedTabs = ({ state, descriptors, navigation, unreadMessagesCount }:an
     };
   });
 
+  useEffect(() => {
+    animatedValue.value = state.index;
+  }, [state.index]);
+
+  useImperativeHandle(ref, () => ({
+    setTabIndex: (index: number) => {
+      animatedValue.value = index;
+    },
+  }));
+
   return (
     <View style={styles.tabBar}>
       <Animated.View style={[styles.indicator, animatedStyle]} />
-      {state.routes.map((route: { key: string | number; name: string; }, index: React.Key | null | undefined) => {
+      {state.routes.map((route: { key: string | number; name: string }, index: React.Key | null | undefined) => {
         const { options } = descriptors[route.key];
         const label =
           options.tabBarLabel !== undefined
@@ -41,12 +50,10 @@ const AnimatedTabs = ({ state, descriptors, navigation, unreadMessagesCount }:an
           });
 
           if (!isFocused && !event.defaultPrevented) {
-            animatedValue.value = index;
             navigation.navigate(route.name);
           }
         };
 
-        // Determine the correct icon based on the route name
         let iconName;
         if (route.name === 'My Profile') {
           iconName = isFocused ? 'newspaper' : 'newspaper-outline';
@@ -67,8 +74,8 @@ const AnimatedTabs = ({ state, descriptors, navigation, unreadMessagesCount }:an
             style={styles.tab}
           >
             <View style={{ position: 'relative' }}>
+              {/* @ts-ignore */}
               <Ionicons name={iconName} size={24} color={isFocused ? 'green' : 'black'} />
-              {/* for messages count; render only on Messages tab and if count is greater than 0 */}
               {route.name === 'Messages' && unreadMessagesCount > 0 && (
                 <View style={styles.badge}>
                   <Text style={styles.badgeText}>{unreadMessagesCount}</Text>
@@ -81,7 +88,7 @@ const AnimatedTabs = ({ state, descriptors, navigation, unreadMessagesCount }:an
       })}
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   tabBar: {

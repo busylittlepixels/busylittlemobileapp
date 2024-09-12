@@ -10,13 +10,16 @@ import MySettings from '../MyScreens/MySettings';
 import MessagesScreen from '../Chat/MessagesScreen';
 import { supabase } from '../../../supabase'; // Adjust path as necessary
 import { useSelector, useDispatch } from 'react-redux'; // Import useSelector and useDispatch
+import { useFocusEffect } from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
 
-const ProfileScreen = ({ navigation }:any) => {
+const ProfileScreen = ({ navigation, route }:any) => {
   const updateDetailsRef = useRef(null);
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0); // Unread message count state
   const user = useSelector((state) => state.auth.user);
+  const tabsRef = useRef(null);
+
   const triggerRefresh = () => {
     if (updateDetailsRef.current) {
       updateDetailsRef.current.triggerRefresh(); // Call the refresh method on UpdateDetailsScreen
@@ -56,10 +59,19 @@ const ProfileScreen = ({ navigation }:any) => {
     return () => clearInterval(intervalId); // Cleanup on component unmount
   }, []);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      if (route.params?.screen === 'Messages') {
+        // Assuming 'Messages' is the second tab (index 1)
+        tabsRef.current?.setTabIndex(1);
+      }
+    }, [route.params?.screen])
+  );
+
   return (
     <View style={{ flex: 1 }}>
       <Tab.Navigator
-        tabBar={(props) => <AnimatedTabs {...props} unreadMessagesCount={unreadMessagesCount} />} // Pass unread count
+        tabBar={(props) => <AnimatedTabs {...props} unreadMessagesCount={unreadMessagesCount} ref={tabsRef} /> } // Pass unread count
         screenOptions={({ route }) => ({
           headerShown: false,
           tabBarActiveTintColor: 'green',
