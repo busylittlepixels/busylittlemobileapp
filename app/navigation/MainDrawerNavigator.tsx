@@ -10,59 +10,14 @@ import CitiesScreen from '../screens/Cities/CitiesScreen';
 import MySchedule from '../screens/MyScreens/MySchedule';
 import UsersScreen from '../screens/General/UsersScreen';
 import MyPersonalSchedule from '../screens/MyScreens/MyPersonalSchedule';
-import MessagesScreen from '../screens/Chat/MessagesScreen';
+// import MessagesScreen from '../screens/Chat/MessagesScreen';
+import AnimatedMenuIcon from '../components/AnimatedMenuIcon'
 
 const Drawer = createDrawerNavigator();
 
 function MessagesPlaceholder() {
   return null;
 }
-// Custom Animated Hamburger/X Icon
-const AnimatedMenuIcon = ({ navigation }:any) => {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const rotationValue = useRef(new Animated.Value(0)).current;
-
-
-  const toggleIconAnimation = () => {
-    Animated.timing(rotationValue, {
-      toValue: isDrawerOpen ? 0 : 1, // Animate to 1 if open, 0 if closed
-      duration: 300,
-      useNativeDriver: true, // Use native driver for better performance
-    }).start();
-  };
-
-  useEffect(() => {
-    // Listen to drawer open/close events
-    const unsubscribeOpen = navigation.addListener('drawerOpen', () => {
-      setIsDrawerOpen(true);
-      toggleIconAnimation();
-    });
-
-    const unsubscribeClose = navigation.addListener('drawerClose', () => {
-      setIsDrawerOpen(false);
-      toggleIconAnimation();
-    });
-
-    return () => {
-      unsubscribeOpen();
-      unsubscribeClose();
-    };
-  }, [isDrawerOpen, navigation]);
-
-  // Rotation interpolation for smooth transition
-  const rotateIcon = rotationValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '45deg'], // From hamburger to X icon
-  });
-
-  return (
-    <Pressable onPress={() => navigation.toggleDrawer()}>
-      <Animated.View style={{ transform: [{ rotate: rotateIcon }] }}>
-        <Ionicons name={isDrawerOpen ? 'close-outline' : 'menu-outline'} size={30} color="black" style={{ marginLeft: 15 }} />
-      </Animated.View>
-    </Pressable>
-  );
-};
 
 // Custom Drawer Content
 const CustomDrawerContent = (props:any) => {

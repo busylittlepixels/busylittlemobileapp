@@ -4,7 +4,7 @@ const initialState = {
   };
   
   const messageReducer = (state = initialState, action: { type: any; payload: { message: any; }; meta: { message: any; }; }) => {
-    console.log('action', action)
+    // console.log('action', action)
     switch (action.type) {
     
         case 'SEND_MESSAGE':
