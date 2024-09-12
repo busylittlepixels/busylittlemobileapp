@@ -74,9 +74,9 @@ const AccountScreen = ({ navigation }: any) => {
   const [articles, setArticles] = useState([]);
   const [favorites, setFavorites] = useState({});
 
-  const avatarBlipImage = Asset.fromModule(require('./../../assets/images/marathon6.png')).uri;
+  // const avatarBlipImage = Asset.fromModule(require('./../../assets/images/marathon6.png')).uri;
   const avatarImage = Asset.fromModule(require('./../../assets/images/blp-splash.png')).uri;
-  const imageUrl =  avatarBlipImage ? avatarBlipImage : avatarImage;
+  const imageUrl = avatarImage;
 
   // Fetch favorites from AsyncStorage
   const fetchFavorites = useCallback(async () => {

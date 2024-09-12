@@ -19,12 +19,12 @@ const AnimatedMenuIcon = ({ navigation }:any) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const rotationValue = useRef(new Animated.Value(0)).current;
 
-  // Function to animate the icon
+
   const toggleIconAnimation = () => {
     Animated.timing(rotationValue, {
       toValue: isDrawerOpen ? 0 : 1, // Animate to 1 if open, 0 if closed
       duration: 300,
-      useNativeDriver: true,
+      useNativeDriver: true, // Use native driver for better performance
     }).start();
   };
 
@@ -49,7 +49,7 @@ const AnimatedMenuIcon = ({ navigation }:any) => {
   // Rotation interpolation for smooth transition
   const rotateIcon = rotationValue.interpolate({
     inputRange: [0, 1],
-    outputRange: ['0deg', '45deg'], // 0deg for hamburger, 45deg for X icon
+    outputRange: ['0deg', '45deg'], // From hamburger to X icon
   });
 
   return (
@@ -86,6 +86,7 @@ const CustomDrawerContent = (props:any) => {
 // Main Drawer Navigator
 const MainDrawerNavigator = () => {
   return (
+    // @ts-ignore
     <Drawer.Navigator
       initialRouteName="Home"
       screenOptions={({ navigation }) => ({

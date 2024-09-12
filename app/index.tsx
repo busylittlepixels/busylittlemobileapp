@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Provider } from 'react-redux';
 import { StripeProvider } from '@stripe/stripe-react-native';
 import store from './store'; // Import the Redux store
+import NetInfo from '@react-native-community/netinfo';
 
 // Method to clear all data from AsyncStorage
 const clearAsyncStorage = async () => {
@@ -31,15 +32,24 @@ const checkAsyncStorage = async () => {
   }
 };
 
-
-
 const App = () => {
-
   useEffect(() => {
     StatusBar.setBarStyle('dark-content'); // Ensures that the bar style is set correctly after mount
     StatusBar.setHidden(false); // Ensures that the StatusBar is visible
-  }, []);
 
+    // Add NetInfo listener to monitor network state changes
+    const unsubscribe = NetInfo.addEventListener(state => {
+      console.log('Connection type', state.type);
+      console.log('Is connected?', state.isConnected);
+      // Optionally dispatch actions to Redux store here
+      // store.dispatch({ type: 'SET_NETWORK_STATUS', payload: state.isConnected });
+    });
+
+    // Cleanup the listener on component unmount
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   return (
     <>

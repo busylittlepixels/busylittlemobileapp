@@ -1,9 +1,10 @@
 // @ts-nocheck
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useState, useEffect, useRef } from 'react';
+import { useDispatch } from 'react-redux';
 import { View, Text, FlatList, TextInput, Button, StyleSheet, KeyboardAvoidingView, Platform, Pressable, Image } from 'react-native';
 import { supabase } from '../../../supabase';  // Ensure supabase is properly initialized
-
+import { sendMessage } from '../../actions/messageActions'; // Import the logout action if needed
 
 const SendButton = ({ title, onPress }) => {
   return (
@@ -30,6 +31,7 @@ const ChatScreen = ({ navigation, route }) => {
   const [newMessage, setNewMessage] = useState('');
   const flatListRef = useRef(null);  // FlatList ref to handle scrolling
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     navigation.setOptions({ 
@@ -56,6 +58,7 @@ const ChatScreen = ({ navigation, route }) => {
       console.error('Error fetching messages:', error);
     } else {
       setMessages(data || []);
+      // dispatch(sendMessage);
     }
 
     markMessagesAsRead(); // Mark messages as read after fetching
@@ -104,6 +107,7 @@ const ChatScreen = ({ navigation, route }) => {
       if (error) {
         console.error('Error sending message:', error);
       } else {
+        
         setNewMessage('');
       }
 
