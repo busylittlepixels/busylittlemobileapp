@@ -14,6 +14,9 @@ import MessagesScreen from '../screens/Chat/MessagesScreen';
 
 const Drawer = createDrawerNavigator();
 
+function MessagesPlaceholder() {
+  return null;
+}
 // Custom Animated Hamburger/X Icon
 const AnimatedMenuIcon = ({ navigation }:any) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -84,7 +87,7 @@ const CustomDrawerContent = (props:any) => {
 };
 
 // Main Drawer Navigator
-const MainDrawerNavigator = () => {
+const MainDrawerNavigator = ({ navigation }:any) => {
   return (
     // @ts-ignore
     <Drawer.Navigator
@@ -128,8 +131,21 @@ const MainDrawerNavigator = () => {
       />
       <Drawer.Screen 
         name="Messages" 
-        component={MessagesScreen} 
-        options={{ headerShown: true }} // Keep current header styles intact
+        component={MessagesPlaceholder}
+        options={{ 
+          headerShown: true,
+          drawerLabel: 'Messages',
+        }}
+        listeners={{
+          drawerItemPress: (e) => {
+            // Prevent default action
+            e.preventDefault();
+            // Navigate to the MessagesScreen in the Profile's Tab Navigator
+            navigation.navigate('Profile', {
+              screen: 'Messages'
+            });
+          }
+        }}
       />
       <Drawer.Screen 
         name="All Users" 
