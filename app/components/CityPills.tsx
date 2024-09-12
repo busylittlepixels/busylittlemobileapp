@@ -10,9 +10,9 @@ const BackButton = ({ title, onPress }) => {
     <Pressable
       style={({ pressed }) => [
         {
-          backgroundColor: pressed ? '#ddd' : 'gray', // Dim the color when pressed
+          backgroundColor: pressed ? '#ddd' : 'green', // Dim the color when pressed
         },
-        styles.button,
+        styles.profileButton,
       ]}
       onPress={onPress}
     >
@@ -26,7 +26,7 @@ const ClearButton = ({ title, onPress }) => {
     <Pressable
       style={({ pressed }) => [
         {
-          backgroundColor: pressed ? '#ddd' : 'red', // Dim the color when pressed
+          backgroundColor: pressed ? '#ddd' : 'gray', // Dim the color when pressed
         },
         styles.clearButton,
       ]}
@@ -110,7 +110,10 @@ const CityPills = ({ user }: any) => {
   };
 
   const navigateToProfile = () => {
-    navigation.navigate('Profile', { user });
+    navigation.replace('Account', { user }, {
+      ...TransitionPresets.SlideFromRightIOS, // Default iOS right-to-left transition
+      gestureDirection: 'horizontal-inverted', // Invert the gesture to make it slide from left
+    });
   };
 
 
@@ -127,7 +130,7 @@ const CityPills = ({ user }: any) => {
         <Text style={styles.pageHeading}>
           Select Your City
           </Text>
-          <Text style={{ textAlign: 'center', marginVertical: 10 }}>You can edit your preferences in your profile settings.</Text>
+          <Text style={{ textAlign: 'center', marginVertical: 10 }}>You can edit your preferences below, or also (for the moment) in your profile settings.</Text>
       </View>
       {cities.length > 0 ? (
         cities.map((city) => {
@@ -139,14 +142,10 @@ const CityPills = ({ user }: any) => {
               style={[
                 styles.pill,
                 isCitySelected && styles.selectedPill,
-                isCitySelected && { backgroundColor: '#000' }, // Apply different background color for selected cities
               ]}
-              onPress={() => !isCitySelected && handleCityToggle(city.name)} // Disable press if already selected
-              disabled={isCitySelected} // Disable pressable for already selected cities
+              onPress={() => handleCityToggle(city.name)}
             >
               <Text style={styles.pillText}>{city.name}</Text>
-
-              
             </Pressable>
           );
         })
@@ -155,7 +154,7 @@ const CityPills = ({ user }: any) => {
       )}
     </View>
     <View style={{ display: 'flex', flexDirection: 'row', gap: 4 }}>
-      <BackButton title="Back to Profile" onPress={navigateToProfile} />
+      <BackButton title="Go to Profile" onPress={navigateToProfile} />
       <ClearButton title="Clear Selection" onPress={clearCities} />
     </View>
     </>
@@ -178,14 +177,14 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   pill: {
-    backgroundColor: '#ddd',
+    backgroundColor: 'lightgray',
     borderRadius: 20,
     paddingVertical: 10,
     paddingHorizontal: 20,
     margin: 5,
   },
   selectedPill: {
-    backgroundColor: '#007BFF',
+    backgroundColor: 'black',
   },
   pillText: {
     color: '#fff',
@@ -198,6 +197,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderColor: 'gray',
     borderWidth: 2,
+    color: '#fff',
+  },
+  profileButton: {
+    marginTop: 50,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    alignItems: 'center',
+    // borderColor: 'green',
+    // borderWidth: 2,
     color: '#fff',
   },
   clearButton: {

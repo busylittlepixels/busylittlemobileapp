@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Pressable, StyleSheet, Animated } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
 import { useDispatch } from 'react-redux';
@@ -73,8 +73,18 @@ const CustomDrawerContent = (props:any) => {
     dispatch(logout());
   };
 
+  const doNothing = () => {
+    return
+  }
+
   return (
     <DrawerContentScrollView {...props} style={styles.drawerContainer}>
+      <DrawerItem
+        label="BUSYLITTLEPIXELS"
+        labelStyle={styles.drawerLabelLogo}
+        onPress={doNothing}
+        style={styles.logoutItem}
+      />
       <DrawerItemList {...props} />
       <DrawerItem
         label="Logout"
@@ -119,7 +129,7 @@ const MainDrawerNavigator = ({ navigation }:any) => {
           fontSize: 14, // Larger font size for drawer labels
           fontWeight: 'bold',
         },
-        drawerActiveTintColor: 'red', // Red tint for active drawer items
+        drawerActiveTintColor: 'white', // Red tint for active drawer items
         drawerActiveBackgroundColor: 'rgba(255, 0, 0, 0.1)', // Light red background when active
       })}
       drawerContent={(props) => <CustomDrawerContent {...props} />}
@@ -184,6 +194,10 @@ const styles = StyleSheet.create({
   drawerLabel: {
     color: '#fff', // White text for drawer items
     fontSize: 14, // Larger font size
+  },
+  drawerLabelLogo: {
+    color: '#fff', // White text for drawer items
+    fontSize: 18, // Larger font size
   },
   logoutItem: {
     marginTop: 20, // Adds space before the logout item

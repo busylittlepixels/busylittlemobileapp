@@ -398,6 +398,23 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
               loading={loading} 
             />
             <Button style={{ color: '#000'}} title="Upload Profile Picture" onPress={handleImageUpload} />
+
+            {/* <Pressable
+              style={({ pressed }) => [
+                {
+                  backgroundColor: pressed ? 'lightgray' : 'gray', // Dim the color when pressed
+                  alignItems: 'center',
+                  paddingVertical: 10,
+                  width: '80%',
+                  justifyContent: 'center'
+                }
+              ]}
+              onPress={handleImageUpload}
+            >
+              <Text style={styles.uploadButtonText}>Upload Profile Picture</Text>
+            </Pressable> */}
+          
+          
           </View>
         }
 
@@ -516,6 +533,11 @@ const styles = StyleSheet.create({
     color: '#FFFFFF', // White text
     fontSize: 16,
     fontWeight: 'normal',
+  },
+  uploadButtonText: {
+    color: '#000', // White text
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   profileHeader:{
     paddingVertical: 20,

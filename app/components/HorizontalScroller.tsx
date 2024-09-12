@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   StyleSheet,
   Image,
@@ -15,6 +15,7 @@ const { width: screenWidth } = Dimensions.get('window');
 
 const HorizontalScroller = () => {
   const navigation = useNavigation(); // Get the navigation object
+  const [isLoading, setIsLoading] = useState(false)
   const scrollX = useRef(new Animated.Value(0)).current; // Scroll position
 
   const images = [
@@ -37,7 +38,7 @@ const HorizontalScroller = () => {
       )}
       scrollEventThrottle={4}
     >
-      {images.map((item, index) => {
+      {images ? images.map((item, index) => {
         const inputRange = [
           (index - 1) * (screenWidth * 0.6),
           index * (screenWidth * 0.6),
@@ -65,7 +66,7 @@ const HorizontalScroller = () => {
             </View>
           </Pressable>
         );
-      })}
+      }) : <View><Text>Loading...</Text></View> }
     </Animated.ScrollView>
   );
 };

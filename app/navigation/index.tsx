@@ -86,7 +86,19 @@ const AppNavigator = () => {
               </Stack.Screen>
             ) : (
               <>
-                <Stack.Screen name="Account" component={MainDrawerNavigator} options={{ headerShown: false }} />
+                {/* <Stack.Screen name="Account" component={MainDrawerNavigator} options={{ headerShown: false }} /> */}
+                <Stack.Screen
+                  name="Account"
+                  component={MainDrawerNavigator}
+                  options={({ route }) => ({
+                    headerShown: false, 
+                    gestureEnabled: true, // Enable gesture for swipe back
+                    cardStyleInterpolator: route.params?.fromCities
+                      ? CardStyleInterpolators.forHorizontalIOS
+                      : undefined, // Apply left-to-right transition only if navigating from CitiesScreen
+                    gestureDirection: route.params?.fromCities ? 'horizontal-inverted' : 'horizontal', // Slide from left if coming from CitiesScreen
+                  })}
+                />
                 <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerTintColor: '#000', headerShown: true, headerBackTitle: 'Back', headerBackTitleVisible: true }} />
                 <Stack.Screen name="Event" component={EventScreen} options={{ headerShown: true }} />
                 <Stack.Screen name="MyEvents" component={MyEventsScreen} options={{ headerShown: false }} />
