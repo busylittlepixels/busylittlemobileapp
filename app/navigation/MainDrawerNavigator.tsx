@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, Pressable, StyleSheet, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { supabase } from '../../supabase'; // Update the path as necessary
 import { logout } from '../actions/authActions';
 import AccountScreen from '../screens/Account/AccountScreen';
 import FavoritesScreen from '../screens/Favourites/FavoritesScreen';
@@ -53,6 +54,34 @@ const CustomDrawerContent = (props:any) => {
 
 // Main Drawer Navigator
 const MainDrawerNavigator = ({ navigation }:any) => {
+  // @ts-ignore
+  const user = useSelector((state) => state.auth.user); // Get user info from Redux
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0); // Unread message count
+  const [loading, setLoading] = useState(true); // Loading state
+
+  // Fetch unread messages from the database
+  const fetchUnreadMessagesCount = async () => {
+    const { data, error } = await supabase
+      .from('messages')
+      .select('id')
+      .eq('receiver_id', user?.id) // Use the logged-in user's ID
+      .eq('read', false); // Only fetch unread messages
+    
+    if (error) {
+      console.error('Error fetching unread messages:', error);
+    } else {
+      setUnreadMessagesCount(data.length); // Set unread count
+    }
+    setLoading(false); // Mark as not loading anymore
+  };
+
+  useEffect(() => {
+    fetchUnreadMessagesCount(); // Fetch unread messages on mount
+
+    const intervalId = setInterval(fetchUnreadMessagesCount, 5000); // Poll every 5 seconds
+    return () => clearInterval(intervalId); // Cleanup interval on unmount
+  }, []);
+
   return (
     // @ts-ignore
     <Drawer.Navigator
@@ -99,7 +128,7 @@ const MainDrawerNavigator = ({ navigation }:any) => {
         component={MessagesPlaceholder}
         options={{ 
           headerShown: true,
-          drawerLabel: 'Messages',
+          drawerLabel: !loading && unreadMessagesCount > 0 ? `Messages (${unreadMessagesCount})` : 'Messages',
         }}
         listeners={{
           drawerItemPress: (e) => {
