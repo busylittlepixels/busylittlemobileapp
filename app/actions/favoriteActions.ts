@@ -43,7 +43,7 @@ export const toggleFavorite = (userId: any, article: any) => async (dispatch: Di
 
     try {
         // Toggle the favorite in the backend
-        const result = await toggleFavoriteService(userId, article_id, article.title, article.slug, article.content);
+        const result = await toggleFavoriteService(userId, article_id, article.title, article.slug, article.content, article.featuredMedia );
 
         if (result.error) {
             console.error('Error toggling favorite:', result.error);

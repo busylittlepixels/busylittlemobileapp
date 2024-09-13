@@ -1,40 +1,36 @@
 import React from 'react';
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { View, Pressable, Image, StyleSheet, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
-const ArticleItem = ({ item, isFavorite, onToggleFavorite }: any) => {
+const ArticleItem = ({ item, isFavorite, onToggleFavorite, featuredMedia }:any) => {
   const navigation = useNavigation();
-
-  // Safely access the source_url from the embedded featured media
-  const featuredMediaUrl = item?._embedded?.['wp:featuredmedia']?.[0]?.source_url;
 
   return (
     <View key={item.id} style={styles.item}>
       {/* Navigate to ArticleScreen */}
       <Pressable
-        // @ts-ignore 
-        onPress={() => navigation.navigate('Article', { item, isFavorite })}
+        // @ts-ignore
+        onPress={() => navigation.navigate('Article', { item, isFavorite, featuredMedia })}
         style={styles.articlePressable}
       >
-        {/* Use the source_url from embedded media or fallback to a placeholder */}
+        {/* Use the featuredMedia as the image source */}
         <Image
           style={styles.tinyLogo}
           source={{
-            uri: featuredMediaUrl ? featuredMediaUrl : 'https://via.placeholder.com/50/800080/FFFFFF',
+            uri: featuredMedia ? featuredMedia : 'https://via.placeholder.com/50/800080/FFFFFF',
           }}
         />
         <View style={styles.textContainer}>
           <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
             {item.title?.rendered || item.title}
           </Text>
-          <Text style={styles.description}>Here's some description...</Text>
         </View>
       </Pressable>
 
       {/* Favorite button */}
       <Pressable
-        onPress={() => onToggleFavorite(item.id, item.title?.rendered, item.slug, item.content?.rendered)}
+        onPress={() => onToggleFavorite(item.id, item.title?.rendered, item.slug, item.content?.rendered, featuredMedia)}
         style={styles.favoriteButton}
       >
         <Ionicons

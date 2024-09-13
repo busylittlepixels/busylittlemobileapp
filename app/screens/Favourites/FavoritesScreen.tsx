@@ -24,11 +24,13 @@ const ResetButton = ({ title, onPress }) => {
 
 
 
-const FavoritesScreen = ({ navigation }: any) => {
+const FavoritesScreen = ({ navigation, route }: any) => {
     const dispatch = useDispatch();
     const user = useSelector((state: any) => state.auth.user);
     const favorites = useSelector((state: any) => state.favorite.favorites);
     const [loading, setIsLoading] = useState<boolean>(false);
+
+    console.log('fave params', route.params)
 
     const handleResetFavorites = () => {
         const userId = user.id;
@@ -42,7 +44,7 @@ const FavoritesScreen = ({ navigation }: any) => {
             }
         }, [dispatch, user])
     );
-
+   
     return (
         <View style={styles.titleContainer}>
             {/* {user && <Text style={{ color: "green", fontSize: 20 }}>Favorite Articles for user: {user?.email}</Text>} */}
@@ -55,29 +57,16 @@ const FavoritesScreen = ({ navigation }: any) => {
                 {Object.keys(favorites).length > 0 ? (
                     Object.keys(favorites).map((articleId, index) => {
                         const item = favorites[articleId];
-                        
-
+                        const featuredMedia = item?._embedded?.['wp:featuredmedia']?.[0]?.source_url;
                         // Normalize title and content before passing to ArticleScreen
                         const title = item.title?.rendered || item.title;
                         const content = item.content?.rendered || item.content;
-
-                        // console.log('Rendering favorite item:', title);
-                        
-                        // return (
-                        //     <Pressable 
-                        //         key={index}
-                        //         onPress={() => {
-                        //             navigation.navigate("Article", { item: { ...item, title, content },  isFavorite: true });
-                        //         }}
-                        //     >
-                        //         <Text style={styles.faveLinks}>{title}</Text>
-                        //     </Pressable>
-                        // );
 
                         return(<ArticleItem
                             key={item.id}
                             item={item}
                             isFavorite={true}
+                            featuredMedia={item.featured_media} // Pass the stored featured image
                             />
                         )
                     })

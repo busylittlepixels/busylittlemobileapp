@@ -22,8 +22,8 @@ const normalizeContent = (input: { rendered: any; }) => {
     return input || ''; // Fallback to an empty string if input is undefined or null
 };
 
-const addFavorite = async (userId: any, articleId: any, title: { rendered: any; }, slug: string, content: { rendered: any; }) => {
-    console.log('add favorite userId', userId)
+const addFavorite = async (userId: any, articleId: any, title: { rendered: any; }, slug: string, content: { rendered: any; }, featuredMedia: string) => {
+    console.log('add favorite userId', userId);
     try {
         // Normalize title and content
         const normalizedTitle = normalizeContent(title);
@@ -49,7 +49,7 @@ const addFavorite = async (userId: any, articleId: any, title: { rendered: any; 
             return { message: 'Favorite already exists', data: existingFavorite };
         }
 
-        // Insert new favorite
+        // Insert new favorite with the featured image
         const { data, error } = await supabase
             .from('favorites')
             .insert([
@@ -58,7 +58,8 @@ const addFavorite = async (userId: any, articleId: any, title: { rendered: any; 
                     article_id: articleId,
                     title: normalizedTitle,
                     article_slug: finalSlug,
-                    content: normalizedContent
+                    content: normalizedContent,
+                    featured_media: featuredMedia  // Store the featured image
                 },
             ])
             .select();  // Explicitly request the inserted data to be returned
@@ -74,6 +75,7 @@ const addFavorite = async (userId: any, articleId: any, title: { rendered: any; 
         return { error };
     }
 };
+
 
 const removeFavorite = async (userId: any, articleId: any) => {
     try {
@@ -115,7 +117,7 @@ const getFavorites = async (userId: any) => {
     }
 };
 
-const toggleFavorite = async (userId: any, articleId: any, title: any, slug: any, content: any) => {
+const toggleFavorite = async (userId: any, articleId: any, title: any, slug: any, content: any, featuredMedia: any) => {
     try {
         const { data, error } = await supabase
             .from('favorites')
@@ -127,7 +129,7 @@ const toggleFavorite = async (userId: any, articleId: any, title: any, slug: any
         if (data) {
             return await removeFavorite(userId, articleId);
         } else {
-            return await addFavorite(userId, articleId, title, slug, content);
+            return await addFavorite(userId, articleId, title, slug, content, featuredMedia);
         }
     } catch (error) {
         console.error('Unexpected error:', error);

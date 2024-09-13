@@ -164,10 +164,11 @@ const AccountScreen = ({ navigation }: any) => {
     fetchData().finally(() => setRefreshing(false));
   }, [fetchData]);
 
-  const handleToggleFavorite = async (articleId, title, slug, content) => {
+  const handleToggleFavorite = async (articleId, title, slug, content, featuredMedia) => {
+    
     const isFavorite = favorites[articleId];
     const serializedContent = JSON.stringify(content);
-    const result = await toggleFavoriteService(user?.id, articleId, title, slug, serializedContent);
+    const result = await toggleFavoriteService(user?.id, articleId, title, slug, serializedContent, featuredMedia);
 
     if (result.error) {
       Toast.show({ type: 'error', text1: 'Error', text2: 'Failed to update favorites.' });
@@ -239,6 +240,7 @@ const AccountScreen = ({ navigation }: any) => {
                 item={item}
                 isFavorite={!!favorites[item.id]}
                 onToggleFavorite={handleToggleFavorite}
+                featuredMedia={item?._embedded?.['wp:featuredmedia']?.[0]?.source_url}
               />)
             })}
           </View>

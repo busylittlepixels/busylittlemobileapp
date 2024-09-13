@@ -39,9 +39,8 @@ export default function ArticleScreen({ navigation, route }: any) {
     const title = item.title?.rendered || item.title;
     const content = item.content?.rendered || item.content;
     const sanitizedContent = useSanitizeRender(content);
-
     // Correctly fetch the featured media URL
-    const featuredMedia = item?._embedded?.['wp:featuredmedia']?.[0]?.source_url;
+    const featuredMedia = item?._embedded?.['wp:featuredmedia']?.[0]?.source_url || route.params.featuredMedia;
 
     const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
 
@@ -52,7 +51,7 @@ export default function ArticleScreen({ navigation, route }: any) {
     const handleToggleFavorite = async () => {
         const serializedContent = JSON.stringify(item.content?.rendered || item.content);
         try {
-            const result = await toggleFavoriteService(user?.id, articleId, item.title, item.slug, serializedContent);
+            const result = await toggleFavoriteService(user?.id, articleId, item.title, item.slug, serializedContent, featuredMedia);
 
             if (result.error) {
                 Toast.show({ type: 'error', text1: 'Error', text2: 'Failed to update favorites.' });
