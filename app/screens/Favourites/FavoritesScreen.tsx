@@ -30,8 +30,6 @@ const FavoritesScreen = ({ navigation, route }: any) => {
     const favorites = useSelector((state: any) => state.favorite.favorites);
     const [loading, setIsLoading] = useState<boolean>(false);
 
-    console.log('fave params', route.params)
-
     const handleResetFavorites = () => {
         const userId = user.id;
         dispatch(clearFavorites(userId));
