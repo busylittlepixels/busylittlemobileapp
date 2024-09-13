@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   tinyLogo: {
-    borderRadius: '50%',
+    borderRadius: 50,
     borderWidth: 2,
     paddingLeft: 2,
     marginLeft: 5,

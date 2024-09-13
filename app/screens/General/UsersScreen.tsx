@@ -108,7 +108,7 @@ const UsersScreen = ({ navigation }: any) => {
                               source={{ uri: item.avatar_url }} 
                               style={[
                                 styles.image, 
-                                {width: 40, height: 40, borderRadius: '50%'}
+                                {width: 40, height: 40, borderRadius: 50}
                               ]} 
                             />
                         }
@@ -141,7 +141,7 @@ const UsersScreen = ({ navigation }: any) => {
                                 source={{ uri: item.avatar_url }} 
                                 style={[
                                     styles.image, 
-                                    {width: 40, height: 40, borderRadius: '50%'}
+                                    {width: 40, height: 40, borderRadius: 50}
                                 ]} 
                                 />
                                 : null }

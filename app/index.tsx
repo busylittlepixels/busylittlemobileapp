@@ -39,10 +39,10 @@ const App = () => {
 
     // Add NetInfo listener to monitor network state changes
     const unsubscribe = NetInfo.addEventListener(state => {
-      console.log('Connection type', state.type);
-      console.log('Is connected?', state.isConnected);
+      // console.log('Connection type', state.type);
+      // console.log('Is connected?', state.isConnected);
       // Optionally dispatch actions to Redux store here
-      // store.dispatch({ type: 'SET_NETWORK_STATUS', payload: state.isConnected });
+      store.dispatch({ type: 'SET_NETWORK_STATUS', payload: state.isConnected });
     });
 
     // Cleanup the listener on component unmount
