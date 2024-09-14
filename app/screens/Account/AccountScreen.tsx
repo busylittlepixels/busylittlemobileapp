@@ -18,10 +18,37 @@ import { toggleFavorite as toggleFavoriteService } from '../../services/favourit
 import { Asset } from 'expo-asset';
 import { enablePublicProfile } from '@/app/services/settingsService';
 
-const AccountScreen = ({ navigation }: any) => {
+
+
+
+
+const AccountScreen = ({ navigation, route }: any) => {
   // track vertical scroll
   const scrollY = useRef(new Animated.Value(0)).current;
-  
+  const { expoPushToken, handleSendPushNotification } = route.params || {};
+
+  console.log('Account rps:', handleSendPushNotification);
+ 
+  const packageNotification = (title, body, data) => {
+    handleSendPushNotification.handleSendPushNotification(title, body, data); 
+  }
+
+  const TestNofitication = ({ title, onPress }) => {
+    return (
+      <Pressable
+        style={({ pressed }) => [
+          {
+            backgroundColor: pressed ? 'lightgray' : 'gray', // Dim the color when pressed
+          },
+          styles.button,
+        ]}
+        onPress={onPress}
+      >
+        <Text style={styles.buttonText}>{title}</Text>
+      </Pressable>
+    );
+  };
+
   // set values for scrolly header
   const HEADER_MAX_HEIGHT = 120;
   const HEADER_MIN_HEIGHT = 80;

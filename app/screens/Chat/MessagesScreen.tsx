@@ -66,6 +66,8 @@ const fetchUserConversations = async (userId) => {
     return uniqueConversations;
 };
 
+
+
 const markMessagesAsRead = async (userId, otherUserId) => {
     // Check if userId and otherUserId are valid before proceeding
     if (!userId || !otherUserId) {
@@ -99,6 +101,13 @@ const MessagesScreen = ({ navigation, route }) => {
     const { expoPushToken, handleSendPushNotification } = route.params || {};
 
     console.log('handleSendPushNotification:',  handleSendPushNotification.handleSendPushNotification);
+
+    const packageNotification = (title, body, data) => {
+      console.log('package in chat', title, body, data);
+      handleSendPushNotification.handleSendPushNotification(title, body, data); 
+    }
+
+
 
     const loadConversations = useCallback(async () => {
         try {
@@ -145,9 +154,10 @@ const MessagesScreen = ({ navigation, route }) => {
                   
                   const senderName = senderData?.full_name || 'Someone';
                   
-                // Check if handleSendPushNotification is passed
+                    // Check if handleSendPushNotification is passed
                
-                    handleSendPushNotification.handleSendPushNotification(
+
+                    packageNotification(
                       'New message in BLP app',
                       `${senderName}: ${payload.new.message}`,
                       { messageId: payload.new.id }

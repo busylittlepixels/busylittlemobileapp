@@ -15,7 +15,6 @@ import ServicesScreen from '../screens/Services/ServicesScreen';
 import UpdateDetailsScreen from '../screens/Profile/UpdateDetailsScreen';
 import PaymentScreen from '../screens/Payment/PaymentScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
-import MainTabNavigator from './MainTabNavigator';
 import MainDrawerNavigator from './MainDrawerNavigator';
 import SignUpScreen from '../screens/Auth/SignUpScreen';
 import EventScreen from '../screens/Events/EventScreen';
@@ -63,7 +62,8 @@ const AppNavigator = ({ expoPushToken, handleSendPushNotification }) => {
   const loading = useSelector((state) => state.auth.loading);
   const isFirstLaunch = useSelector((state) => state.onboarding.isFirstLaunch);
 
-  console.log('app navigator screenProps', handleSendPushNotification);
+  console.log('app navigator notification', handleSendPushNotification);
+  console.log('app navigator expoPushToken', expoPushToken);
 
   if (loading) {
     return (
@@ -91,6 +91,7 @@ const AppNavigator = ({ expoPushToken, handleSendPushNotification }) => {
                 {/* <Stack.Screen name="Account" component={MainDrawerNavigator} options={{ headerShown: false }} /> */}
                 <Stack.Screen
                   name="Account"
+                  initialParams={{ expoPushToken, handleSendPushNotification }} 
                   component={MainDrawerNavigator}
                   options={({ route }) => ({
                     headerShown: false, 
@@ -102,8 +103,8 @@ const AppNavigator = ({ expoPushToken, handleSendPushNotification }) => {
                   })}
                 />
                 <Stack.Screen name="Profile" 
-                  component={ProfileScreen} 
                   initialParams={{ expoPushToken, handleSendPushNotification }} 
+                  component={ProfileScreen} 
                   options={{ headerTintColor: '#000', headerShown: true, headerBackTitle: 'Back', headerBackTitleVisible: true }} 
                 />
                 <Stack.Screen name="Event" component={EventScreen} options={{ headerShown: true }} />

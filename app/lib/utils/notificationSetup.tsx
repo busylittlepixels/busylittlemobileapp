@@ -53,7 +53,7 @@ export async function sendPushNotification(expoPushToken, title, body, data = {}
   const message = {
     to: expoPushToken,
     sound: 'default',
-    title: 'New message yo',
+    title: title,
     body: body,
     data: data,
   };

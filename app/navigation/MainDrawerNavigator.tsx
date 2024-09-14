@@ -53,11 +53,14 @@ const CustomDrawerContent = (props:any) => {
 };
 
 // Main Drawer Navigator
-const MainDrawerNavigator = ({ navigation }:any) => {
+const MainDrawerNavigator = ({ navigation, route }:any) => {
   // @ts-ignore
   const user = useSelector((state) => state.auth.user); // Get user info from Redux
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0); // Unread message count
   const [loading, setLoading] = useState(true); // Loading state
+  const { handleSendPushNotification } = route.params || {};
+  
+  console.log('MainDrawerNavigator push functions:', handleSendPushNotification )
 
   // Fetch unread messages from the database
   const fetchUnreadMessagesCount = async () => {
@@ -120,6 +123,7 @@ const MainDrawerNavigator = ({ navigation }:any) => {
     >
       <Drawer.Screen 
         name="Home" 
+        initialParams={{ handleSendPushNotification }}
         component={AccountScreen} 
         options={{ headerShown: true }} // Keep current header styles intact
       />
@@ -143,6 +147,7 @@ const MainDrawerNavigator = ({ navigation }:any) => {
       />
       <Drawer.Screen 
         name="All Users" 
+        initialParams={{ handleSendPushNotification }}
         component={UsersScreen} 
         options={{ drawerLabel: 'All Users', headerShown: true }} // Header stays the same
       />

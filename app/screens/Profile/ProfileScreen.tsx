@@ -96,8 +96,8 @@ const ProfileScreen = ({ navigation, route }:any) => {
         />
         <Tab.Screen
           name="Messages"
-          component={MessagesScreen}
           initialParams={{ handleSendPushNotification }}
+          component={MessagesScreen}
           listeners={{
             focus: () => navigation.setOptions({ title: 'Messages' }),
           }}
