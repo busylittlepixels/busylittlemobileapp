@@ -61,7 +61,7 @@ const Stack = createStackNavigator<RootStackParamList>();
 const AppNavigator = () => {
   const user = useSelector((state) => state.auth.user);
   const loading = useSelector((state) => state.auth.loading);
-  const isFirstLaunch = useSelector((state) => state.auth.isFirstLaunch);
+  const isFirstLaunch = useSelector((state) => state.onboarding.isFirstLaunch);
 
   if (loading) {
     return (

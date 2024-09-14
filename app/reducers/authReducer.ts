@@ -4,14 +4,11 @@ import {
   LOGOUT_SUCCESS,
   SIGNUP_SUCCESS,
   SET_LOADING,
-  SET_FIRST_LAUNCH,
-  COMPLETE_ONBOARDING,
 } from '../actions/authActions';
 
 const initialState = {
   user: null,
   loading: false,
-  isFirstLaunch: false, // Default to true for first launch
 };
 
 const authReducer = (state = initialState, action: any) => {
@@ -24,10 +21,6 @@ const authReducer = (state = initialState, action: any) => {
       return { ...state, loading: false };
     case SET_LOADING:
       return { ...state, loading: action.payload };
-    case SET_FIRST_LAUNCH:
-      return { ...state, isFirstLaunch: action.payload };
-    case COMPLETE_ONBOARDING:
-      return { ...state, user: action.payload };
     default:
       return state;
   }
