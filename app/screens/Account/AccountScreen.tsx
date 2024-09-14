@@ -19,35 +19,23 @@ import { Asset } from 'expo-asset';
 import { enablePublicProfile } from '@/app/services/settingsService';
 
 
-
-
-
 const AccountScreen = ({ navigation, route }: any) => {
   // track vertical scroll
   const scrollY = useRef(new Animated.Value(0)).current;
+
   const { expoPushToken, handleSendPushNotification } = route.params || {};
+  // console.log('Account rps:', handleSendPushNotification);
+  // console.log('Account pt:', expoPushToken);
 
-  console.log('Account rps:', handleSendPushNotification);
- 
-  const packageNotification = (title, body, data) => {
-    handleSendPushNotification.handleSendPushNotification(title, body, data); 
-  }
 
-  const TestNofitication = ({ title, onPress }) => {
-    return (
-      <Pressable
-        style={({ pressed }) => [
-          {
-            backgroundColor: pressed ? 'lightgray' : 'gray', // Dim the color when pressed
-          },
-          styles.button,
-        ]}
-        onPress={onPress}
-      >
-        <Text style={styles.buttonText}>{title}</Text>
-      </Pressable>
-    );
-  };
+  useEffect(() => {
+    // Pass a function to setTimeout, not the result of calling packageNotification
+    setTimeout(() => {
+      console.log('in account')
+      handleSendPushNotification.handleSendPushNotification('Boom', 'Ya Wha: Hew?', {});
+    }, 3500); // Delay of 5000ms (5 seconds)
+  }, []);
+  
 
   // set values for scrolly header
   const HEADER_MAX_HEIGHT = 120;

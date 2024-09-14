@@ -58,9 +58,10 @@ const MainDrawerNavigator = ({ navigation, route }:any) => {
   const user = useSelector((state) => state.auth.user); // Get user info from Redux
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0); // Unread message count
   const [loading, setLoading] = useState(true); // Loading state
-  const { handleSendPushNotification } = route.params || {};
+  const { expoPushToken, handleSendPushNotification } = route.params || {};
   
-  console.log('MainDrawerNavigator push functions:', handleSendPushNotification )
+  console.log('MainDrawerNavigator push functions:', handleSendPushNotification.handleSendPushNotification )
+  console.log('pushtoken', expoPushToken)
 
   // Fetch unread messages from the database
   const fetchUnreadMessagesCount = async () => {
@@ -123,7 +124,7 @@ const MainDrawerNavigator = ({ navigation, route }:any) => {
     >
       <Drawer.Screen 
         name="Home" 
-        initialParams={{ handleSendPushNotification }}
+        initialParams={{ expoPushToken, handleSendPushNotification }}
         component={AccountScreen} 
         options={{ headerShown: true }} // Keep current header styles intact
       />

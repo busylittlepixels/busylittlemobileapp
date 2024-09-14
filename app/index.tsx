@@ -48,7 +48,7 @@ const App = () => {
   }, []);
 
   // Function to send push notifications globally
-  const handleSendPushNotification = async (title, body, data) => {
+  const handleSendPushNotification = async (expoPushToken, title, body, data) => {
     if (!expoPushToken) {
       console.error('Expo push token is not available');
       return;
