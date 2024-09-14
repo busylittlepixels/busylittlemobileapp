@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, Pressable, StyleSheet, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -21,7 +22,7 @@ function MessagesPlaceholder() {
 }
 
 // Custom Drawer Content
-const CustomDrawerContent = (props:any) => {
+const CustomDrawerContent = (props: any) => {
   const dispatch = useDispatch();
 
   const handleLogout = () => {
@@ -29,16 +30,12 @@ const CustomDrawerContent = (props:any) => {
     dispatch(logout());
   };
 
-  const doNothing = () => {
-    return
-  }
-
   return (
     <DrawerContentScrollView {...props} style={styles.drawerContainer}>
       <DrawerItem
         label="BUSYLITTLEPIXELS"
         labelStyle={styles.drawerLabelLogo}
-        onPress={doNothing}
+        onPress={() => {}}
         style={styles.logoutItem}
       />
       <DrawerItemList {...props} />
@@ -50,12 +47,16 @@ const CustomDrawerContent = (props:any) => {
       />
     </DrawerContentScrollView>
   );
-};
+}
 
 // Main Drawer Navigator
-const MainDrawerNavigator = ({ navigation }:any) => {
-  // @ts-ignore
+const MainDrawerNavigator = ({ navigation, route }: any) => {
   const user = useSelector((state) => state.auth.user); // Get user info from Redux
+  const { expoPushToken, handleSendPushNotification } = route.params; // Get the values from route.params
+
+  console.log('Drawer Expo Push Token:', expoPushToken);
+  console.log('Drawer Handle Send Push Notification:', handleSendPushNotification);
+
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0); // Unread message count
   const [loading, setLoading] = useState(true); // Loading state
 
@@ -77,13 +78,11 @@ const MainDrawerNavigator = ({ navigation }:any) => {
 
   useEffect(() => {
     fetchUnreadMessagesCount(); // Fetch unread messages on mount
-
     const intervalId = setInterval(fetchUnreadMessagesCount, 5000); // Poll every 5 seconds
     return () => clearInterval(intervalId); // Cleanup interval on unmount
   }, []);
 
   return (
-    // @ts-ignore
     <Drawer.Navigator
       initialRouteName="Home"
       screenOptions={({ navigation }) => ({
@@ -121,6 +120,7 @@ const MainDrawerNavigator = ({ navigation }:any) => {
       <Drawer.Screen 
         name="Home" 
         component={AccountScreen} 
+        initialParams={{ expoPushToken, handleSendPushNotification }} // Pass to all screens
         options={{ headerShown: true }} // Keep current header styles intact
       />
       <Drawer.Screen 
@@ -132,12 +132,8 @@ const MainDrawerNavigator = ({ navigation }:any) => {
         }}
         listeners={{
           drawerItemPress: (e) => {
-            // Prevent default action
             e.preventDefault();
-            // Navigate to the MessagesScreen in the Profile's Tab Navigator
-            navigation.navigate('Profile', {
-              screen: 'Messages'
-            });
+            navigation.navigate('Profile', { screen: 'Messages' });
           }
         }}
       />

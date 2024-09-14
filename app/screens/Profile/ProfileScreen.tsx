@@ -19,7 +19,6 @@ const ProfileScreen = ({ navigation, route }:any) => {
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0); // Unread message count state
   const user = useSelector((state) => state.auth.user);
   const tabsRef = useRef(null);
-  const { expoPushToken, handleSendPushNotification } = route.params || {};
   
   const triggerRefresh = () => {
     if (updateDetailsRef.current) {
@@ -94,7 +93,6 @@ const ProfileScreen = ({ navigation, route }:any) => {
         <Tab.Screen
           name="Messages"
           component={MessagesScreen}
-          initialParams={{ expoPushToken, handleSendPushNotification }}
           listeners={{
             focus: () => navigation.setOptions({ title: 'Messages' }),
           }}

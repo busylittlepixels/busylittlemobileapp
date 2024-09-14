@@ -18,9 +18,13 @@ import { toggleFavorite as toggleFavoriteService } from '../../services/favourit
 import { Asset } from 'expo-asset';
 import { enablePublicProfile } from '@/app/services/settingsService';
 
-const AccountScreen = ({ navigation }: any) => {
+const AccountScreen = ({ navigation, route }: any) => {
   // track vertical scroll
+  const { expoPushToken, handleSendPushNotification } = route.params || {};
   const scrollY = useRef(new Animated.Value(0)).current;
+
+  console.log('Accounts Screen pushTok', expoPushToken)
+  console.log('Accounts Screen handleSendPushNotification', handleSendPushNotification)
   
   // set values for scrolly header
   const HEADER_MAX_HEIGHT = 120;
