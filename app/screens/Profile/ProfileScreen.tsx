@@ -21,6 +21,9 @@ const ProfileScreen = ({ navigation, route }:any) => {
   const tabsRef = useRef(null);
   const { expoPushToken, handleSendPushNotification } = route.params || {};
   
+  console.log('profile push function', handleSendPushNotification )
+
+
   const triggerRefresh = () => {
     if (updateDetailsRef.current) {
       updateDetailsRef.current.triggerRefresh(); // Call the refresh method on UpdateDetailsScreen
@@ -94,7 +97,7 @@ const ProfileScreen = ({ navigation, route }:any) => {
         <Tab.Screen
           name="Messages"
           component={MessagesScreen}
-          initialParams={{ expoPushToken, handleSendPushNotification }}
+          initialParams={{ handleSendPushNotification }}
           listeners={{
             focus: () => navigation.setOptions({ title: 'Messages' }),
           }}
