@@ -24,15 +24,15 @@ const AccountScreen = ({ navigation, route }: any) => {
   const scrollY = useRef(new Animated.Value(0)).current;
 
   const { expoPushToken, handleSendPushNotification } = route.params || {};
-  // console.log('Account rps:', handleSendPushNotification);
-  // console.log('Account pt:', expoPushToken);
+  console.log('Account rps:', handleSendPushNotification);
+  console.log('Account pt:', expoPushToken);
 
 
   useEffect(() => {
     // Pass a function to setTimeout, not the result of calling packageNotification
     setTimeout(() => {
       console.log('in account')
-      handleSendPushNotification.handleSendPushNotification('Boom', 'Ya Wha: Hew?', {});
+      handleSendPushNotification.handleSendPushNotification(expoPushToken, 'Boom', 'Ya Wha: Hew?', {});
     }, 3500); // Delay of 5000ms (5 seconds)
   }, []);
   

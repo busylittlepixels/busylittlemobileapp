@@ -100,7 +100,21 @@ const MessagesScreen = ({ navigation, route }) => {
     const userId = user?.id;
     const { expoPushToken, handleSendPushNotification } = route.params || {};
 
-  
+    console.log('handleSendPushNotification:',  handleSendPushNotification.handleSendPushNotification);
+
+
+    const alertNewMessage = async (expoPushToken, senderName, message) => {
+      handleSendPushNotification.handleSendPushNotification(
+        expoPushToken,
+        'New message in BLP app',
+        `${senderName}: ${message}`,
+      
+      );
+    }
+
+
+
+
     const loadConversations = useCallback(async () => {
         try {
             const data = await fetchUserConversations(userId);
@@ -147,12 +161,9 @@ const MessagesScreen = ({ navigation, route }) => {
                   const senderName = senderData?.full_name || 'Someone';
                   
                     // Check if handleSendPushNotification is passed
-                    handleSendPushNotification.handleSendPushNotification(
-                      expoPushToken,
-                      'New message in BLP app',
-                      `${senderName}: ${payload.new.message}`,
-                      { messageId: payload.new.id }
-                    );
+               
+                    alertNewMessage(expoPushToken, senderName, payload.new.message)
+                    
                   }
             
               }

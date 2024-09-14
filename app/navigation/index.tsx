@@ -90,6 +90,7 @@ const AppNavigator = ({ expoPushToken, handleSendPushNotification }) => {
               <>
                 {/* <Stack.Screen name="Account" component={MainDrawerNavigator} options={{ headerShown: false }} /> */}
                 <Stack.Screen name="Account"
+                  initialParams={{ expoPushToken, handleSendPushNotification }} 
                   component={MainDrawerNavigator}
                   options={({ route }) => ({
                     headerShown: false, 

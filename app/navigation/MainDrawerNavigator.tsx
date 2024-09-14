@@ -60,7 +60,7 @@ const MainDrawerNavigator = ({ navigation, route }:any) => {
   const [loading, setLoading] = useState(true); // Loading state
   const { expoPushToken, handleSendPushNotification } = route.params || {};
   
-  console.log('MainDrawerNavigator push functions:', handleSendPushNotification.handleSendPushNotification )
+  console.log('MainDrawerNavigator push functions:', handleSendPushNotification )
   console.log('pushtoken', expoPushToken)
 
   // Fetch unread messages from the database
