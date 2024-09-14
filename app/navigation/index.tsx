@@ -58,10 +58,12 @@ export type RootStackParamList = {
 
 const Stack = createStackNavigator<RootStackParamList>();
 
-const AppNavigator = () => {
+const AppNavigator = ({ expoPushToken, handleSendPushNotification }) => {
   const user = useSelector((state) => state.auth.user);
   const loading = useSelector((state) => state.auth.loading);
   const isFirstLaunch = useSelector((state) => state.onboarding.isFirstLaunch);
+
+  console.log('app navigator screenProps', handleSendPushNotification);
 
   if (loading) {
     return (
@@ -99,7 +101,11 @@ const AppNavigator = () => {
                     gestureDirection: route.params?.fromCities ? 'horizontal-inverted' : 'horizontal', // Slide from left if coming from CitiesScreen
                   })}
                 />
-                <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerTintColor: '#000', headerShown: true, headerBackTitle: 'Back', headerBackTitleVisible: true }} />
+                <Stack.Screen name="Profile" 
+                  component={ProfileScreen} 
+                  initialParams={{ expoPushToken, handleSendPushNotification }} 
+                  options={{ headerTintColor: '#000', headerShown: true, headerBackTitle: 'Back', headerBackTitleVisible: true }} 
+                />
                 <Stack.Screen name="Event" component={EventScreen} options={{ headerShown: true }} />
                 <Stack.Screen name="MyEvents" component={MyEventsScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="Calendar" component={SettingsScreen} options={({ navigation }) => ({

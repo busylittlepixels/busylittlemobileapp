@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useRef, useEffect, useState } from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
+import { View, StyleSheet, Pressable, Platform} from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MySchedule from './../MyScreens/MyEventsFeed';
@@ -19,7 +19,8 @@ const ProfileScreen = ({ navigation, route }:any) => {
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0); // Unread message count state
   const user = useSelector((state) => state.auth.user);
   const tabsRef = useRef(null);
-
+  const { expoPushToken, handleSendPushNotification } = route.params || {};
+  
   const triggerRefresh = () => {
     if (updateDetailsRef.current) {
       updateDetailsRef.current.triggerRefresh(); // Call the refresh method on UpdateDetailsScreen
@@ -93,6 +94,7 @@ const ProfileScreen = ({ navigation, route }:any) => {
         <Tab.Screen
           name="Messages"
           component={MessagesScreen}
+          initialParams={{ expoPushToken, handleSendPushNotification }}
           listeners={{
             focus: () => navigation.setOptions({ title: 'Messages' }),
           }}

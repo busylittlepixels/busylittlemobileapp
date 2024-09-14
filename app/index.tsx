@@ -1,17 +1,17 @@
 // @ts-nocheck
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import AppNavigator from './navigation';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { StyleSheet } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Provider } from 'react-redux';
 import { StripeProvider } from '@stripe/stripe-react-native';
-import store from './store'; // Import the Redux store
+import store from './store';
 import NetInfo from '@react-native-community/netinfo';
+import { registerForPushNotificationsAsync, sendPushNotification } from './lib/utils/notificationSetup';
 
-// Method to clear all data from AsyncStorage
+
 const clearAsyncStorage = async () => {
   try {
     await AsyncStorage.clear();
@@ -33,38 +33,48 @@ const checkAsyncStorage = async () => {
 };
 
 const App = () => {
-  useEffect(() => {
-    StatusBar.setBarStyle('dark-content'); // Ensures that the bar style is set correctly after mount
-    StatusBar.setHidden(false); // Ensures that the StatusBar is visible
+  const [expoPushToken, setExpoPushToken] = useState('');
 
-    // Add NetInfo listener to monitor network state changes
+  useEffect(() => {
+    registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+
     const unsubscribe = NetInfo.addEventListener(state => {
-      // console.log('Connection type', state.type);
-      // console.log('Is connected?', state.isConnected);
-      // Optionally dispatch actions to Redux store here
       store.dispatch({ type: 'SET_NETWORK_STATUS', payload: state.isConnected });
     });
 
-    // Cleanup the listener on component unmount
     return () => {
       unsubscribe();
     };
   }, []);
 
+  // Function to send push notifications globally
+  const handleSendPushNotification = async (title, body, data) => {
+    if (!expoPushToken) {
+      console.error('Expo push token is not available');
+      return;
+    }
+    try {
+      await sendPushNotification(expoPushToken, title, body, data);
+      console.log('Notification sent successfully');
+    } catch (error) {
+      console.error('Failed to send notification:', error);
+    }
+  };
+
   return (
-    <>
-      <StripeProvider publishableKey="pk_test_51PQaYdBXlSvXkMpQNKlp1h4yvqCUsPhKdTP8ntBKLPt85MgUCvg9leRwKhnc5i4q8VvlZl6Finfu6hsKGYpDUoDd00W6scKuzG">
-        <SafeAreaProvider>
-          <StatusBar style="dark" backgroundColor="dark" />
+    <StripeProvider publishableKey="your-publishable-key">
+      <SafeAreaProvider>
+        <SafeAreaView style={styles.safeArea}>
+          <StatusBar style="dark" />
           <Provider store={store}>
-            <SafeAreaView style={styles.safeArea}>
-              <AppNavigator />
-            </SafeAreaView>
+            {/* Pass down the notification handler and expoPushToken to AppNavigator */}
+            <AppNavigator expoPushToken={expoPushToken} handleSendPushNotification={{handleSendPushNotification}} />
+          
           </Provider>
           <Toast />
-        </SafeAreaProvider>
-      </StripeProvider>
-    </>
+        </SafeAreaView>
+      </SafeAreaProvider>
+    </StripeProvider>
   );
 };
 
