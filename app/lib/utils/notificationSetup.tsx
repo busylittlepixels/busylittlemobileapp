@@ -48,7 +48,7 @@ export async function registerForPushNotificationsAsync() {
 
 export async function sendPushNotification(expoPushToken, title, body, data = {}) {
   
-  console.log('inside send notification', expoPushToken, title, body, data )
+  // console.log('inside send notification', expoPushToken, title, body, data )
   
   const message = {
     to: expoPushToken,

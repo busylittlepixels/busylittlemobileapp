@@ -8,6 +8,7 @@ import { RealtimeChannel } from "@supabase/supabase-js";
 import { useSelector } from "react-redux";
 import { Swipeable } from "react-native-gesture-handler";
 
+
 // Core function restored
 const fetchUserConversations = async (userId) => {
     const { data: messages, error } = await supabase
@@ -93,28 +94,11 @@ const markMessagesAsRead = async (userId, otherUserId) => {
     }
 };
 
-const MessagesScreen = ({ navigation, route }) => {
+const MessagesScreen = ({ navigation }) => {
     const [conversations, setConversations] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
     const user = useSelector((state) => state.auth.user);
     const userId = user?.id;
-    const { expoPushToken, handleSendPushNotification } = route.params || {};
-
-    console.log('handleSendPushNotification:',  handleSendPushNotification.handleSendPushNotification);
-
-
-    const alertNewMessage = async (expoPushToken, senderName, message) => {
-      handleSendPushNotification.handleSendPushNotification(
-        expoPushToken,
-        'New message in BLP app',
-        `${senderName}: ${message}`,
-      
-      );
-    }
-
-
-
-
     const loadConversations = useCallback(async () => {
         try {
             const data = await fetchUserConversations(userId);
@@ -134,52 +118,6 @@ const MessagesScreen = ({ navigation, route }) => {
             markMessagesAsRead(userId);
         }, [loadConversations, userId])
     );
-
-    useEffect(() => {
-        let channel: RealtimeChannel;
-    
-        const setupSubscription = async () => {
-          channel = supabase
-            .channel("messages_channel")
-            .on(
-              "postgres_changes",
-              {
-                event: "INSERT",
-                schema: "public",
-                table: "messages",
-              },
-              async (payload) => {
-                if (payload.new.receiver_id === userId) {
-                  await loadConversations();
-
-                  const { data: senderData } = await supabase
-                    .from('profiles')
-                    .select('full_name')
-                    .eq('id', payload.new.sender_id)
-                    .single();
-                  
-                  const senderName = senderData?.full_name || 'Someone';
-                  
-                    // Check if handleSendPushNotification is passed
-               
-                    alertNewMessage(expoPushToken, senderName, payload.new.message)
-                    
-                  }
-            
-              }
-            )
-            .subscribe();
-        };
-    
-        setupSubscription();
-    
-        return () => {
-          if (channel) {
-            supabase.removeChannel(channel);
-          }
-        };
-
-    }, [userId, loadConversations]);
 
     const onRefresh = useCallback(async () => {
         setRefreshing(true);

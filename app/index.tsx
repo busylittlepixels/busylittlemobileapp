@@ -1,5 +1,6 @@
 // @ts-nocheck
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { NotificationProvider, useNotification } from './contexts/NotificationContext';
 import AppNavigator from './navigation';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'react-native';
@@ -9,8 +10,9 @@ import { Provider } from 'react-redux';
 import { StripeProvider } from '@stripe/stripe-react-native';
 import store from './store';
 import NetInfo from '@react-native-community/netinfo';
-import { registerForPushNotificationsAsync, sendPushNotification } from './lib/utils/notificationSetup';
-
+import { registerForPushNotificationsAsync } from './lib/utils/notificationSetup';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useMessageSubscription } from './hooks/useMessageSubscription';
 
 const clearAsyncStorage = async () => {
   try {
@@ -32,12 +34,24 @@ const checkAsyncStorage = async () => {
   }
 };
 
-const App = () => {
-  const [expoPushToken, setExpoPushToken] = useState('');
+const AppContent = () => {
+  const { setExpoPushToken } = useNotification();
 
+  useMessageSubscription(); // Add this line
+  
   useEffect(() => {
-    registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+    registerForPushNotificationsAsync().then(token => {
+      if (token) {
+        setExpoPushToken(token);
+      }
+    });
+  }, []);
 
+  return <AppNavigator />;
+};
+
+const App = () => {
+  useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
       store.dispatch({ type: 'SET_NETWORK_STATUS', payload: state.isConnected });
     });
@@ -47,29 +61,15 @@ const App = () => {
     };
   }, []);
 
-  // Function to send push notifications globally
-  const handleSendPushNotification = async (expoPushToken, title, body, data) => {
-    if (!expoPushToken) {
-      console.error('Expo push token is not available');
-      return;
-    }
-    try {
-      await sendPushNotification(expoPushToken, title, body, data);
-      console.log('Notification sent successfully');
-    } catch (error) {
-      console.error('Failed to send notification:', error);
-    }
-  };
-
   return (
     <StripeProvider publishableKey="your-publishable-key">
       <SafeAreaProvider>
         <SafeAreaView style={styles.safeArea}>
           <StatusBar style="dark" />
           <Provider store={store}>
-            {/* Pass down the notification handler and expoPushToken to AppNavigator */}
-            <AppNavigator expoPushToken={expoPushToken} handleSendPushNotification={{handleSendPushNotification}} />
-          
+            <NotificationProvider>
+              <AppContent />
+            </NotificationProvider>
           </Provider>
           <Toast />
         </SafeAreaView>
@@ -87,5 +87,6 @@ const styles = StyleSheet.create({
 
 export default App;
 
+// Uncomment these lines to use the AsyncStorage functions
 // checkAsyncStorage(); // Uncomment to log storage contents
 // clearAsyncStorage(); // Uncomment to clear storage on each launch

@@ -57,13 +57,10 @@ export type RootStackParamList = {
 
 const Stack = createStackNavigator<RootStackParamList>();
 
-const AppNavigator = ({ expoPushToken, handleSendPushNotification }) => {
+const AppNavigator = () => {
   const user = useSelector((state) => state.auth.user);
   const loading = useSelector((state) => state.auth.loading);
   const isFirstLaunch = useSelector((state) => state.onboarding.isFirstLaunch);
-
-  console.log('app navigator notification', handleSendPushNotification);
-  console.log('app navigator expoPushToken', expoPushToken);
 
   if (loading) {
     return (
@@ -90,7 +87,6 @@ const AppNavigator = ({ expoPushToken, handleSendPushNotification }) => {
               <>
                 {/* <Stack.Screen name="Account" component={MainDrawerNavigator} options={{ headerShown: false }} /> */}
                 <Stack.Screen name="Account"
-                  initialParams={{ expoPushToken, handleSendPushNotification }} 
                   component={MainDrawerNavigator}
                   options={({ route }) => ({
                     headerShown: false, 
@@ -102,7 +98,6 @@ const AppNavigator = ({ expoPushToken, handleSendPushNotification }) => {
                   })}
                 />
                 <Stack.Screen name="Profile" 
-                  initialParams={{ expoPushToken, handleSendPushNotification }} 
                   component={ProfileScreen} 
                   options={{ headerTintColor: '#000', headerShown: true, headerBackTitle: 'Back', headerBackTitleVisible: true }} 
                 />
