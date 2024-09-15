@@ -46,9 +46,9 @@ export async function registerForPushNotificationsAsync() {
   return token;
 }
 
-export async function sendPushNotification(expoPushToken, title, body, data = {}) {
+export async function sendPushNotification(expoPushToken, title, body, data = {}, icon) {
   
-  // console.log('inside send notification', expoPushToken, title, body, data )
+  console.log('inside send notification', expoPushToken, title, body, data, icon)
   
   const message = {
     to: expoPushToken,
@@ -56,6 +56,7 @@ export async function sendPushNotification(expoPushToken, title, body, data = {}
     title: title,
     body: body,
     data: data,
+    icon: icon
   };
 
   await fetch('https://exp.host/--/api/v2/push/send', {
