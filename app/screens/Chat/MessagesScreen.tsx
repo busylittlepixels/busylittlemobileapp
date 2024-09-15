@@ -1,24 +1,16 @@
+// MessagesScreen.tsx
 // @ts-nocheck
 import React, { useState, useEffect, useCallback } from "react";
+import { View, Text, FlatList, Pressable, StyleSheet, RefreshControl, ActivityIndicator, Alert, Image } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import {
-    View,
-    Text,
-    FlatList,
-    Pressable,
-    StyleSheet,
-    RefreshControl,
-    ActivityIndicator,
-    Alert,
-    Image,
-} from "react-native";
-import { supabase } from "@/supabase"; // Replace with your Supabase client
+import { supabase } from "@/supabase";
 import { RealtimeChannel } from "@supabase/supabase-js";
 import { useSelector } from "react-redux";
-import { Swipeable } from "react-native-gesture-handler"; // Import from gesture handler
+import { Swipeable } from "react-native-gesture-handler";
 
+
+// Core function restored
 const fetchUserConversations = async (userId) => {
-    // Fetch all messages involving the user, ordered by created_at (latest first)
     const { data: messages, error } = await supabase
         .from("messages")
         .select(
@@ -29,14 +21,13 @@ const fetchUserConversations = async (userId) => {
         `
         )
         .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
-        .order("created_at", { ascending: false }); // Fetch latest messages first
+        .order("created_at", { ascending: false });
 
     if (error) {
         console.error("Error fetching messages:", error);
         return [];
     }
 
-    // Fetch unread messages where the logged-in user is the receiver
     const { data: unreadMessages, error: unreadError } = await supabase
         .from("messages")
         .select("sender_id")
@@ -48,14 +39,12 @@ const fetchUserConversations = async (userId) => {
         return messages;
     }
 
-    // Create a map of unread message counts by sender_id
     const unreadCountMap = unreadMessages.reduce((acc, curr) => {
-        const senderId = curr.sender_id; // Group unread messages by sender_id
+        const senderId = curr.sender_id;
         acc[senderId] = (acc[senderId] || 0) + 1;
         return acc;
     }, {});
 
-    // Create a map of the latest message per conversation
     const uniqueConversations = [];
     const seenConversations = new Set();
 
@@ -69,7 +58,7 @@ const fetchUserConversations = async (userId) => {
 
             uniqueConversations.push({
                 ...message,
-                unreadCount: unreadCountMap[otherUserId] || 0, // Assign unread count for the sender
+                unreadCount: unreadCountMap[otherUserId] || 0,
             });
             seenConversations.add(conversationKey);
         }
@@ -77,6 +66,8 @@ const fetchUserConversations = async (userId) => {
 
     return uniqueConversations;
 };
+
+
 
 const markMessagesAsRead = async (userId, otherUserId) => {
     // Check if userId and otherUserId are valid before proceeding
@@ -103,12 +94,11 @@ const markMessagesAsRead = async (userId, otherUserId) => {
     }
 };
 
-const MessagesScreen = ({ navigation, route }: any) => {
+const MessagesScreen = ({ navigation }) => {
     const [conversations, setConversations] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
     const user = useSelector((state) => state.auth.user);
     const userId = user?.id;
-
     const loadConversations = useCallback(async () => {
         try {
             const data = await fetchUserConversations(userId);
@@ -125,46 +115,14 @@ const MessagesScreen = ({ navigation, route }: any) => {
     useFocusEffect(
         useCallback(() => {
             loadConversations();
-            markMessagesAsRead(userId); // Mark messages as read when returning to this screen
+            markMessagesAsRead(userId);
         }, [loadConversations, userId])
     );
 
-    useEffect(() => {
-        let channel: RealtimeChannel;
-
-        const setupSubscription = async () => {
-            channel = supabase
-                .channel("messages_channel")
-                .on(
-                    "postgres_changes",
-                    {
-                        event: "INSERT",
-                        schema: "public",
-                        table: "messages",
-                    },
-                    (payload) => {
-                        if (payload.new.receiver_id === userId) {
-                            // A new message has been received, update the conversations
-                            loadConversations();
-                        }
-                    }
-                )
-                .subscribe();
-        };
-
-        setupSubscription();
-
-        return () => {
-            if (channel) {
-                supabase.removeChannel(channel);
-            }
-        };
-    }, [userId, loadConversations]);
-
     const onRefresh = useCallback(async () => {
-        setRefreshing(true); // Start the refresh
-        await loadConversations(); // Fetch new data
-        setRefreshing(false); // Stop the refresh
+        setRefreshing(true);
+        await loadConversations();
+        setRefreshing(false);
     }, [loadConversations]);
 
     const handleChatPress = (receiverId, otherUserName, otherUserAvatar) => {
@@ -176,29 +134,6 @@ const MessagesScreen = ({ navigation, route }: any) => {
             otherUserAvatar,
         });
     };
-
-    // const handleDeleteAllChats = async (item: any, receiverId: any) => {
-    //     Alert.alert('Delete', 'Are you sure you want to delete the entire conversation?', [
-    //         { text: 'Cancel', style: 'cancel' },
-    //         {
-    //             text: 'Delete',
-    //             onPress: async () => {
-    //                 const { error } = await supabase
-    //                     .from('messages')
-    //                     .delete()
-    //                     .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
-    //                     .or(`sender_id.eq.${receiverId},receiver_id.eq.${receiverId}`);
-
-    //                 if (error) {
-    //                     console.error('Error deleting conversation:', error);
-    //                 } else {
-    //                     loadConversations();  // Reload after deletion
-    //                 }
-    //             },
-    //             style: 'destructive',
-    //         },
-    //     ]);
-    // };
 
     const handleDelete = async (itemId: any) => {
         Alert.alert("Delete", "Are you sure you want to delete this message?", [
@@ -241,11 +176,10 @@ const MessagesScreen = ({ navigation, route }: any) => {
         const otherUserName = otherUserProfile?.full_name || "Unknown User";
         const otherUserAvatar = otherUserProfile?.avatar_url;
 
-        const lastMessage = item.message || "No messages yet"; // Fallback if no messages
-        const lastSenderName =
-            item.sender_id === userId ? "You" : otherUserProfile?.full_name;
+        const lastMessage = item.message || "No messages yet";
+        const lastSenderName = item.sender_id === userId ? "You" : otherUserProfile?.full_name;
         const lastMessagePreview = `${lastSenderName}: ${lastMessage}`;
-        const unreadCount = item.unreadCount; // Unread message count for this conversation
+        const unreadCount = item.unreadCount;
 
         return (
             <Swipeable
@@ -263,7 +197,7 @@ const MessagesScreen = ({ navigation, route }: any) => {
                             <Image
                                 source={{
                                     uri: otherUserAvatar || "https://via.placeholder.com/50",
-                                }} // Fallback to placeholder if no avatar
+                                }}
                                 style={styles.avatar}
                             />
                             <View style={styles.textContainer}>
@@ -331,32 +265,32 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         flexDirection: "column",
-        gap: 25, // Ensure the app supports this, or use margin/padding as an alternative for older React Native versions
+        gap: 25,
         marginTop: "50%",
     },
     conversationItem: {
         padding: 20,
         borderBottomWidth: 1,
         borderBottomColor: "#ddd",
-        flexDirection: "row", // Arrange items in a row
+        flexDirection: "row",
         alignItems: "center",
-        justifyContent: "space-between", // Ensure spacing between avatar, text, and timestamp
-        flex: 1, // Take up the available width
+        justifyContent: "space-between",
+        flex: 1,
     },
     avatar: {
         width: 50,
         height: 50,
-        borderRadius: 25, // Circular avatar
+        borderRadius: 25,
         marginRight: 10,
     },
     outerTextContainer: {
         flexDirection: "row",
-        flex: 1, // Take up remaining space to prevent overflow
+        flex: 1,
     },
     textContainer: {
-        flex: 1, // Take up remaining space
-        flexShrink: 1, // Allow the text container to shrink and wrap
-        marginRight: 10, // Space between text and timestamp
+        flex: 1,
+        flexShrink: 1,
+        marginRight: 10,
         alignItems: "flex-start",
     },
     userName: {
@@ -365,13 +299,13 @@ const styles = StyleSheet.create({
     },
     lastMessage: {
         color: "#888",
-        flexWrap: "wrap", // Ensure text wraps within the available space
+        flexWrap: "wrap",
     },
     timestamp: {
         fontSize: 12,
         color: "#aaa",
         marginTop: 5,
-        textAlign: "right", // Align the timestamp to the right
+        textAlign: "right",
     },
     deleteButton: {
         backgroundColor: "red",

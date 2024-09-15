@@ -17,11 +17,12 @@ import Spacer from '../../components/Spacer';
 import { toggleFavorite as toggleFavoriteService } from '../../services/favouriteService';
 import { Asset } from 'expo-asset';
 import { enablePublicProfile } from '@/app/services/settingsService';
+import { useNotification } from '../../contexts/NotificationContext';
 
-const AccountScreen = ({ navigation }: any) => {
+const AccountScreen = ({ navigation, route }: any) => {
   // track vertical scroll
   const scrollY = useRef(new Animated.Value(0)).current;
-  
+
   // set values for scrolly header
   const HEADER_MAX_HEIGHT = 120;
   const HEADER_MIN_HEIGHT = 80;

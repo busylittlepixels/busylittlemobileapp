@@ -1,0 +1,48 @@
+// hooks/useMessageSubscription.ts
+// @ts-nocheck
+import { useEffect } from 'react';
+import { supabase } from "@/supabase";
+import { useNotification } from '../contexts/NotificationContext';
+import { useSelector } from "react-redux";
+
+export const useMessageSubscription = () => {
+  const { sendNotification } = useNotification();
+  const user = useSelector((state) => state.auth.user);
+  const userId = user?.id;
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const channel = supabase
+      .channel("messages_channel")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
+        },
+        async (payload) => {
+          if (payload.new.receiver_id === userId) {
+            const { data: senderData } = await supabase
+              .from('profiles')
+              .select('full_name')
+              .eq('id', payload.new.sender_id)
+              .single();
+            
+            const senderName = senderData?.full_name || 'Someone';
+            
+            sendNotification(
+              'New message in BLP app',
+              `${senderName}: ${payload.new.message}`
+            );
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [userId, sendNotification]);
+};

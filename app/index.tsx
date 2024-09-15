@@ -1,17 +1,19 @@
 // @ts-nocheck
 import React, { useEffect } from 'react';
+import { NotificationProvider, useNotification } from './contexts/NotificationContext';
 import AppNavigator from './navigation';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { StyleSheet } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Provider } from 'react-redux';
 import { StripeProvider } from '@stripe/stripe-react-native';
-import store from './store'; // Import the Redux store
+import store from './store';
 import NetInfo from '@react-native-community/netinfo';
+import { registerForPushNotificationsAsync } from './lib/utils/notificationSetup';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useMessageSubscription } from './hooks/useMessageSubscription';
 
-// Method to clear all data from AsyncStorage
 const clearAsyncStorage = async () => {
   try {
     await AsyncStorage.clear();
@@ -32,39 +34,47 @@ const checkAsyncStorage = async () => {
   }
 };
 
+const AppContent = () => {
+  const { setExpoPushToken } = useNotification();
+
+  useMessageSubscription(); // Add this line
+  
+  useEffect(() => {
+    registerForPushNotificationsAsync().then(token => {
+      if (token) {
+        setExpoPushToken(token);
+      }
+    });
+  }, []);
+
+  return <AppNavigator />;
+};
+
 const App = () => {
   useEffect(() => {
-    StatusBar.setBarStyle('dark-content'); // Ensures that the bar style is set correctly after mount
-    StatusBar.setHidden(false); // Ensures that the StatusBar is visible
-
-    // Add NetInfo listener to monitor network state changes
     const unsubscribe = NetInfo.addEventListener(state => {
-      // console.log('Connection type', state.type);
-      // console.log('Is connected?', state.isConnected);
-      // Optionally dispatch actions to Redux store here
       store.dispatch({ type: 'SET_NETWORK_STATUS', payload: state.isConnected });
     });
 
-    // Cleanup the listener on component unmount
     return () => {
       unsubscribe();
     };
   }, []);
 
   return (
-    <>
-      <StripeProvider publishableKey="pk_test_51PQaYdBXlSvXkMpQNKlp1h4yvqCUsPhKdTP8ntBKLPt85MgUCvg9leRwKhnc5i4q8VvlZl6Finfu6hsKGYpDUoDd00W6scKuzG">
-        <SafeAreaProvider>
-          <StatusBar style="dark" backgroundColor="dark" />
+    <StripeProvider publishableKey="your-publishable-key">
+      <SafeAreaProvider>
+        <SafeAreaView style={styles.safeArea}>
+          <StatusBar style="dark" />
           <Provider store={store}>
-            <SafeAreaView style={styles.safeArea}>
-              <AppNavigator />
-            </SafeAreaView>
+            <NotificationProvider>
+              <AppContent />
+            </NotificationProvider>
           </Provider>
           <Toast />
-        </SafeAreaProvider>
-      </StripeProvider>
-    </>
+        </SafeAreaView>
+      </SafeAreaProvider>
+    </StripeProvider>
   );
 };
 
@@ -77,5 +87,6 @@ const styles = StyleSheet.create({
 
 export default App;
 
+// Uncomment these lines to use the AsyncStorage functions
 // checkAsyncStorage(); // Uncomment to log storage contents
 // clearAsyncStorage(); // Uncomment to clear storage on each launch

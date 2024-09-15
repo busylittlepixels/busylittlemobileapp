@@ -1,5 +1,5 @@
 // @ts-nocheck
-
+// notificationSetup.ts
 import { Platform } from "react-native";
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
@@ -28,7 +28,6 @@ export async function registerForPushNotificationsAsync() {
       return;
     }
     token = (await Notifications.getExpoPushTokenAsync({
-      
       projectId: Constants.expoConfig.extra.eas.projectId,
     })).data;
   } else {
@@ -49,12 +48,12 @@ export async function registerForPushNotificationsAsync() {
 
 export async function sendPushNotification(expoPushToken, title, body, data = {}) {
   
-  console.log('inside send notification', expoPushToken, title, body, data )
+  // console.log('inside send notification', expoPushToken, title, body, data )
   
   const message = {
     to: expoPushToken,
     sound: 'default',
-    title: 'New message yo',
+    title: title,
     body: body,
     data: data,
   };

@@ -1,35 +1,36 @@
-// components/NotificationHandler.tsx
 // @ts-nocheck
+// NotificationSetup.tsx
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { supabase } from '@/supabase';
+import { supabase } from '@/supabase'; // Make sure to import supabase
 import { sendPushNotification } from '../lib/utils/notificationSetup';
 
-const NotificationHandler = ({ expoPushToken }) => {
+const NotificationSetup = ({ expoPushToken }) => {
   const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
-    if (!user || !expoPushToken) return;
-
-    const channel = supabase
-      .channel('messages_channel')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages',
-        },
-        async (payload) => {
-          if (payload.new.receiver_id === user.id) {
+    if (user) {
+      const channel = supabase
+        .channel('public:messages')
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'messages',
+            filter: `receiver_id=eq.${user.id}`,
+          },
+          async (payload) => {
+            // Fetch sender's name
             const { data: senderData } = await supabase
               .from('profiles')
               .select('full_name')
               .eq('id', payload.new.sender_id)
               .single();
-            
+
             const senderName = senderData?.full_name || 'Someone';
-            
+
+            // Send push notification
             await sendPushNotification(
               expoPushToken,
               'New Message',
@@ -37,16 +38,16 @@ const NotificationHandler = ({ expoPushToken }) => {
               { messageId: payload.new.id }
             );
           }
-        }
-      )
-      .subscribe();
+        )
+        .subscribe();
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
   }, [user, expoPushToken]);
 
-  return null;
+  return null; // This component doesn't render anything
 };
 
-export default NotificationHandler;
+export default NotificationSetup;

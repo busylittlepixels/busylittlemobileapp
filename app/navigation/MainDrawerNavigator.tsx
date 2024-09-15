@@ -53,7 +53,7 @@ const CustomDrawerContent = (props:any) => {
 };
 
 // Main Drawer Navigator
-const MainDrawerNavigator = ({ navigation }:any) => {
+const MainDrawerNavigator = ({ navigation, route }:any) => {
   // @ts-ignore
   const user = useSelector((state) => state.auth.user); // Get user info from Redux
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0); // Unread message count

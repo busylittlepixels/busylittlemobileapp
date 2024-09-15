@@ -15,7 +15,6 @@ import ServicesScreen from '../screens/Services/ServicesScreen';
 import UpdateDetailsScreen from '../screens/Profile/UpdateDetailsScreen';
 import PaymentScreen from '../screens/Payment/PaymentScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
-import MainTabNavigator from './MainTabNavigator';
 import MainDrawerNavigator from './MainDrawerNavigator';
 import SignUpScreen from '../screens/Auth/SignUpScreen';
 import EventScreen from '../screens/Events/EventScreen';
@@ -87,8 +86,7 @@ const AppNavigator = () => {
             ) : (
               <>
                 {/* <Stack.Screen name="Account" component={MainDrawerNavigator} options={{ headerShown: false }} /> */}
-                <Stack.Screen
-                  name="Account"
+                <Stack.Screen name="Account"
                   component={MainDrawerNavigator}
                   options={({ route }) => ({
                     headerShown: false, 
@@ -99,7 +97,10 @@ const AppNavigator = () => {
                     gestureDirection: route.params?.fromCities ? 'horizontal-inverted' : 'horizontal', // Slide from left if coming from CitiesScreen
                   })}
                 />
-                <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerTintColor: '#000', headerShown: true, headerBackTitle: 'Back', headerBackTitleVisible: true }} />
+                <Stack.Screen name="Profile" 
+                  component={ProfileScreen} 
+                  options={{ headerTintColor: '#000', headerShown: true, headerBackTitle: 'Back', headerBackTitleVisible: true }} 
+                />
                 <Stack.Screen name="Event" component={EventScreen} options={{ headerShown: true }} />
                 <Stack.Screen name="MyEvents" component={MyEventsScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="Calendar" component={SettingsScreen} options={({ navigation }) => ({
