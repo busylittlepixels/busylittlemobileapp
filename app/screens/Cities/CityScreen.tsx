@@ -8,7 +8,18 @@ import { supabase } from '../../../supabase';
 import { ThemedText } from '@/app/components/ThemedText';
 import { ThemedView } from '@/app/components/ThemedView';
 import { Collapsible } from '@/app/components/Collapsible';
+import Animated, { withSpring, useSharedValue, SharedTransition } from 'react-native-reanimated';
+import { ScrollView } from 'react-native-gesture-handler';
 
+const customTransition = SharedTransition.custom((values) => {
+  'worklet';
+  return {
+    height: withSpring(values.targetHeight),
+    width: withSpring(values.targetWidth),
+    originX: withSpring(values.targetOriginX),
+    originY: withSpring(values.targetOriginY),
+  };
+});
 
 type City = {
   id: number;
@@ -110,11 +121,12 @@ const CityScreen = ({ navigation, route }: any) => {
 
   return (
     <View style={styles.container}>
+   
       <ParallaxScrollView
         headerBackgroundColor={{ light: '#353636', dark: '#D0D0D0' }}
         backgroundColor="#353636" // Set the background color of the scroll view itself
-        contentBackgroundColor="#353636" // Set the content background color
-        headerImage={<Image source={cityImage} style={styles.headerImage} />}
+        contentBackgroundColor="#353636" // Set the content background colorz
+        headerImage={<Animated.Image source={cityImage} style={{ width: 400, height: 250,}} sharedTransitionStyle={customTransition} sharedTransitionTag={`city-${route.params?.city}`}  />}
       >
         <ThemedView style={styles.contentContainer}>
           <ThemedText type="title" style={styles.text}>
@@ -186,7 +198,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#000', // Ensure the container has a white background
 },
   headerImage: {
-    width: '100%',
+    width: 400,
     height: 250,
   },
   contentContainer: {

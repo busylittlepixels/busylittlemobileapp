@@ -9,7 +9,19 @@ import {
   Pressable,
   ActivityIndicator
 } from 'react-native';
+import Animated, { withSpring } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
+import { SharedTransition } from 'react-native-reanimated';
+
+const customTransition = SharedTransition.custom((values) => {
+  'worklet';
+  return {
+    height: withSpring(values.targetHeight),
+    width: withSpring(values.targetWidth),
+    originX: withSpring(values.targetOriginX),
+    originY: withSpring(values.targetOriginY),
+  };
+});
 
 const CitiesGrid = ({ cities }: any) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -79,9 +91,11 @@ const CitiesGrid = ({ cities }: any) => {
             onPress={() => navigation.navigate('City', { city: item })}
             style={styles.imageContainer}
           >
-            <Image
+            <Animated.Image
               source={getCityImage(item)}
-              style={styles.image}
+              style={{ width: 100, height: 100, borderRadius: 10}}
+              sharedTransitionTag={`city-${item}`}
+              sharedTransitionStyle={customTransition}
             />
             <Text style={styles.imageText}>{item}</Text>
           </Pressable>

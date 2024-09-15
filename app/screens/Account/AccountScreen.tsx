@@ -18,6 +18,7 @@ import { toggleFavorite as toggleFavoriteService } from '../../services/favourit
 import { Asset } from 'expo-asset';
 import { enablePublicProfile } from '@/app/services/settingsService';
 import { useNotification } from '../../contexts/NotificationContext';
+import { useNavigation } from '@react-navigation/native';
 
 const GreenDot = () => {
   return <View style={styles.greenDot} />;

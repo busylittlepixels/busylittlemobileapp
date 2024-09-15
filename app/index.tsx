@@ -1,5 +1,6 @@
 // @ts-nocheck
 import React, { useEffect } from 'react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { NotificationProvider, useNotification } from './contexts/NotificationContext';
 import AppNavigator from './navigation';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
@@ -47,7 +48,11 @@ const AppContent = () => {
     });
   }, []);
 
-  return <AppNavigator />;
+    return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <AppNavigator />
+    </GestureHandlerRootView>
+  );
 };
 
 const App = () => {
