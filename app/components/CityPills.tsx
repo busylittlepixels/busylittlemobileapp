@@ -77,7 +77,7 @@ const CityPills = ({ user }: any) => {
 
   // Function to handle city selection by name
   const handleCityToggle = async (cityName) => {
-    console.log('toggle', cityName);
+    // console.log('toggle', cityName);
     
     const isSelected = selectedCities.includes(cityName);
 
@@ -102,10 +102,10 @@ const CityPills = ({ user }: any) => {
       .eq('id', userId); // Ensure 'user.id' is correctly referenced
 
     if (error) {
-      console.error('Error updating user cities:', error);
+      // console.error('Error updating user cities:', error);
     } else {
-      console.log('updated data', error);
-      console.log('User cities updated successfully!');
+      // console.log('updated data', error);
+      // console.log('User cities updated successfully!');
     }
   };
 

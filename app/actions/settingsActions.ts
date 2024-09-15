@@ -5,6 +5,7 @@ import { enablePublicProfile as enableProfileService } from '../services/setting
 
 export const SET_PUBLIC_PROFILE = 'SET_PUBLIC_PROFILE';
 export const SET_ADVERT_PREFERENCE = 'SET_ADVERT_PREFERENCE';
+export const SET_NOTIFICATION_PREFERENCE = 'SET_NOTIFICATION_PREFERENCE';
 
 // Action to set advert preference
 export const setAdvertPreference = (showAdverts: any) => async (dispatch: Dispatch) => {
@@ -19,6 +20,21 @@ export const setAdvertPreference = (showAdverts: any) => async (dispatch: Dispat
     });
   } catch (error) {
     console.error('Failed to save advert preference', error);
+  }
+};
+
+export const setNotificationsPreference = (showNotifications: any) => async (dispatch: Dispatch) => {
+  try {
+    // Save the preference in AsyncStorage
+    await AsyncStorage.setItem('showNotifications', JSON.stringify(showNotifications));
+
+    // Dispatch the action to update Redux state
+    dispatch({
+      type: SET_NOTIFICATION_PREFERENCE,
+      payload: showNotifications,
+    });
+  } catch (error) {
+    console.error('Failed to save notifications preference', error);
   }
 };
 

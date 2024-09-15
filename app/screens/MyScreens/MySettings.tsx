@@ -2,9 +2,8 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { ScrollView, View, Text, StyleSheet, Switch, Button, Alert, Pressable, RefreshControl } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux'; // Import useSelector and useDispatch
-import { setPublicProfile, setAdvertPreference } from '../../actions/settingsActions'; // Import the action
+import { setPublicProfile, setAdvertPreference, setNotificationsPreference } from '../../actions/settingsActions'; // Import the action
 import { supabase } from "@/supabase";
-
 
 const AcceptButton = ({ title, onPress }) => {
     return (
@@ -47,6 +46,7 @@ const MySettings = ({ navigation }: any) => {
     const dispatch = useDispatch();
     const user = useSelector((state: any) => state.auth.user);
     const showAdverts = useSelector((state: any) => state.settings.showAdverts);
+    const showNotifications = useSelector((state: any) => state.settings.showNotifications);
     const showPublic = useSelector((state: any) => state.settings.enablePublicProfile);
 
     // console.log('showPublic', showPublic);
@@ -59,6 +59,11 @@ const MySettings = ({ navigation }: any) => {
     const togglePublic = (value: boolean) => {
         // @ts-ignore
         dispatch(setPublicProfile(value, user?.id));
+    };
+
+    const toggleNotifications = (value: boolean) => {
+        // @ts-ignore
+        dispatch(setNotificationsPreference(value));
     };
 
     // Fetch pending connection requests where the current user is the receiver
@@ -131,13 +136,13 @@ const MySettings = ({ navigation }: any) => {
     return (
         // <View style={styles.innerContainer}>
             <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={styles.innerContainer}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        >
+                style={{ flex: 1 }}
+                contentContainerStyle={styles.innerContainer}
+                showsVerticalScrollIndicator={false}
+                refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                }
+            >
             <Text style={[styles.title, { paddingVertical: 5 }]}>Connection Requests:</Text>
             <View>
                 {pendingRequests.length > 0 ? (
@@ -171,6 +176,18 @@ const MySettings = ({ navigation }: any) => {
                         value={enableConnections}
                         trackColor={{ true: 'green', false: 'gray' }}
                         onValueChange={setEnableConnections}
+                    />
+                </View>
+            </View>
+
+            <Text style={[styles.title, { paddingTop: 15, paddingBottom: 5 }]}>Notifications:</Text>
+            <View>
+                <View style={styles.inputWrapper}>
+                    <Text style={styles.inlineLabel}>Enable Push Notifications?</Text>
+                    <Switch
+                        value={showNotifications}
+                        trackColor={{ true: 'green', false: 'gray' }}
+                        onValueChange={toggleNotifications}
                     />
                 </View>
             </View>

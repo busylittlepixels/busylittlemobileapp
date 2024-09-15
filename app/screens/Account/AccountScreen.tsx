@@ -19,6 +19,15 @@ import { Asset } from 'expo-asset';
 import { enablePublicProfile } from '@/app/services/settingsService';
 import { useNotification } from '../../contexts/NotificationContext';
 
+const GreenDot = () => {
+  return <View style={styles.greenDot} />;
+};
+
+const RedDot = () => {
+  return <View style={styles.redDot} />;
+};
+
+
 const AccountScreen = ({ navigation, route }: any) => {
   // track vertical scroll
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -49,6 +58,19 @@ const AccountScreen = ({ navigation, route }: any) => {
     outputRange: [AVATAR_MAX_SIZE, AVATAR_MIN_SIZE],
     extrapolate: 'clamp',
   });
+
+  const dotSize = scrollY.interpolate({
+    inputRange: [0, (HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT) * 1.5],  
+    outputRange: [16, 12],  // Dot size shrinks from 16 to 10
+    extrapolate: 'clamp',
+  });
+  
+  const dotPosition = scrollY.interpolate({
+    inputRange: [0, (HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT) * 1.5],  
+    outputRange: [6, 4],  // Adjust the position of the dot as the avatar shrinks
+    extrapolate: 'clamp',
+  });
+  
   
   // Access Redux state and get the user
   const user = useSelector((state) => state.auth.user);
@@ -66,7 +88,8 @@ const AccountScreen = ({ navigation, route }: any) => {
   // duh
   const showAdverts = useSelector((state) => state.settings.showAdverts);
   const enablePublicProfile = useSelector((state) => state.settings.enablePublicProfile);
-  
+  const showNotifications = useSelector((state) => state.settings.showNotifications);
+
   // also duh
   const [refreshing, setRefreshing] = useState(false);
   const [tickets, setTickets] = useState([]);
@@ -184,21 +207,33 @@ const AccountScreen = ({ navigation, route }: any) => {
   return (
     <View style={{ flex: 1 }}>
       <Animated.View style={[styles.avatarContainer, { height: headerHeight, paddingVertical }]}>
-        {user && (
-          <View style={styles.userInfoContainer}>
-            <View style={styles.textContainer}>
-              <Text style={styles.screenTitle}>Hey {profile?.username || user.user_metadata?.username}</Text>
-              <Text style={styles.screenSub}>{profile?.email || user?.email}</Text>
-              {/* <Text style={styles.screenMicro}>UserId: {user.id}</Text> */}
-            </View>
-            <Pressable  onPress={goToProfile}>
+      {user && (
+        <View style={styles.userInfoContainer}>
+          <View style={styles.textContainer}>
+            <Text style={styles.screenTitle}>Hey {profile?.username || user.user_metadata?.username}</Text>
+            <Text style={styles.screenSub}>{profile?.email || user?.email}</Text>
+          </View>
+          <Pressable onPress={goToProfile} style={{ position: 'relative' }}>
             <Animated.Image
               source={{ uri: profile?.avatar_url ? profile?.avatar_url : imageUrl }}
-              style={[styles.tinyLogo, { width: avatarSize, height: avatarSize, paddingLeft: 5, borderColor: enablePublicProfile ? 'green' : 'white', }]}
+              style={[styles.tinyLogo, { width: avatarSize, height: avatarSize, paddingLeft: 5, borderColor: enablePublicProfile ? 'green' : 'white' }]}
             />
-            </Pressable>
-          </View>
-        )}
+            <Animated.View 
+              style={[
+                styles.dotContainer, 
+                { 
+                  width: dotSize, 
+                  height: dotSize, 
+                  left: dotPosition,  // Adjusts dot's position to left
+                  bottom: dotPosition // Adjusts dot's position to bottom
+                }
+              ]}
+            >
+              {showNotifications ? <GreenDot /> : <RedDot />}
+            </Animated.View>
+          </Pressable>
+        </View>
+      )}
       </Animated.View>
       <ScrollView
         style={{ flex: 1 }}
@@ -282,12 +317,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
   },
-  tinyLogo: {
-    borderRadius: 50,
-    borderWidth: 2,
-    paddingLeft: 2,
-    marginLeft: 5,
-  },
+
   textContainer: {
     flex: 1,
     alignItems: 'flex-start',
@@ -314,6 +344,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 10,
+    position: 'relative'
   },
   screenTitle: {
     fontSize: 20,
@@ -325,11 +356,42 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#fff'
   },
+  screenMicroContainer:{
+    display: 'flex',
+    alignContent: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    right: 0,
+    bottom: 0
+  },
   screenMicro: {
     fontSize: 10,
     fontWeight: '400',
-    color: '#fff'
-  }
+    color: '#fff',  
+  },
+  tinyLogo: {
+    borderRadius: 50,
+    borderWidth: 2,
+    paddingLeft: 2,
+    marginLeft: 5,
+    position: 'relative', // Ensure relative positioning of the avatar
+  },
+  dotContainer: {
+    position: 'absolute',  // Absolutely position the dot
+    borderRadius: 8,
+  },
+  greenDot: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: 'green',
+  },
+  redDot: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: 'red',
+  },
 });
 
 export default AccountScreen;
