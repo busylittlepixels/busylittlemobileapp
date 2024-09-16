@@ -230,7 +230,7 @@ const AccountScreen = ({ navigation, route }: any) => {
                 }
               ]}
             >
-              {showNotifications ? <GreenDot /> : <RedDot />}
+              {enablePublicProfile && <GreenDot />}
             </Animated.View>
           </Pressable>
         </View>

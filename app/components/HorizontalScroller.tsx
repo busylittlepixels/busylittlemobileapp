@@ -39,6 +39,7 @@ const HorizontalScroller = () => {
       scrollEventThrottle={4}
     >
       {images ? images.map((item, index) => {
+        // console.log('image map item', item);
         const inputRange = [
           (index - 1) * (screenWidth * 0.6),
           index * (screenWidth * 0.6),
@@ -54,7 +55,7 @@ const HorizontalScroller = () => {
         return (
           <Pressable
             key={item.id}
-            onPress={() => navigation.navigate('TabEile')}
+            onPress={() => navigation.navigate('TabEile', { item: { ...item, uri: typeof item.url === 'string' ? item.url : Image.resolveAssetSource(item.url).uri } })}  // Updated to pass full item with uri
             style={styles.imageContainer}
           >
             <View style={styles.innerContainer}>
