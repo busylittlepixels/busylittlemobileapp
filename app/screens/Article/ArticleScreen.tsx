@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import React, { useEffect, useState, memo, useCallback } from 'react';
 import { StyleSheet, Dimensions, Pressable, View, Button, Image, ScrollView } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -12,6 +10,8 @@ import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useSanitizeRender from '@/app/hooks/useSanitizeRender';
 import { toggleFavorite } from '../../services/favouriteService';
+import Animated, { Easing, useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+
 
 const MemoizedRenderHTML = memo(RenderHTML, (prevProps, nextProps) => {
     return prevProps.source.html === nextProps.source.html;
@@ -34,6 +34,7 @@ const baseStyles = {
 };
 
 export default function ArticleScreen({ navigation, route }: any) {
+  const opacityValue = useSharedValue(0); // Updated
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.auth.user);
   const favorites = useSelector((state: any) => state.favorite.favorites);
@@ -45,12 +46,22 @@ export default function ArticleScreen({ navigation, route }: any) {
   const title = item.title?.rendered || item.title;
   const content = item.content?.rendered || item.content;
   const [sanitizedContent, setSanitizedContent] = useState<string | null>(null);
-
   const featuredMedia = item?._embedded?.['wp:featuredmedia']?.[0]?.source_url || route.params.featuredMedia;
 
   const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
-
   const sanitizeContent = useSanitizeRender(content);
+
+  // Function to fade in the component
+  const fadeIn = () => {
+    opacityValue.value = withTiming(1, { duration: 750, easing: Easing.inOut(Easing.ease) });
+  };
+
+  // Apply animation to style
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacityValue.value,
+    };
+  });
 
   useEffect(() => {
     const fetchSanitizedContent = async () => {
@@ -58,6 +69,7 @@ export default function ArticleScreen({ navigation, route }: any) {
         const sanitized = await sanitizeContent;
         setSanitizedContent(sanitized);
       } catch (error) {
+        // @ts-ignore
         if (error.message.includes("Unrecognized token '<'")) {
           console.log("Suppressing known HTML parsing error.");
         } else {
@@ -69,12 +81,15 @@ export default function ArticleScreen({ navigation, route }: any) {
   
     fetchSanitizedContent();
   }, [content, sanitizeContent]);
-  
-  
-  
+
   useEffect(() => {
     setIsFavorite(favorites[articleId]);
   }, [favorites, articleId]);
+
+  useEffect(() => {
+    // Trigger fade in animation when the component mounts
+    fadeIn();
+  }, []); // Runs once on mount
 
   const handleToggleFavorite = useCallback(async () => {
     try {
@@ -170,7 +185,7 @@ export default function ArticleScreen({ navigation, route }: any) {
           />
         }
       >
-        <ThemedView style={styles.contentContainer}>
+        <Animated.View style={[styles.contentContainer, animatedStyle]}>
           <ThemedText type="title" style={styles.title}>{title}</ThemedText>
           <ScrollView>
             {renderContent()}
@@ -178,7 +193,7 @@ export default function ArticleScreen({ navigation, route }: any) {
           <View style={styles.buttonContainer}>
             <Button title="Back to Articles" onPress={() => navigation.navigate('Account')} />
           </View>
-        </ThemedView>
+        </Animated.View>
       </ParallaxScrollView>
     </View>
   );
