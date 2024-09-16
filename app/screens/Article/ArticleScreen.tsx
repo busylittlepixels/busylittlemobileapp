@@ -54,7 +54,7 @@ export default function ArticleScreen({ navigation, route }: any) {
 
   // Function to fade in the component
   const fadeIn = () => {
-    opacityValue.value = withTiming(1, { duration: 750, easing: Easing.inOut(Easing.ease) });
+    opacityValue.value = withTiming(1, { duration: 950, easing: Easing.inOut(Easing.ease) });
   };
 
   // Apply animation to style
@@ -72,7 +72,7 @@ export default function ArticleScreen({ navigation, route }: any) {
       } catch (error) {
         // @ts-ignore
         if (error.message.includes("Unrecognized token '<'")) {
-          console.log("Suppressing known HTML parsing error.");
+          // console.log("Suppressing known HTML parsing error.");
         } else {
           // console.error('Error sanitizing content:', error);
         }

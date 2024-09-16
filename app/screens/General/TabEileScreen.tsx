@@ -15,6 +15,12 @@ const ITEM_HEIGHT = height * 0.5;
 
 const TabEileScreen = ({ navigation, route }:any) => {
 
+  console.log('def', route.params);
+
+  useEffect(() => {
+    navigation.setOptions({ title: route.params?.item?.name });
+  }, [navigation]);
+
   const triggerRefresh = async () => {
     console.log('fuck yourself')
   }
@@ -41,8 +47,8 @@ const TabEileScreen = ({ navigation, route }:any) => {
         style={{
           width: '100%',
           height: ITEM_HEIGHT,
-          borderBottomLeftRadius: 20,
-          borderBottomRightRadius: 20
+          // borderBottomLeftRadius: 20,
+          // borderBottomRightRadius: 20
         }}
         resizeMode='cover'
       />

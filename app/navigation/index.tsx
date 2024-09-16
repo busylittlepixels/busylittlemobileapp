@@ -47,7 +47,7 @@ export type RootStackParamList = {
   UpdateDetails: undefined;
   Payment: undefined;
   ResetPass: undefined;
-  TabEile: undefined;
+  General: undefined;
   Onboarding: undefined;
   Profile: undefined;
   Calendar: undefined;
@@ -142,7 +142,31 @@ const AppNavigator = () => {
                 })} />
                 <Stack.Screen name="UpdateDetails" component={UpdateDetailsScreen} options={{ headerShown: true }} />
                 <Stack.Screen name="Payment" component={PaymentScreen} />
-                <Stack.Screen name="TabEile" component={TabEileScreen} />
+                <Stack.Screen name="General" component={TabEileScreen} 
+                  options={({ navigation }) => ({
+                  gestureEnabled: false,
+                  gestureDirection: 'vertical',
+                  cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
+                  headerTintColor: '#000',
+                  headerBackTitle: 'Back', // Change the back button text
+                  headerBackTitleVisible: true, // Ensures the back button text is visible
+                  headerRight: () => (
+                    <View style={{ display: 'flex', flexDirection: 'row' }}>
+                      <Pressable
+                        onPress={() => navigation.navigate('Profile')} // Navigate to the Profile screen
+                        style={{ marginRight: 15 }}
+                      >
+                        <Ionicons name="person-outline" size={24} color="black" />
+                      </Pressable>
+                      <Pressable
+                        onPress={() => navigation.navigate('Search')} // Navigate to the Search screen
+                        style={{ marginRight: 15 }}
+                      >
+                        <Ionicons name="search-outline" size={24} color="black" />
+                      </Pressable>
+                    </View>
+                  ),
+                })} />
                 <Stack.Screen name="FriendProfile" component={FriendProfileScreen} options={({ navigation }) => ({
                   gestureEnabled: false,
                   gestureDirection: 'horizontal',
