@@ -32,6 +32,7 @@ import SettingsScreen from '../screens/General/SettingsScreen';
 import FriendProfileScreen from '../screens/Friends/FriendProfileScreen';
 import ChatScreen from '../screens/Chat/ChatScreen';
 import MessagesScreen from '../screens/Chat/MessagesScreen';
+import { createSharedElementStackNavigator } from 'react-navigation-shared-element';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -55,7 +56,7 @@ export type RootStackParamList = {
   Chat: undefined;
 };
 
-const Stack = createStackNavigator<RootStackParamList>();
+const Stack = createSharedElementStackNavigator();
 
 const AppNavigator = () => {
   const user = useSelector((state) => state.auth.user);

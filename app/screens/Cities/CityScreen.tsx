@@ -10,6 +10,7 @@ import { ThemedView } from '@/app/components/ThemedView';
 import { Collapsible } from '@/app/components/Collapsible';
 import Animated, { withSpring, useSharedValue, SharedTransition } from 'react-native-reanimated';
 import { ScrollView } from 'react-native-gesture-handler';
+import { SharedElement } from 'react-navigation-shared-element';
 
 const customTransition = SharedTransition.custom((values) => {
   'worklet';
@@ -54,6 +55,19 @@ const getCityImage = (name: string) => {
 const CityScreen = ({ navigation, route }: any) => {
   const [loading, setLoading] = useState(true);
   const [city, setCity] = useState<City | null>(null);
+
+  CityScreen.sharedElements = (route) => {
+    const { city } = route.params;
+    return [
+      {
+        id: `city-${city}`,  // Match the ID used in CitiesGrid
+        animation: 'move',   // You can also use 'fade' or 'move'
+        resize: 'auto',      // Define resize behavior
+        align: 'auto',       // Define alignment of the shared element
+      },
+    ];
+  };
+  
 
   const OutlineButton = ({ title, onPress }: any) => {
     return (
@@ -119,6 +133,8 @@ const CityScreen = ({ navigation, route }: any) => {
   const { name, description, country } = city;
   const cityImage = getCityImage(name);
 
+  console.log(route.params.city)
+
   return (
     <View style={styles.container}>
    
@@ -126,7 +142,11 @@ const CityScreen = ({ navigation, route }: any) => {
         headerBackgroundColor={{ light: '#353636', dark: '#D0D0D0' }}
         backgroundColor="#353636" // Set the background color of the scroll view itself
         contentBackgroundColor="#353636" // Set the content background colorz
-        headerImage={<Animated.Image source={cityImage} style={{ width: 400, height: 250,}} sharedTransitionStyle={customTransition} sharedTransitionTag={`city-${route.params?.city}`}  />}
+        headerImage={
+          <SharedElement id={`city-${route.params?.city}`}>
+            <Animated.Image source={cityImage} style={{ width: 400, height: 250,}}  />
+          </SharedElement>
+      }
       >
         <ThemedView style={styles.contentContainer}>
           <ThemedText type="title" style={styles.text}>

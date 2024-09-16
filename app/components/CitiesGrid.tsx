@@ -12,6 +12,7 @@ import {
 import Animated, { withSpring } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import { SharedTransition } from 'react-native-reanimated';
+import { SharedElement } from 'react-navigation-shared-element';
 
 const customTransition = SharedTransition.custom((values) => {
   'worklet';
@@ -66,6 +67,7 @@ const CitiesGrid = ({ cities }: any) => {
   //   );
   // }
 
+
   if (!cities || cities.length === 0) {
     return (
       <View style={styles.noCities}>
@@ -84,22 +86,23 @@ const CitiesGrid = ({ cities }: any) => {
           !isLoading && { justifyContent: 'flex-start' }, // Ensure content alignment when not loading
         ]}
       >
-        {cities.map((item:any, index:any) => (
-          <Pressable
+        {cities.map((item:any, index:any) => {
+          
+          return(<Pressable
             key={index}
             // @ts-ignore
             onPress={() => navigation.navigate('City', { city: item })}
             style={styles.imageContainer}
           >
-            <Animated.Image
-              source={getCityImage(item)}
-              style={{ width: 100, height: 100, borderRadius: 10}}
-              sharedTransitionTag={`city-${item}`}
-              sharedTransitionStyle={customTransition}
-            />
+            <SharedElement id={`city-${item}`}>
+              <Animated.Image
+                source={getCityImage(item)}
+                style={{ width: 100, height: 100, borderRadius: 10}}
+              />
+            </SharedElement>
             <Text style={styles.imageText}>{item}</Text>
           </Pressable>
-        ))}
+        )})}
       </ScrollView>
     </View>
   );
