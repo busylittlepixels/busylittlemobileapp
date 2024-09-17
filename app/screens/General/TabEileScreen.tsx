@@ -8,6 +8,7 @@ import {
   Dimensions,
   Pressable
 } from 'react-native';
+import ParallaxScrollView from '@/app/components/ParallaxScrollView';
 import { Ionicons } from '@expo/vector-icons';
 import { SimpleLineIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 const { height } = Dimensions.get('window');
@@ -42,17 +43,26 @@ const TabEileScreen = ({ navigation, route }:any) => {
   console.log('tab eile, rud eile', item.uri);
   return (
     <View style={{ flex: 1, backgroundColor: '#0f0f0f' }}>
-      <Image
-        source={{ uri: item.uri }}
-        style={{
-          width: '100%',
-          height: ITEM_HEIGHT,
-          // borderBottomLeftRadius: 20,
-          // borderBottomRightRadius: 20
-        }}
-        resizeMode='cover'
-      />
-      <MaterialCommunityIcons
+      <ParallaxScrollView
+        // @ts-ignores
+        headerBackgroundColor="#353636"
+        backgroundColor="#353636"
+        contentBackgroundColor="#353636"
+        headerImage={
+           <Image
+           source={{ uri: item.uri }}
+           style={{
+             width: '100%',
+             height: ITEM_HEIGHT,
+             // borderBottomLeftRadius: 20,
+             // borderBottomRightRadius: 20
+           }}
+           resizeMode='cover'
+         />
+        }
+      >
+     
+      {/* <MaterialCommunityIcons
         name='close'
         size={28}
         color='#fff'
@@ -65,7 +75,7 @@ const TabEileScreen = ({ navigation, route }:any) => {
         onPress={() => {
           navigation.goBack();
         }}
-      />
+      /> */}
       <View
         style={{ flexDirection: 'row', marginTop: 10, paddingHorizontal: 20 }}
       >
@@ -134,6 +144,7 @@ const TabEileScreen = ({ navigation, route }:any) => {
           culpa qui officia deserunt mollit anim id est laborum.
         </Text>
       </ScrollView>
+    </ParallaxScrollView>
     </View>
   );
 };
