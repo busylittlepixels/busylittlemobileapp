@@ -32,6 +32,8 @@ import SettingsScreen from '../screens/General/SettingsScreen';
 import FriendProfileScreen from '../screens/Friends/FriendProfileScreen';
 import ChatScreen from '../screens/Chat/ChatScreen';
 import MessagesScreen from '../screens/Chat/MessagesScreen';
+import MyQRCodeScreen from '../screens/MyScreens/MyQRCodeScreen';
+import CameraScreen from '../screens/General/CameraScreen'
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -53,6 +55,8 @@ export type RootStackParamList = {
   Calendar: undefined;
   FriendProfile: undefined;
   Chat: undefined;
+  Camera: undefined;
+  MyQR: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -141,6 +145,39 @@ const AppNavigator = () => {
                   ),
                 })} />
                 <Stack.Screen name="UpdateDetails" component={UpdateDetailsScreen} options={{ headerShown: true }} />
+                <Stack.Screen name="Camera" component={CameraScreen} options={({ navigation }) => ({
+                  gestureEnabled: false,
+                  gestureDirection: 'vertical',
+                  cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
+                  headerTintColor: '#000',
+                  headerBackTitle: 'Back', // Change the back button text
+                  headerBackTitleVisible: true, // Ensures the back button text is visible
+                  headerRight: () => (
+                    <View style={{ display: 'flex', flexDirection: 'row' }}>
+                      <Pressable
+                        onPress={() => navigation.navigate('Profile')} // Navigate to the Profile screen
+                        style={{ marginRight: 15 }}
+                      >
+                        <Ionicons name="person-outline" size={24} color="black" />
+                      </Pressable>
+                      <Pressable
+                        onPress={() => navigation.navigate('Search')} // Navigate to the Search screen
+                        style={{ marginRight: 15 }}
+                      >
+                        <Ionicons name="search-outline" size={24} color="black" />
+                      </Pressable>
+                    </View>
+                  ),
+                })} />
+                <Stack.Screen name="MyQR" component={MyQRCodeScreen} options={({ navigation }) => ({
+                  gestureEnabled: false,
+                  gestureDirection: 'vertical',
+                  cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
+                  headerTintColor: '#000',
+                  headerBackTitle: 'Back', // Change the back button text
+                  headerBackTitleVisible: true, // Ensures the back button text is visible/>
+                  headerShown: 'false'
+                })} />
                 <Stack.Screen name="Payment" component={PaymentScreen} />
                 <Stack.Screen name="General" component={TabEileScreen} 
                   options={({ navigation }) => ({

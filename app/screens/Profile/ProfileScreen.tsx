@@ -7,6 +7,7 @@ import MySchedule from './../MyScreens/MyEventsFeed';
 import UpdateDetailsScreen from './UpdateDetailsScreen';
 import AnimatedTabs from '../../components/AnimatedTabs';
 import MySettings from '../MyScreens/MySettings';
+import MyContacts from '../MyScreens/MyContacts';
 import MessagesScreen from '../Chat/MessagesScreen';
 import { supabase } from '../../../supabase'; // Adjust path as necessary
 import { useSelector, useDispatch } from 'react-redux'; // Import useSelector and useDispatch
@@ -97,6 +98,14 @@ const ProfileScreen = ({ navigation, route }:any) => {
           component={MessagesScreen}
           listeners={{
             focus: () => navigation.setOptions({ title: 'Messages' }),
+          }}
+        />
+
+        <Tab.Screen
+          name="Contacts"
+          component={MyContacts}
+          listeners={{
+            focus: () => navigation.setOptions({ title: 'Scanned Contacts' }),
           }}
         />
         <Tab.Screen
