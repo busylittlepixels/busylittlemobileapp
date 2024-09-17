@@ -61,6 +61,8 @@ const AnimatedTabs = forwardRef(({ state, descriptors, navigation, unreadMessage
           iconName = isFocused ? 'settings' : 'settings-outline';
         } else if (route.name === 'Messages') {
           iconName = isFocused ? 'chatbox' : 'chatbox-outline';
+        } else if (route.name === 'Contacts') {
+          iconName = isFocused ? 'people' : 'people-outline';
         }
 
         return (
@@ -107,7 +109,7 @@ const styles = StyleSheet.create({
   indicator: {
     position: 'absolute',
     height: 3,
-    width: width / 3, // Adjust based on the number of tabs
+    width: width / 4, // Adjust based on the number of tabs
     backgroundColor: 'green',
     bottom: 0,
     left: 0,

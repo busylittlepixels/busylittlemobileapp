@@ -266,7 +266,7 @@ const AccountScreen = ({ navigation, route }: any) => {
 
         
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Featured (Actual) Events:</Text>
+          <Text style={styles.sectionTitle}>Featured Events:</Text>
           <EventsGrid items={events} />
         </View>
         

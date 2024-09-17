@@ -10,6 +10,8 @@ import { ThemedView } from '@/app/components/ThemedView';
 import { Collapsible } from '@/app/components/Collapsible';
 import Animated, { withSpring, useSharedValue, SharedTransition } from 'react-native-reanimated';
 import { ScrollView } from 'react-native-gesture-handler';
+import CityCarousel from '@/app/components/CityCarousel';
+
 
 const customTransition = SharedTransition.custom((values) => {
   'worklet';
@@ -54,6 +56,9 @@ const getCityImage = (name: string) => {
 const CityScreen = ({ navigation, route }: any) => {
   const [loading, setLoading] = useState(true);
   const [city, setCity] = useState<City | null>(null);
+
+
+  console.log('city route params', route.params?.item)
 
   const OutlineButton = ({ title, onPress }: any) => {
     return (
@@ -180,6 +185,10 @@ const CityScreen = ({ navigation, route }: any) => {
         <View style={[styles.buttonContainer, { display: 'flex', flexDirection: 'row', gap: 4, paddingVertical: 10, paddingHorizontal: 10, marginVertical: 10 }]}>
           <OutlineButton title="Go Back" onPress={() => navigation.goBack()} color="#fff" />
         </View>
+
+        
+        <CityCarousel />
+
 
       </ParallaxScrollView>
 

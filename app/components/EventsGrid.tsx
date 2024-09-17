@@ -12,7 +12,19 @@ import {
 import { useNavigation } from '@react-navigation/native';
 
 
-const EventsGrid = ({ items }:any) => {
+interface EventItem {
+  event_name: string;
+  event_image: string;
+  description: string;
+}
+
+interface EventsGridProps {
+  items: EventItem[];
+}
+
+
+
+const EventsGrid = ({ items }:EventsGridProps) => {
 
 
   const navigation = useNavigation(); // Get the navigation object
@@ -28,6 +40,7 @@ const EventsGrid = ({ items }:any) => {
         // @ts-ignore
         onPress={() => navigation.navigate('Event', { item })}
         style={styles.articlePressable}
+        key={item.id}
       >
         {/* Use the featuredMedia as the image source */}
         <Image
@@ -43,7 +56,17 @@ const EventsGrid = ({ items }:any) => {
           <Text numberOfLines={1} ellipsizeMode="tail">
             {item.description}
           </Text>
+          <Text numberOfLines={1} ellipsizeMode="tail">
+            {new Date(item.start_date).toLocaleDateString()}
+          </Text>
         </View>
+
+        <Pressable
+            onPress={() => navigation.navigate('Event', { item })}
+            style={styles.eventButton}
+          >
+            <Text style={styles.eventButtonText}>View Event</Text>
+          </Pressable>
       </Pressable>
       ))}
     </ScrollView>
@@ -97,9 +120,12 @@ const styles = StyleSheet.create({
   },
   articlePressable: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     flex: 1,
-    marginBottom: 5
+    marginBottom: 10,
+    paddingVertical: 6,
+    // backgroundColor: 'lightgray',
+    borderRadius: 5
   },
   tinyLogo: {
     width: 50,
