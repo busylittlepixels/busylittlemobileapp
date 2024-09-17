@@ -12,7 +12,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 
 
-const EventsGrid = ({ tickets }:any) => {
+const EventsGrid = ({ items }:any) => {
 
 
   const navigation = useNavigation(); // Get the navigation object
@@ -23,19 +23,28 @@ const EventsGrid = ({ tickets }:any) => {
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.eventsSection}
     >
-      {tickets.map((item) => (
-        <View key={item.id} style={styles.item}>
-          <View>
-            <Text style={styles.title}>{item.event_name}</Text>
-            <Text>{item.event_description}</Text>
-          </View>
-          <Pressable
-            onPress={() => navigation.navigate('Event', { item })}
-            style={styles.eventButton}
-          >
-            <Text style={styles.eventButtonText}>View Event</Text>
-          </Pressable>
+      {items.map((item) => (
+        <Pressable
+        // @ts-ignore
+        onPress={() => navigation.navigate('Event', { item })}
+        style={styles.articlePressable}
+      >
+        {/* Use the featuredMedia as the image source */}
+        <Image
+          style={styles.tinyLogo}
+          source={{
+            uri: item.event_image ? item.event_image : 'https://via.placeholder.com/50/800080/FFFFFF',
+          }}
+        />
+        <View style={styles.textContainer}>
+          <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
+            {item.event_name}
+          </Text>
+          <Text numberOfLines={1} ellipsizeMode="tail">
+            {item.description}
+          </Text>
         </View>
+      </Pressable>
       ))}
     </ScrollView>
   );
@@ -52,8 +61,11 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   eventsSection: {
-    backgroundColor: '#ffffff',
-    padding: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderColor: '#'
   },
   eventsSectionTitle: {
     fontSize: 20,
@@ -82,7 +94,32 @@ const styles = StyleSheet.create({
   }, 
   eventButtonText: {
     color: '#fff'
-  }
+  },
+  articlePressable: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    marginBottom: 5
+  },
+  tinyLogo: {
+    width: 50,
+    height: 50,
+    marginRight: 10,
+    borderRadius: 5,
+  },
+  textContainer: {
+    flex: 1,
+    alignItems: 'flex-start',
+  },
+  title: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    maxWidth: '100%',
+  },
+  description: {
+    fontSize: 14,
+    color: '#666',
+  },
 });
 
 export default EventsGrid;

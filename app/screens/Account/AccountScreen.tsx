@@ -94,6 +94,7 @@ const AccountScreen = ({ navigation, route }: any) => {
   // also duh
   const [refreshing, setRefreshing] = useState(false);
   const [tickets, setTickets] = useState([]);
+  const [events, setEvents] = useState([]);
   const [profile, setProfile] = useState(null);
   const [cities, setCities] = useState([]);
   const [articles, setArticles] = useState([]);
@@ -122,10 +123,11 @@ const AccountScreen = ({ navigation, route }: any) => {
     if (!user || !user.id) return;
 
     try {
-      const [{ data: userDetails, error: userError }, { data: citiesData, error: citiesError }, { data: ticketsData, error: ticketsError }] = await Promise.all([
+      const [{ data: userDetails, error: userError }, { data: citiesData, error: citiesError }, { data: ticketsData, error: ticketsError }, { data: eventsData, error: eventsError }] = await Promise.all([
         supabase.from('profiles').select('*').eq('id', user.id).single(),
         supabase.from('profiles').select('cities').eq('id', user.id).single(),
-        supabase.from('tickets').select('*')
+        supabase.from('tickets').select('*'),
+        supabase.from('events').select('*')
       ]);
 
       if (userError) throw new Error(userError.message);
@@ -136,6 +138,9 @@ const AccountScreen = ({ navigation, route }: any) => {
 
       if (ticketsError) throw new Error(ticketsError.message);
       setTickets(ticketsData);
+    
+      if (eventsError) throw new Error(eventsError.message);
+      setEvents(eventsData);
 
     } catch (err) {
       console.error('Failed to fetch user data:', err.message);
@@ -259,11 +264,13 @@ const AccountScreen = ({ navigation, route }: any) => {
           <CitiesGrid cities={profile?.cities || cities} />
         </View>
 
+        
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Featured Events:</Text>
-          <EventsGrid tickets={tickets} />
+          <Text style={styles.sectionTitle}>Featured (Actual) Events:</Text>
+          <EventsGrid items={events} />
         </View>
-
+        
+      
         {showAdverts && (
           <AdBanner color={'#008000'} image='https://placehold.co/500x100' subtitle="Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light? Gotta light?" />
         )}
