@@ -33,6 +33,7 @@ import FriendProfileScreen from '../screens/Friends/FriendProfileScreen';
 import ChatScreen from '../screens/Chat/ChatScreen';
 import MyQRCodeScreen from '../screens/MyScreens/MyQRCodeScreen';
 import CameraScreen from '../screens/General/CameraScreen'
+import MyContacts from '../screens/MyScreens/MyContacts';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -56,6 +57,7 @@ export type RootStackParamList = {
   Chat: undefined;
   Camera: undefined;
   MyQR: undefined;
+  MyContacts: undefined
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -185,6 +187,25 @@ const AppNavigator = () => {
                   headerBackTitleVisible: true, // Ensures the back button text is visible/>
                   headerShown: 'false'
                 })} />
+                <Stack.Screen name="MyContacts" component={MyContacts} options={({ navigation }) => ({
+                  gestureEnabled: false,
+                  gestureDirection: 'vertical',
+                  cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
+                  headerTintColor: '#000',
+                  headerBackTitle: 'Back', // Change the back button text
+                  headerBackTitleVisible: true, // Ensures the back button text is visible
+                  headerRight: () => (
+                    <View style={{ display: 'flex', flexDirection: 'row' }}>
+                      <Pressable
+                        onPress={() => navigation.navigate('Camera')} // Navigate to the Profile screen
+                        style={{ marginRight: 15 }}
+                      >
+                        <Ionicons name="camera-outline" size={24} color="black" />
+                      </Pressable>
+                    </View>
+                  ),
+                })}
+                />
                 <Stack.Screen name="Payment" component={PaymentScreen} />
                 <Stack.Screen name="General" component={TabEileScreen} 
                   options={({ navigation }) => ({

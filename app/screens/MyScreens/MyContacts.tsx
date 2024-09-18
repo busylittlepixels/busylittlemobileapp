@@ -113,7 +113,19 @@ const MyContacts = ({ navigation }: any) => {
   };
   
 
-//   console.log('userContacts', userContacts)
+  //   console.log('userContacts', userContacts)
+  useEffect(() => {
+    navigation.setOptions({
+      headerBackTitleVisible: false, // Ensures the back button text is visible
+      headerRight: () => (
+        <View style={{ flexDirection: 'row', marginRight: 15 }}>
+          <Pressable onPress={() => navigation.navigate('Camera')}>
+            <Ionicons name="camera-outline" size={24} color="black" />
+          </Pressable>
+        </View>
+      ),
+    });
+  }, [navigation]);
 
 
   const onRefresh = useCallback(() => {
@@ -127,10 +139,7 @@ const MyContacts = ({ navigation }: any) => {
     }, 2000);
   }, []);
 
-  useEffect(() => {
-    fetchContacts();
-    navigation.setOptions({ headerTitle: 'My Contacts' });
-  }, [navigation]);
+   
 
   return (
     <ScrollView

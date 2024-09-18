@@ -49,7 +49,7 @@ const ScanButton = ({ title, onPress }) => {
       ]}
       onPress={onPress}
     >
-      <Text style={styles.buttonText} alt={title}><Ionicons name="qr-code-outline" size={24} color="white" /></Text>
+      <Text style={styles.buttonText} alt={title}><Ionicons name="camera-outline" size={28} color="white" /></Text>
     </Pressable>
   );
 };
@@ -65,7 +65,7 @@ const MyCodeButton = ({ title, onPress }) => {
       ]}
       onPress={onPress}
     >
-      <Text style={styles.buttonText} alt={title}><Ionicons name="camera-outline" size={28} color="white" /></Text>
+      <Text style={styles.buttonText} alt={title}><Ionicons name="qr-code-outline" size={24} color="white" /></Text>
     </Pressable>
   );
 };
