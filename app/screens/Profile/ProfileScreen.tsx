@@ -109,7 +109,26 @@ const ProfileScreen = ({ navigation, route }:any) => {
           name="MyContacts"
           component={MyContacts}
           listeners={{
-            focus: () => navigation.setOptions({ title: 'Scanned Contacts' }),
+            focus: () => navigation.setOptions({ 
+              title: 'Scanned Contacts', 
+              headerRight: () => (
+                <View style={{ flexDirection: 'row', marginRight: 15 }}>
+                  <Pressable onPress={() => navigation.navigate('Camera')}>
+                    <Ionicons name="camera-outline" size={24} color="black" />
+                  </Pressable>
+                </View>
+              )
+            }),
+            blur: () => navigation.setOptions({
+              // Reset headerRight to default (null or whatever the other tabs use)
+              headerRight: () => (
+                <View style={{ flexDirection: 'row', marginRight: 15 }}>
+                  <Pressable onPress={triggerRefresh}>
+                    <Ionicons name="refresh-outline" size={24} color="black" />
+                  </Pressable>
+                </View>
+              )
+            }),
           }}
         />
         <Tab.Screen

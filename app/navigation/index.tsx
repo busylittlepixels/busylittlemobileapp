@@ -169,12 +169,6 @@ const AppNavigator = () => {
                       >
                         <Ionicons name="people-outline" size={24} color="black" />
                       </Pressable>
-                      <Pressable
-                        onPress={() => navigation.navigate('Search')} // Navigate to the Search screen
-                        style={{ marginRight: 15 }}
-                      >
-                        <Ionicons name="search-outline" size={24} color="black" />
-                      </Pressable>
                     </View>
                   ),
                 })} />

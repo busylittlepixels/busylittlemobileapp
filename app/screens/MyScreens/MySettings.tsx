@@ -88,7 +88,7 @@ const MySettings = ({ navigation }: any) => {
 
 
   const fetchContacts = async () => {
-    console.log('Fetching contacts...');
+    // console.log('Fetching contacts...');
     
     // First, get the related user IDs from the contacts table
     const { data: contacts, error: contactsError } = await supabase
@@ -103,7 +103,7 @@ const MySettings = ({ navigation }: any) => {
   
     if (contacts && contacts.length > 0) {
       const relatedUserIds = contacts.map(contact => contact.contact_user_id);
-      console.log('Related user IDs:', relatedUserIds);
+      // console.log('Related user IDs:', relatedUserIds);
   
       // Now, fetch the profiles using the related user IDs
       const { data: profiles, error: profilesError } = await supabase
@@ -115,7 +115,7 @@ const MySettings = ({ navigation }: any) => {
         console.error('Error fetching profiles:', profilesError);
       } else {
         setUserContacts(profiles);  // Set the profiles, not 'data'
-        console.log('Fetched profiles:', profiles);
+        // console.log('Fetched profiles:', profiles);
       }
     } else {
       console.log('No contacts found.');

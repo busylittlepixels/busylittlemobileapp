@@ -1,125 +1,102 @@
-// @ts-nocheck
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useEffect, useState, useCallback } from "react";
-import { ScrollView, View, Text, StyleSheet, Switch, Button, Alert, Pressable, RefreshControl } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux'; // Import useSelector and useDispatch
-import { setPublicProfile, setAdvertPreference, setNotificationsPreference } from '../../actions/settingsActions'; // Import the action
+import { ScrollView, View, Text, StyleSheet, Pressable, RefreshControl } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
+import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from "@/supabase";
 
-const AcceptButton = ({ title, onPress }) => {
-  return (
-    <Pressable
-      style={({ pressed }) => [
-        {
-          backgroundColor: pressed ? '#90EE90' : 'green', // Dim the color when pressed
-        },
-        styles.button,
-      ]}
-      onPress={onPress}
-    >
-      <Text style={styles.buttonText}>{title}</Text>
-    </Pressable>
-  );
-};
+const AcceptButton = ({ title, onPress }:any) => (
+  <Pressable
+    style={({ pressed }) => [
+      {
+        backgroundColor: pressed ? '#90EE90' : 'green',
+      },
+      styles.qrButton,
+    ]}
+    onPress={onPress}
+  >
+    <Text style={styles.buttonText}>{title}</Text>
+  </Pressable>
+);
 
-const RejectButton = ({ title, onPress }) => {
-  return (
-    <Pressable
-      style={({ pressed }) => [
-        {
-          backgroundColor: pressed ? '#000' : 'red', // Dim the color when pressed
-        },
-        styles.button,
-      ]}
-      onPress={onPress}
-    >
-      <Text style={styles.buttonText}>{title}</Text>
-    </Pressable>
-  );
-};
+const RejectButton = ({ title, onPress }:any) => (
+  <Pressable
+    style={({ pressed }) => [
+      {
+        backgroundColor: pressed ? '#000' : 'red',
+      },
+      styles.qrButton,
+    ]}
+    onPress={onPress}
+  >
+    <Text style={styles.buttonText}>{title}</Text>
+  </Pressable>
+);
 
-const ScanButton = ({ title, onPress }) => {
-  return (
-    <Pressable
-      style={({ pressed }) => [
-        {
-          backgroundColor: pressed ? '#000' : 'gray', // Dim the color when pressed
-        },
-        styles.qrButton,
-      ]}
-      onPress={onPress}
-    >
-      <Text style={styles.buttonText} alt={title}><Ionicons name="qr-code-outline" size={24} color="white" /></Text>
-    </Pressable>
-  );
-};
+const ScanButton = ({ title, onPress }:any) => (
+  <Pressable
+    style={({ pressed }) => [
+      {
+        backgroundColor: pressed ? '#000' : 'gray',
+      },
+      styles.qrButton,
+    ]}
+    onPress={onPress}
+  >
+    <Text style={styles.buttonText}>
+      <Ionicons name="qr-code-outline" size={24} color="white" />
+    </Text>
+  </Pressable>
+);
 
-const MyCodeButton = ({ title, onPress }) => {
-  return (
-    <Pressable
-      style={({ pressed }) => [
-        {
-          backgroundColor: pressed ? '#000' : 'green', // Dim the color when pressed
-        },
-        styles.qrButton,
-      ]}
-      onPress={onPress}
-    >
-      <Text style={styles.buttonText} alt={title}><Ionicons name="camera-outline" size={28} color="white" /></Text>
-    </Pressable>
-  );
-};
-
-
-const MyContacts = ({ navigation }: any) => {
+const MyContacts = ({ navigation }:any) => {
   const [refreshing, setRefreshing] = useState(false);
-  const [userContacts, setUserContacts] = useState([])
+  const [userContacts, setUserContacts] = useState([]);
 
-  const dispatch = useDispatch();
-  const user = useSelector((state: any) => state.auth.user);
- 
+  // @ts-ignore
+  const user = useSelector((state) => state.auth.user);
 
-  const fetchContacts = async () => {   
-    // First, get the related user IDs from the contacts table
+  const fetchContacts = async () => {
     const { data: contacts, error: contactsError } = await supabase
       .from('contacts')
-      .select('contact_user_id')  // Ensure this column exists in your 'contacts' table
+      .select('contact_user_id')
       .eq('user_id', user.id);
-  
+
     if (contactsError) {
-    //   console.error('Error fetching contacts:', contactsError);
-      return; // Exit the function if there's an error
+      // Handle error if necessary
+      return;
     }
-  
+
     if (contacts && contacts.length > 0) {
       const relatedUserIds = contacts.map(contact => contact.contact_user_id);
-    //   console.log('Related user IDs:', relatedUserIds);
-  
-      // Now, fetch the profiles using the related user IDs
+
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
         .select('*')
-        .in('id', relatedUserIds); // Assuming 'id' is the primary key in the 'profiles' table
-  
+        .in('id', relatedUserIds);
+
       if (profilesError) {
-        // console.error('Error fetching profiles:', profilesError);
+        // Handle error if necessary
       } else {
-        setUserContacts(profiles);  // Set the profiles, not 'data'
-        // console.log('Fetched profiles:', profiles);
+        // @ts-ignore
+        setUserContacts(profiles);
       }
     } else {
-      console.log('No contacts found.');
+      setUserContacts([]);
     }
   };
-  
 
-  //   console.log('userContacts', userContacts)
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchContacts().then(() => setRefreshing(false));
+  }, []);
+
   useEffect(() => {
     navigation.setOptions({
-      headerBackTitleVisible: false, // Ensures the back button text is visible
+      headerBackTitleVisible: true, // Ensures the back button text is visible
       headerRight: () => (
         <View style={{ flexDirection: 'row', marginRight: 15 }}>
-          <Pressable onPress={() => navigation.navigate('Camera')}>
+          <Pressable onPress={() =>  navigation.navigate('Camera')}>
             <Ionicons name="camera-outline" size={24} color="black" />
           </Pressable>
         </View>
@@ -127,19 +104,11 @@ const MyContacts = ({ navigation }: any) => {
     });
   }, [navigation]);
 
-
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    // Sync data from AsyncStorage
-    fetchContacts().then(() => setRefreshing(false));
-
-    setTimeout(() => {
-      setRefreshing(false);
-      // console.log('should refresh user details');
-    }, 2000);
-  }, []);
-
-   
+  useFocusEffect(
+    useCallback(() => {
+      fetchContacts();
+    }, [navigation])
+  );
 
   return (
     <ScrollView
@@ -156,11 +125,15 @@ const MyContacts = ({ navigation }: any) => {
           <View style={styles.inputWrapper}>
             {userContacts.length > 0 ? (
               userContacts.map((c) => (
+                // @ts-ignore
                 <View key={c.id} style={{ marginBottom: 10 }}>
+                  {/* @ts-ignore */}
                   <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{c.full_name}</Text>
                   <Text>company: BusyLittlePixels</Text>
                   <Text>job title: CTO</Text>
+                  {/* @ts-ignore */}
                   <Text>email: {c.email}</Text>
+                  {/* @ts-ignore */}
                   <Text>website: {c.website}</Text>
                 </View>
               ))
@@ -176,7 +149,6 @@ const MyContacts = ({ navigation }: any) => {
     </ScrollView>
   );
 };
-
 
 const styles = StyleSheet.create({
   innerContainer: {
@@ -203,10 +175,11 @@ const styles = StyleSheet.create({
   },
   qrButton: {
     paddingVertical: 20,
+    paddingHorizontal: 20,
     borderRadius: 5,
     alignItems: 'center',
     marginTop: 0,
-    width: '100%',
+    width: '50%',
   },
   buttonText: {
     color: 'white',

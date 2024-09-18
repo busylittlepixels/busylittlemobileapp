@@ -58,7 +58,7 @@ const CityScreen = ({ navigation, route }: any) => {
   const [city, setCity] = useState<City | null>(null);
 
 
-  console.log('city route params', route.params?.item)
+  // console.log('city route params', route.params?.item)
 
   const OutlineButton = ({ title, onPress }: any) => {
     return (
