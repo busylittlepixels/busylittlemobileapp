@@ -114,7 +114,7 @@ const MySavedEventList = ({ navigation }) => {
                                 }}
                             />
                             <View style={styles.textContainer}>
-                                <Text style={styles.userName}>{item.events.event_name} - {item.events.id}</Text>
+                                <Text style={styles.userName}>{item.events.event_name}</Text>
                                 <Text>{item.events.description}</Text>
                             </View>
                         </View>
