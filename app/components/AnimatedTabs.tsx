@@ -61,7 +61,7 @@ const AnimatedTabs = forwardRef(({ state, descriptors, navigation, unreadMessage
           iconName = isFocused ? 'settings' : 'settings-outline';
         } else if (route.name === 'Messages') {
           iconName = isFocused ? 'chatbox' : 'chatbox-outline';
-        } else if (route.name === 'Contacts') {
+        } else if (route.name === 'MyContacts') {
           iconName = isFocused ? 'people' : 'people-outline';
         }
 

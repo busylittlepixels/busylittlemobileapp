@@ -133,7 +133,6 @@ const MyContacts = ({ navigation }: any) => {
   }, [navigation]);
 
   return (
-    // <View style={styles.innerContainer}>
     <ScrollView
       style={{ flex: 1 }}
       contentContainerStyle={styles.innerContainer}
@@ -142,28 +141,33 @@ const MyContacts = ({ navigation }: any) => {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
     >
-           
-        <View>
+      <View>
         <Text style={[styles.title, { paddingVertical: 5 }]}>Scanned Contacts:</Text>
-          <View>
-            <View style={styles.inputWrapper}>
-              {userContacts ? userContacts.map((c) => (
+        <View>
+          <View style={styles.inputWrapper}>
+            {userContacts.length > 0 ? (
+              userContacts.map((c) => (
                 <View key={c.id} style={{ marginBottom: 10 }}>
-                    <Text style={{ fontWeight: 'bold', fontSize: 18}}>{c.full_name}</Text>
-                    <Text>company: BusyLittlePixels</Text>
-                    <Text>job title: CTO</Text>
-                    <Text>email: {c.email}</Text>
-                    <Text>website: {c.website}</Text>
+                  <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{c.full_name}</Text>
+                  <Text>company: BusyLittlePixels</Text>
+                  <Text>job title: CTO</Text>
+                  <Text>email: {c.email}</Text>
+                  <Text>website: {c.website}</Text>
                 </View>
-               )) : <Text>Loading scanned contacts</Text>}
-            </View>
+              ))
+            ) : (
+              <View style={styles.noContactsContainer}>
+                <Text style={styles.noContactsText}>No contacts found.</Text>
+                <ScanButton title="Scan your first code" onPress={() => navigation.navigate('Camera')} />
+              </View>
+            )}
           </View>
         </View>
-   
+      </View>
     </ScrollView>
-    // </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   innerContainer: {
@@ -178,39 +182,26 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     marginVertical: 10,
   },
-  inputWrapperQR: {
-    display: 'flex',
-    flexDirection: 'row',
+  noContactsContainer: {
+    justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 10,
-    width: '100%'
-    // justifyContent: 'center',  
+    padding: 20,
   },
-  inlineLabel: {
-    fontWeight: 'bold',
-    marginRight: 10,
-  },
-  requestContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 10,
-  },
-  button: {
-    padding: 10,
-    borderRadius: 5,
+  noContactsText: {
+    fontSize: 16,
+    color: 'gray',
+    marginBottom: 10,
   },
   qrButton: {
     paddingVertical: 20,
-    paddingHorizontal: 20,
     borderRadius: 5,
     alignItems: 'center',
     marginTop: 0,
-    width: '50%'
+    width: '100%',
   },
   buttonText: {
     color: 'white',
-  }
+  },
 });
 
 export default MyContacts;

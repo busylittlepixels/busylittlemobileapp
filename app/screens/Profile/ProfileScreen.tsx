@@ -67,6 +67,10 @@ const ProfileScreen = ({ navigation, route }:any) => {
         // Assuming 'Messages' is the second tab (index 1)
         tabsRef.current?.setTabIndex(1);
       }
+      if (route.params?.screen === 'MyContacts') {
+        // Assuming 'Messages' is the second tab (index 1)
+        tabsRef.current?.setTabIndex(2);
+      }
     }, [route.params?.screen])
   );
 
@@ -102,7 +106,7 @@ const ProfileScreen = ({ navigation, route }:any) => {
         />
 
         <Tab.Screen
-          name="Contacts"
+          name="MyContacts"
           component={MyContacts}
           listeners={{
             focus: () => navigation.setOptions({ title: 'Scanned Contacts' }),
