@@ -1,7 +1,7 @@
 // @ts-nocheck
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useEffect } from 'react';
-import { StyleSheet, Image, Platform, Pressable, Text, View, Button } from 'react-native';
+import { StyleSheet, Image, Platform, Pressable, Text, View, Button, Alert } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import ParallaxScrollView from '@/app/components/ParallaxScrollView';
 import InScreenScroller from '@/app/components/InScreenScroller';
@@ -9,7 +9,9 @@ import { ThemedText } from '@/app/components/ThemedText';
 import { ThemedView } from '@/app/components/ThemedView';
 import EventSignupForm from '../../components/EventSignupForm';
 import Animated, { withSpring, useSharedValue, SharedTransition } from 'react-native-reanimated';
+import Toast from 'react-native-toast-message';
 import React from 'react';
+import { supabase } from '@/supabase';
 
 const customTransition = SharedTransition.custom((values) => {
   'worklet';
@@ -25,27 +27,77 @@ export default function EventScreen({ navigation, route }: any) {
   const dispatch = useDispatch();
 
   const user = useSelector((state) => state.auth.user);
-// Extract event_image from route params
-const evntImg = route.params?.item?.event_image;
+  // Extract event_image from route params
+  const evntImg = route.params?.item?.event_image;
 
-// This function will return the correct image source based on whether it's a URL or a local asset
-const getEvntImage = (imagePath: string) => {
-  if (imagePath && imagePath.startsWith('http')) {
-    // It's a URL, return the uri object
-    return { uri: imagePath };
-  } else {
-    // It's a local resource, use require
-    return require('../../assets/images/tile.png'); // Fallback image if necessary
+
+  const addToMyEvents = async (event) => {
+
+    // Check if the event is already saved
+    const { data: existingEvent, error: queryError } = await supabase
+    .from('profile_events')
+    .select('*')
+    .eq('profile_id', user.id)
+    .eq('event_id', event.id);
+
+    if (queryError) {
+    console.error('Error checking for existing event:', queryError);
+    } else if (existingEvent.length > 0) {
+    console.log('Event already saved.');
+    } else {
+    // Insert the event if it doesn't exist
+    const { data: insertedData, error: insertError } = await supabase
+      .from('profile_events')
+      .insert({ profile_id: user.id, event_id: event.id });
+
+    if (insertError) {
+      console.error('Error saving event:', insertError);
+      Toast.show({
+        type: 'error',
+        text1: 'Bollocks',
+        text2: 'Something broke.',
+      });
+    } else {
+      console.log('Event saved successfully:', insertedData);
+      Toast.show({
+        type: 'success',
+        text1: 'Fuck Yeah',
+        text2: 'Added to My Events.',
+      });
+    }
+    }
+
+
   }
-};
 
-const eImg = getEvntImage(evntImg);
 
-console.log('fucking imagee', eImg.uri)
+  // This function will return the correct image source based on whether it's a URL or a local asset
+  const getEvntImage = (imagePath: string) => {
+    if (imagePath && imagePath.startsWith('http')) {
+      // It's a URL, return the uri object
+      return { uri: imagePath };
+    } else {
+      // It's a local resource, use require
+      return require('../../assets/images/tile.png'); // Fallback image if necessary
+    }
+  };
+
+  const eImg = getEvntImage(evntImg);
 
   useEffect(() => {
-    navigation.setOptions({ title: route.params.item.event_name });
+    navigation.setOptions({
+      title: route.params.item.event_name,
+      headerBackTitleVisible: false, // Ensures the back button text is visible
+      headerRight: () => (
+        <View style={{ flexDirection: 'row', marginRight: 15 }}>
+          <Pressable onPress={() => addToMyEvents(route.params.item)}>
+            <Ionicons name="calendar-outline" size={24} color="black" />
+          </Pressable>
+        </View>
+      ),
+    });
   }, [navigation]);
+
 
   return (
     <View style={styles.container}>
@@ -80,10 +132,11 @@ console.log('fucking imagee', eImg.uri)
           Video
         </ThemedText>
 
-        <EventSignupForm user={user} hostcity={route.params ? route.params.item?.city : 'dublin'} />
+        {/* <EventSignupForm user={user} hostcity={route.params ? route.params.item?.city : 'dublin'} /> */}
 
-        <View>
-          <Button title="Back to List" onPress={() => navigation.navigate('Account')} />
+        <View style={{ display: 'flex', flexDirection: 'row', gap: 4, width: '100%'}}>
+          <Button title="Nah, I'll Pass" onPress={() => navigation.navigate('Account')} />
+          <Button title="Register" onPress={() => navigation.navigate('Payment')} />
         </View>
       </ParallaxScrollView>
     </View>

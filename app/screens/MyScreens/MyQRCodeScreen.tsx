@@ -1,9 +1,28 @@
 // @ts-nocheck
+import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Button, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Button, ActivityIndicator, Pressable } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import { supabase } from '../../../supabase';
 import { useSelector } from 'react-redux';
+
+const BackButton = ({ title, onPress }:any) => (
+  <Pressable
+    style={({ pressed }) => [
+      {
+        backgroundColor: pressed ? '#000' : 'gray',
+      },
+      styles.qrButton,
+    ]}
+    onPress={onPress}
+  >
+    <Text style={styles.buttonText}>
+      Back
+    </Text>
+  </Pressable>
+);
+
+
 
 export default function MyQRCodeScreen({ navigation }) {
   const [profile, setProfile] = useState(null);
@@ -81,7 +100,7 @@ export default function MyQRCodeScreen({ navigation }) {
         />
       </View>
 
-      <Button title="Back to Camera" onPress={() => navigation.goBack()} />
+      <BackButton title="Back" onPress={() => navigation.goBack()} />
     </View>
   );
 }
@@ -106,4 +125,15 @@ const styles = StyleSheet.create({
   qrContainer: {
     marginBottom: 20,
   },
+  qrButton: {
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 0,
+    width: '70%'
+  },
+  buttonText:{
+    color: 'white'
+  }
 });

@@ -8,7 +8,7 @@ import { logout } from '../actions/authActions';
 import AccountScreen from '../screens/Account/AccountScreen';
 import FavoritesScreen from '../screens/Favourites/FavoritesScreen';
 import CitiesScreen from '../screens/Cities/CitiesScreen';
-import MySchedule from '../screens/MyScreens/MySchedule';
+import MySavedEvents from '../screens/MyScreens/MySavedEvents';
 import UsersScreen from '../screens/General/UsersScreen';
 import MyPersonalSchedule from '../screens/MyScreens/MyPersonalSchedule';
 // import MessagesScreen from '../screens/Chat/MessagesScreen';
@@ -162,8 +162,8 @@ const MainDrawerNavigator = ({ navigation, route }:any) => {
         options={{ drawerLabel: 'Schedule', headerShown: true }} // Header stays the same
       />
       <Drawer.Screen 
-        name="My Schedule" 
-        component={MySchedule} 
+        name="Saved Events" 
+        component={MySavedEvents} 
         options={{ drawerLabel: 'Events', headerShown: true }} // Header stays the same
       />
     </Drawer.Navigator>

@@ -19,7 +19,7 @@ const AcceptButton = ({ title, onPress }:any) => (
   </Pressable>
 );
 
-const RejectButton = ({ title, onPress }:any) => (
+const BackButton = ({ title, onPress }:any) => (
   <Pressable
     style={({ pressed }) => [
       {
@@ -44,7 +44,7 @@ const ScanButton = ({ title, onPress }:any) => (
     onPress={onPress}
   >
     <Text style={styles.buttonText}>
-      <Ionicons name="qr-code-outline" size={24} color="white" />
+      <Ionicons name="camera-outline" size={24} color="white" />
     </Text>
   </Pressable>
 );
@@ -96,7 +96,7 @@ const MyContacts = ({ navigation }:any) => {
       headerBackTitleVisible: true, // Ensures the back button text is visible
       headerRight: () => (
         <View style={{ flexDirection: 'row', marginRight: 15 }}>
-          <Pressable onPress={() =>  navigation.navigate('Camera')}>
+          <Pressable onPress={() => navigation.navigate('Camera')}>
             <Ionicons name="camera-outline" size={24} color="black" />
           </Pressable>
         </View>
@@ -175,11 +175,11 @@ const styles = StyleSheet.create({
   },
   qrButton: {
     paddingVertical: 20,
-    paddingHorizontal: 20,
+    // paddingHorizontal: 20,
     borderRadius: 5,
     alignItems: 'center',
     marginTop: 0,
-    width: '50%',
+    width: '100%',
   },
   buttonText: {
     color: 'white',

@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MyEventsFeed from './MyEventsFeed';
-import MySchedule from './MySchedule';
+import MySchedule from './MySavedEvents';
 import { useNavigation } from '@react-navigation/native';
 
 // Tab Navigator
