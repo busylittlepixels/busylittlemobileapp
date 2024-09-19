@@ -25,7 +25,7 @@ const ExitButton = ({ title, onPress }) => {
       ]}
       onPress={onPress}
     >
-      <Text style={styles.buttonText}><Ionicons name="arrow-back-outline" size={24} color="white" /></Text>
+      <Text style={styles.buttonText}><Ionicons name="arrow-undo-outline" size={24} color="white" /></Text>
     </Pressable>
   );
 };
@@ -41,7 +41,7 @@ const RegisterButton = ({ title, onPress }) => {
       ]}
       onPress={onPress}
     >
-      <Text style={styles.buttonText}><Ionicons name="cart-outline" size={24} color="white" /></Text>
+      <Text style={styles.buttonText}><Ionicons name="arrow-redo-outline" size={24} color="white" /></Text>
     </Pressable>
   );
 };
