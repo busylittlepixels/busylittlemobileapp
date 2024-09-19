@@ -1,6 +1,6 @@
 // @ts-nocheck
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Image, Platform, Pressable, Text, View, Button, Alert } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import ParallaxScrollView from '@/app/components/ParallaxScrollView';
@@ -12,6 +12,39 @@ import Animated, { withSpring, useSharedValue, SharedTransition } from 'react-na
 import Toast from 'react-native-toast-message';
 import React from 'react';
 import { supabase } from '@/supabase';
+
+
+const ExitButton = ({ title, onPress }) => {
+  return (
+    <Pressable
+      style={({ pressed }) => [
+        {
+          backgroundColor: pressed ? '#90EE90' : 'red', // Dim the color when pressed
+        },
+        styles.button,
+      ]}
+      onPress={onPress}
+    >
+      <Text style={styles.buttonText}><Ionicons name="arrow-back-outline" size={24} color="white" /></Text>
+    </Pressable>
+  );
+};
+
+const RegisterButton = ({ title, onPress }) => {
+  return (
+    <Pressable
+      style={({ pressed }) => [
+        {
+          backgroundColor: pressed ? '#90EE90' : 'green', // Dim the color when pressed
+        },
+        styles.button,
+      ]}
+      onPress={onPress}
+    >
+      <Text style={styles.buttonText}><Ionicons name="cart-outline" size={24} color="white" /></Text>
+    </Pressable>
+  );
+};
 
 const customTransition = SharedTransition.custom((values) => {
   'worklet';
@@ -29,10 +62,11 @@ export default function EventScreen({ navigation, route }: any) {
   const user = useSelector((state) => state.auth.user);
   // Extract event_image from route params
   const evntImg = route.params?.item?.event_image;
+  const [isSaved, setIsSaved] = useState(route.params?.isSaved); 
 
 
   const addToMyEvents = async (event) => {
-
+    
     // Check if the event is already saved
     const { data: existingEvent, error: queryError } = await supabase
     .from('profile_events')
@@ -43,7 +77,7 @@ export default function EventScreen({ navigation, route }: any) {
     if (queryError) {
     console.error('Error checking for existing event:', queryError);
     } else if (existingEvent.length > 0) {
-    console.log('Event already saved.');
+      console.log('Event already saved.');
     } else {
     // Insert the event if it doesn't exist
     const { data: insertedData, error: insertError } = await supabase
@@ -58,16 +92,15 @@ export default function EventScreen({ navigation, route }: any) {
         text2: 'Something broke.',
       });
     } else {
+      setIsSaved(true);
       console.log('Event saved successfully:', insertedData);
       Toast.show({
         type: 'success',
-        text1: 'Fuck Yeah',
+        text1: 'Bada Bing!',
         text2: 'Added to My Events.',
       });
     }
-    }
-
-
+  }
   }
 
 
@@ -85,13 +118,14 @@ export default function EventScreen({ navigation, route }: any) {
   const eImg = getEvntImage(evntImg);
 
   useEffect(() => {
+    
     navigation.setOptions({
       title: route.params.item.event_name,
       headerBackTitleVisible: false, // Ensures the back button text is visible
       headerRight: () => (
         <View style={{ flexDirection: 'row', marginRight: 15 }}>
-          <Pressable onPress={() => addToMyEvents(route.params.item)}>
-            <Ionicons name="calendar-outline" size={24} color="black" />
+          <Pressable onPress={() => addToMyEvents(route.params.item, isSaved)}>
+            <Ionicons name="calendar-outline" size={24} color={isSaved ? "green" : "black"} />
           </Pressable>
         </View>
       ),
@@ -110,33 +144,38 @@ export default function EventScreen({ navigation, route }: any) {
         <ThemedView style={styles.titleContainer}>
           <ThemedText type="title">{route.params ? route.params.item.event_name : 'Title'}</ThemedText>
         </ThemedView>
+        <ThemedView style={styles.titleContainer}>
+          <ThemedText>{route.params ? route.params.item.event_location : ''} - {route.params ? new Date(route.params.item.start_date ).toLocaleDateString(): ''}</ThemedText>
+        </ThemedView>
         <ThemedText>
           {route.params ? route.params.item.description : 'Body'}
         </ThemedText>
-
+        <ThemedText>
+          Video
+        </ThemedText>
         <ThemedText>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse id enim nec libero pulvinar luctus ac at urna. Cras consequat tortor vitae porttitor aliquet. Maecenas in ornare sapien.
         </ThemedText>
+        <View style={{ paddingVertical: 10 }}>
+          <InScreenScroller />
+        </View>
+
         <ThemedText>
           Fusce ullamcorper, augue quis lacinia molestie, lorem orci vulputate augue, ac accumsan turpis tellus vitae orci. Donec ornare ullamcorper viverra. Duis in semper dui, ut tempor mauris.
           </ThemedText>
           <ThemedText>
            Maecenas pellentesque vehicula nibh vel scelerisque. Fusce sollicitudin sodales lectus, sit amet feugiat justo pharetra nec. Phasellus non lacinia urna, nec dignissim velit. Quisque consequat nisi a fringilla pulvinar.
         </ThemedText>
+
+       
         
-        <View style={{ paddingVertical: 10 }}>
-          <InScreenScroller />
-        </View>
-
-        <ThemedText>
-          Video
-        </ThemedText>
-
+        
+      
         {/* <EventSignupForm user={user} hostcity={route.params ? route.params.item?.city : 'dublin'} /> */}
 
         <View style={{ display: 'flex', flexDirection: 'row', gap: 4, width: '100%'}}>
-          <Button title="Nah, I'll Pass" onPress={() => navigation.navigate('Account')} />
-          <Button title="Register" onPress={() => navigation.navigate('Payment')} />
+          <ExitButton title="Nah, I'll Pass" style={styles.buttons} onPress={() => navigation.navigate('Account')} />
+          <RegisterButton title="Register" style={styles.buttons} onPress={() => navigation.navigate('Payment')} />
         </View>
       </ParallaxScrollView>
     </View>
@@ -160,8 +199,17 @@ const styles = StyleSheet.create({
   link: {
     color: '#ffffff',
   },
-  buttons: {
-    display: 'flex',
-    left: 0,
+  button: {
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 0,
+    width: '50%'
+  },
+  buttonText: {
+    color: '#FFFFFF', // White text
+    fontSize: 16,
+    fontWeight: 'normal',
   },
 });

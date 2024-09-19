@@ -1,5 +1,6 @@
 // MySavedEventList.tsx
 // @ts-nocheck
+import { Ionicons } from "@expo/vector-icons";
 import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, FlatList, Pressable, StyleSheet, RefreshControl, ActivityIndicator, Alert, Image } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
@@ -7,7 +8,6 @@ import { supabase } from "@/supabase";
 import { RealtimeChannel } from "@supabase/supabase-js";
 import { useSelector } from "react-redux";
 import { Swipeable } from "react-native-gesture-handler";
-
 
 const MySavedEventList = ({ navigation }) => {
     const [savedEvents, setSavedEvents] = useState([]); 
@@ -24,7 +24,10 @@ const MySavedEventList = ({ navigation }) => {
             id,
             event_name,
             description,
-            start_date
+            start_date, 
+            end_date, 
+            event_location, 
+            event_image
           )
         `)
         .eq('profile_id', user.id);
@@ -86,7 +89,8 @@ const MySavedEventList = ({ navigation }) => {
               style={styles.deleteButton}
               onPress={() => handleDelete(item)}  // Pass the full item to handleDelete
           >
-              <Text style={styles.deleteButtonText}>Delete</Text>
+            
+              <Text style={styles.deleteButtonText}><Ionicons name="trash-outline" size={18} color="white" /></Text>
           </Pressable>
       );
   };
@@ -95,7 +99,7 @@ const MySavedEventList = ({ navigation }) => {
   const renderSavedEventItem = ({ item }) => {
 
             
-               return (
+        return (
             <Swipeable
                 renderRightActions={(progress, dragX, id) =>
                     renderRightActions(progress, dragX, item)
@@ -103,19 +107,29 @@ const MySavedEventList = ({ navigation }) => {
             >
                 <Pressable
                     onPress={() =>
-                        navigation.navigate('Event', { item: item.events })
+                        navigation.navigate('Event', { item: item.events, isSaved: true })
                     }
                 >
+                    
                     <View style={styles.conversationItem}>
+                        <Image
+                            style={styles.tinyLogo}
+                            source={{
+                                uri: item.events.event_image ? item.events.event_image : 'https://via.placeholder.com/50/800080/FFFFFF',
+                            }}
+                         />
                         <View style={styles.outerTextContainer}>
                             <Image
                                 source={{
-                                    uri: "https://via.placeholder.com/50",
+                                    uri: item.events.event_image,
                                 }}
                             />
                             <View style={styles.textContainer}>
+                                {/* <Image src={item.events.event_image} /> */}
                                 <Text style={styles.userName}>{item.events.event_name}</Text>
                                 <Text>{item.events.description}</Text>
+                                <Text>{item.events.event_location} - {new Date(item.events.start_date).toLocaleDateString()}</Text>
+                                
                             </View>
                         </View>
                     </View>
@@ -206,6 +220,12 @@ const styles = StyleSheet.create({
     deleteButtonText: {
         color: "#fff",
         fontWeight: "bold",
+    },
+    tinyLogo: {
+        width: 50,
+        height: 50,
+        marginRight: 10,
+        borderRadius: 5,
     },
 });
 
