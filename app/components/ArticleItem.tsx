@@ -34,9 +34,10 @@ const ArticleItem = ({ item, isFavorite, onToggleFavorite, featuredMedia }:any) 
         style={styles.favoriteButton}
       >
         <Ionicons
-          name={isFavorite ? 'heart' : 'heart-outline'}
-          size={24}
-          color={isFavorite ? 'red' : 'gray'}
+          // @ts-ignore
+          name={isFavorite ? 'heart' : null}
+          size={18}
+          color={isFavorite && 'red'}
         />
       </Pressable>
     </View>

@@ -69,10 +69,10 @@ export default function EventScreen({ navigation, route }: any) {
     
     // Check if the event is already saved
     const { data: existingEvent, error: queryError } = await supabase
-    .from('profile_events')
-    .select('*')
-    .eq('profile_id', user.id)
-    .eq('event_id', event.id);
+      .from('profile_events')
+      .select('*')
+      .eq('profile_id', user.id)
+      .eq('event_id', event.id);
 
     if (queryError) {
     console.error('Error checking for existing event:', queryError);

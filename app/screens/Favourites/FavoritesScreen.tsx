@@ -63,7 +63,7 @@ const FavoritesScreen = ({ navigation, route }: any) => {
                         return(<ArticleItem
                             key={item.id}
                             item={item}
-                            isFavorite={true}
+                            isFavorite={false}
                             featuredMedia={item.featured_media} // Pass the stored featured image
                             />
                         )
