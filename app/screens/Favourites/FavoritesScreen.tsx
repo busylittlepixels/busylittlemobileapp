@@ -6,6 +6,22 @@ import { useFocusEffect } from '@react-navigation/native';
 import { fetchFavorites, clearFavorites } from '../../actions/favoriteActions';
 import ArticleItem from '@/app/components/ArticleItem';
 
+const SaveButton = ({ title, onPress }) => {
+    return (
+      <Pressable
+        style={({ pressed }) => [
+          {
+            backgroundColor: pressed ? 'darkgreen' : 'green', // Dim the color when pressed
+          },
+          styles.button,
+        ]}
+        onPress={onPress}
+      >
+        <Text style={styles.resetButtonText}>{title}</Text>
+      </Pressable>
+    );
+};
+
 const ResetButton = ({ title, onPress }) => {
     return (
       <Pressable
@@ -22,6 +38,21 @@ const ResetButton = ({ title, onPress }) => {
     );
 };
 
+const SelectFavoritesButton = ({ title, onPress }) => {
+    return (
+      <Pressable
+        style={({ pressed }) => [
+          {
+            backgroundColor: pressed ? 'lightgray' : 'white', // Dim the color when pressed
+          },
+          styles.selectFavesButton,
+        ]}
+        onPress={onPress}
+      >
+        <Text style={styles.selectFavesButtonText}>{title}</Text>
+      </Pressable>
+    );
+};
 
 
 const FavoritesScreen = ({ navigation, route }: any) => {
@@ -34,6 +65,11 @@ const FavoritesScreen = ({ navigation, route }: any) => {
         const userId = user.id;
         dispatch(clearFavorites(userId));
     };
+
+    const handleStoreFavorites = () => {
+        console.log('save faves to profile');
+    };
+
 
     useFocusEffect(
         useCallback(() => {
@@ -73,13 +109,14 @@ const FavoritesScreen = ({ navigation, route }: any) => {
                 )}
                 
             </ScrollView>
-            {Object.keys(favorites).length > 0 ? (
+            
             <View style={{ display: 'flex', flexDirection: 'row', gap: 4, width:'100%', position:'relative', paddingVertical: 10 }}>
-                {/* <UpdateButton title="Update" onPress={handleUpdate} /> */}
-                <ResetButton title="Archive" onPress={handleResetFavorites} style={{ marginBottom: 10, paddingBottom: 50 }} />
-                <ResetButton title="Clear" onPress={handleResetFavorites} style={{ marginBottom: 10, paddingBottom: 50 }} />
+            {Object.keys(favorites).length > 0 ? (
+                <><SaveButton title="Archive" onPress={handleStoreFavorites} style={{ marginBottom: 10, paddingBottom: 50 }} />
+                <ResetButton title="Clear" onPress={handleResetFavorites} style={{ marginBottom: 10, paddingBottom: 50 }} /></>
+            ) : <SelectFavoritesButton title="View Articles" onPress={handleStoreFavorites} style={{ marginBottom: 10, paddingBottom: 50 }} onPress={() => navigation.replace('Account')} style={{ marginBottom: 10, paddingBottom: 50 }} />}
             </View>
-            ) : null}
+            
         </View>
     );
 };
@@ -138,6 +175,19 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 0,
         width: '50%'
+    },
+    selectFavesButton: {
+        paddingVertical: 20,
+        paddingHorizontal: 20,
+        borderRadius: 5,
+        alignItems: 'center',
+        marginTop: 0,
+        width: '100%'
+    },
+    selectFavesButtonText: {
+        color: 'gray',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
 });
 
