@@ -19,11 +19,20 @@ const SendButton = ({ title, onPress }) => {
       ]}
       onPress={onPress}
     >
-      <Text style={styles.buttonText}><Ionicons name={'chevron-forward-circle-outline'} size={24} color={'white'} /></Text>
+       <Text style={styles.buttonText}><Ionicons name={'chevron-forward-circle-outline'} size={24} color={'white'} /></Text>
     </Pressable>
   );
 };
 
+const AtttachmentButton = ({ icon, onPress }) => {
+  return (
+    <Pressable
+      onPress={onPress}
+    >
+      <Ionicons name={`${icon}-outline`} size={24} color="black" />
+    </Pressable>
+  );
+};
 
 const ChatScreen = ({ navigation, route }) => {
   const { senderId, receiverId } = route.params;
@@ -46,6 +55,11 @@ const ChatScreen = ({ navigation, route }) => {
     ),
   });
   }, [navigation]);
+
+  const handleAttachment = (icon) =>{
+    console.log('icon: ' + icon + ' clicked');
+  } 
+
 
   const fetchMessages = async () => {
     const { data, error } = await supabase
@@ -179,6 +193,10 @@ const ChatScreen = ({ navigation, route }) => {
       />
 
         <View style={styles.inputContainer}>
+          <View style={{ flexDirection: 'row', paddingHorizontal: 8, gap: 4 }}>
+            <AtttachmentButton onPress={() => handleAttachment('camera')} icon={'camera'}/>
+            <AtttachmentButton onPress={() =>handleAttachment('attachment')} icon={'attach'}/>
+          </View>
           <TextInput
             style={styles.input}
             placeholder="Type a message..."
