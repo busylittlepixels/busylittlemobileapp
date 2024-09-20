@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Pressable, StyleSheet, Animated } from 'react-native';
+import { Asset } from 'expo-asset';
+import { View, Text, Pressable, StyleSheet, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,7 +12,7 @@ import CitiesScreen from '../screens/Cities/CitiesScreen';
 import MySavedEvents from '../screens/MyScreens/MySavedEvents';
 import UsersScreen from '../screens/General/UsersScreen';
 import MyPersonalSchedule from '../screens/MyScreens/MyPersonalSchedule';
-// import MessagesScreen from '../screens/Chat/MessagesScreen';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import AnimatedMenuIcon from '../components/AnimatedMenuIcon'
 
 const Drawer = createDrawerNavigator();
@@ -20,8 +21,14 @@ function MessagesPlaceholder() {
   return null;
 }
 
+
+
 // Custom Drawer Content
 const CustomDrawerContent = (props:any) => {
+
+  
+  const profile_img = Asset.fromModule(require('./../assets/images/blp-splash.png')).uri;
+  console.log(profile_img);
   const dispatch = useDispatch();
 
   const handleLogout = () => {
@@ -29,26 +36,22 @@ const CustomDrawerContent = (props:any) => {
     dispatch(logout());
   };
 
-  const doNothing = () => {
-    return
-  }
-
   return (
-    <DrawerContentScrollView {...props} style={styles.drawerContainer}>
-      <DrawerItem
-        label="BUSYLITTLEPIXELS"
-        labelStyle={styles.drawerLabelLogo}
-        onPress={doNothing}
-        style={styles.logoutItem}
+    <SafeAreaView style={{flex: 1}}>
+       <Image
+        source={{ uri: profile_img }}
+        style={styles.sideMenuProfileIcon}
       />
-      <DrawerItemList {...props} />
-      <DrawerItem
-        label="Logout"
-        labelStyle={styles.drawerLabel}
-        onPress={handleLogout}
-        style={styles.logoutItem}
-      />
-    </DrawerContentScrollView>
+      <DrawerContentScrollView {...props} style={styles.drawerContainer}>
+        <DrawerItemList {...props} />
+        <DrawerItem
+          label="Logout"
+          labelStyle={styles.drawerLabel}
+          onPress={handleLogout}
+          style={styles.logoutItem}
+        />
+      </DrawerContentScrollView>
+    </SafeAreaView>
   );
 };
 
@@ -174,6 +177,7 @@ const styles = StyleSheet.create({
   drawerContainer: {
     backgroundColor: '#000', // Black background for the drawer
     flex: 1,
+    // justifyContent: 'space-between' 
   },
   drawerLabel: {
     color: '#fff', // White text for drawer items
@@ -184,7 +188,27 @@ const styles = StyleSheet.create({
     fontSize: 18, // Larger font size
   },
   logoutItem: {
-    marginTop: 20, // Adds space before the logout item
+    borderTopWidth: 1,
+    borderColor: 'white',
+    marginTop: 100, // Adds space before the logout item
+    width: '80%',
+    paddingTop: 10,
+    borderRadius: 0
+  },
+  sideMenuProfileIcon: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,  // Make it circular
+    alignSelf: 'flex-start',
+    borderColor: 'white',   // Set border color to white
+    borderWidth: 2,          // Set the width of the border (you can adjust the value)
+    marginVertical: 50,
+    marginLeft: 15
+  },
+  iconStyle: {
+    width: 15,
+    height: 15,
+    marginHorizontal: 5,
   },
 });
 
