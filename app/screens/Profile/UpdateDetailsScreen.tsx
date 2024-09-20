@@ -391,7 +391,7 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
           </View>
         )} */}
 
-        {avatarUrl && 
+        
           <View style={styles.profileHeader}>
             <ImageUploader 
               avatarUrl={avatarUrl} 
@@ -416,7 +416,7 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
           
           
           </View>
-        }
+        
 
         <View style={styles.formContainer}>
           <View style={styles.inputWrapper}>
