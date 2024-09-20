@@ -49,6 +49,9 @@ const CustomDrawerContent = (props:any) => {
           labelStyle={styles.drawerLabel}
           onPress={handleLogout}
           style={styles.logoutItem}
+          icon={() => (
+            <Ionicons name="log-out-outline" size={24} color="white" />
+          )}
         />
       </DrawerContentScrollView>
     </SafeAreaView>
@@ -124,7 +127,11 @@ const MainDrawerNavigator = ({ navigation, route }:any) => {
       <Drawer.Screen 
         name="Home" 
         component={AccountScreen} 
-        options={{ headerShown: true }} // Keep current header styles intact
+        options={{ headerShown: true, 
+          drawerIcon: () => (
+            <Ionicons name="home-outline" size={24} color="white" />
+          )
+        }} // Keep current header styles intact
       />
       <Drawer.Screen 
         name="Messages" 
@@ -132,6 +139,9 @@ const MainDrawerNavigator = ({ navigation, route }:any) => {
         options={{ 
           headerShown: true,
           drawerLabel: !loading && unreadMessagesCount > 0 ? `Messages (${unreadMessagesCount})` : 'Messages',
+          drawerIcon: () => (
+            <Ionicons name="chatbubbles-outline" size={24} color="white" />
+          )
         }}
         listeners={{
           drawerItemPress: (e) => {
@@ -147,27 +157,47 @@ const MainDrawerNavigator = ({ navigation, route }:any) => {
       <Drawer.Screen 
         name="All Users" 
         component={UsersScreen} 
-        options={{ drawerLabel: 'All Users', headerShown: true }} // Header stays the same
+        options={{ drawerLabel: 'All Users', headerShown: true, 
+          drawerIcon: () => (
+            <Ionicons name="people-outline" size={24} color="white" />
+            )
+         }} 
       />
       <Drawer.Screen 
         name="Favorites" 
         component={FavoritesScreen} 
-        options={{ headerShown: true }} // Header stays the same
+        options={{ headerShown: true, 
+          drawerIcon: () => (
+            <Ionicons name="heart-outline" size={24} color="white" />
+            )
+         }} 
       />
       <Drawer.Screen 
         name="Cities" 
         component={CitiesScreen} 
-        options={{ headerShown: true }} // Header stays the same
+        options={{ headerShown: true,
+          drawerIcon: () => (
+            <Ionicons name="pin-outline" size={24} color="white" />
+            )
+        }} 
       />
       <Drawer.Screen 
         name="Personal Schedule" 
         component={MyPersonalSchedule} 
-        options={{ drawerLabel: 'Schedule', headerShown: true }} // Header stays the same
+        options={{ drawerLabel: 'Schedule', headerShown: true, 
+          drawerIcon: () => (
+            <Ionicons name="calendar-outline" size={24} color="white" />
+            )
+        }} 
       />
       <Drawer.Screen 
         name="Saved Events" 
         component={MySavedEvents} 
-        options={{ drawerLabel: 'Events', headerShown: true }} // Header stays the same
+        options={{ drawerLabel: 'Events', headerShown: true, 
+          drawerIcon: () => (
+            <Ionicons name="ticket-outline" size={24} color="white" />
+          )
+        }} 
       />
     </Drawer.Navigator>
   );
@@ -199,11 +229,11 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,  // Make it circular
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
     borderColor: 'white',   // Set border color to white
     borderWidth: 2,          // Set the width of the border (you can adjust the value)
     marginVertical: 50,
-    marginLeft: 15
+    // marginLeft: 15
   },
   iconStyle: {
     width: 15,

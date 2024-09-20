@@ -67,7 +67,6 @@ const SignUpScreen = ({ navigation }: Props) => {
         <Text style={styles.logoTitle}>busy</Text><Text style={styles.logoTitleHighlight}>little</Text><Text style={styles.logoTitle}>signuppage</Text>
       </View>
       {error && <Text style={styles.error}>{error}</Text>}
-      <Text>Username</Text>
       <TextInput
         placeholder="Username"
         placeholderTextColor='#fff'
@@ -77,7 +76,6 @@ const SignUpScreen = ({ navigation }: Props) => {
         autoCapitalize='none'
         clearTextOnFocus={true}
       />
-      <Text>Full Name</Text>
       <TextInput
         placeholder="Full Name"
         placeholderTextColor='#fff'
@@ -87,8 +85,6 @@ const SignUpScreen = ({ navigation }: Props) => {
         autoCapitalize='none'
         clearTextOnFocus={true}
       />
-      
-      <Text>Email</Text>
       <TextInput
         placeholder="you@example.com"
         placeholderTextColor='#fff'
@@ -99,7 +95,6 @@ const SignUpScreen = ({ navigation }: Props) => {
         autoCapitalize='none'
         clearTextOnFocus={true}
       />
-      <Text>Password</Text>
       <TextInput
         placeholder="Password"
         placeholderTextColor='#fff'

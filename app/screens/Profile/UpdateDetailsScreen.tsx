@@ -397,7 +397,7 @@ const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
               avatarUrl={avatarUrl} 
               loading={loading} 
             />
-            <Button style={{ color: '#000'}} title="Upload Profile Picture" onPress={handleImageUpload} />
+            <Button style={[styles.uploadButtonText, { color: '#000', fontSize: "20"}]} title="Upload Profile Picture" onPress={handleImageUpload} />
 
             {/* <Pressable
               style={({ pressed }) => [
@@ -542,9 +542,9 @@ const styles = StyleSheet.create({
   profileHeader:{
     paddingVertical: 20,
     paddingHorizontal: 15, 
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#e1e1e1',
     borderWidth: 1,
-    borderRadius: 3, 
+    borderRadius: 5, 
     marginBottom: 5
   },
   inputWrapper: {

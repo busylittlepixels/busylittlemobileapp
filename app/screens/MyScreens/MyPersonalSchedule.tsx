@@ -24,6 +24,9 @@ const MyPersonalSchedule = (props: Props) => {
     todayButtonTextColor: themeColor
   });
 
+
+  console.log('items format (schedule)', agendaItems);
+
   const onDateChanged = useCallback((date, updateSource) => {
     console.log('ExpandableCalendarScreen onDateChanged: ', date, updateSource);
   }, []);
