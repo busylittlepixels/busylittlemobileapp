@@ -27,6 +27,7 @@ const formatScheduleToAgendaItems = (schedule) => {
   }
 
   const agendaMap = schedule.reduce((acc, event) => {
+    console.log('agendamap', event)
     const rawStartDate = event.events.start_date;
     const parsedDate = new Date(rawStartDate);
     console.log('Raw start_date:', rawStartDate);
@@ -43,7 +44,7 @@ const formatScheduleToAgendaItems = (schedule) => {
       hour: eventStartTime,
       duration: '1h',  // You can calculate the actual duration if available
       title: event.events.event_name, 
-      
+      detail: event.events.description
     };
 
     // Add event data to the correct date group
@@ -105,6 +106,7 @@ const MyPersonalSchedule = (props: Props) => {
   }, []);
 
   const renderItem = useCallback(({ item }: any) => {
+    console.log('item in render item', item)
     return <AgendaItem item={item} />;
   }, []);
 

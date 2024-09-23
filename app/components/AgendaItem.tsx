@@ -12,16 +12,13 @@ const AgendaItem = (props: ItemProps) => {
   const {item} = props;
   const navigation = useNavigation(); 
 
-
-
   const buttonPressed = useCallback(() => {
-    // Alert.alert('Show me more');
     // @ts-ignore
-    navigation.navigate("Calendar", { item })
+    navigation.navigate("CalendarEvent", { item })
   }, []);
 
   const itemPressed = useCallback(() => {
-    Alert.alert(item.title);
+    console.log('item detail:', item)
 
   }, []);
 
@@ -44,6 +41,7 @@ const AgendaItem = (props: ItemProps) => {
         <Text style={styles.itemDurationText}>{item.duration || 'Duration unavailable'}</Text>
       </View>
       <Text style={styles.itemTitleText}>{item.title}</Text>
+      {/* <Text style={styles.itemDetailText}>{item.detail}</Text> */}
       <View style={styles.itemButtonContainer}>
         <Button color={'grey'} title={'Info'} onPress={buttonPressed}/>
       </View>
@@ -76,6 +74,18 @@ const styles = StyleSheet.create({
     marginLeft: 16,
     fontWeight: 'bold',
     fontSize: 16
+  },
+  itemText: {
+    color: 'black',
+    marginLeft: 16,
+    fontWeight: 'bold',
+    fontSize: 16
+  },
+  itemDetailText: {
+    color: 'black',
+    marginLeft: 16,
+    fontWeight: 'normal',
+    fontSize: 14,
   },
   itemButtonContainer: {
     flex: 1,

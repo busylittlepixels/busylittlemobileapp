@@ -2,7 +2,7 @@ import React, { useEffect} from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 // import { useNavigation } from '@react-navigation/native';
 
-const SettingsScreen = ({ navigation, route }:any) => {
+const CalendarEventScreen = ({ navigation, route }:any) => {
 
   const wtftitle = route.params?.item.title; 
   const detail = route.params?.item.detail
@@ -34,4 +34,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default SettingsScreen;
+export default CalendarEventScreen;

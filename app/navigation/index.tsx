@@ -34,6 +34,7 @@ import ChatScreen from '../screens/Chat/ChatScreen';
 import MyQRCodeScreen from '../screens/MyScreens/MyQRCodeScreen';
 import CameraScreen from '../screens/General/CameraScreen'
 import MyContacts from '../screens/MyScreens/MyContacts';
+import CalendarEventScreen from '../screens/Events/CalendarEventScreen';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -57,7 +58,8 @@ export type RootStackParamList = {
   Chat: undefined;
   Camera: undefined;
   MyQR: undefined;
-  MyContacts: undefined
+  MyContacts: undefined,
+  CalendarEvent: undefined; 
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -117,6 +119,24 @@ const AppNavigator = () => {
                 }} />
                 <Stack.Screen name="MyEvents" component={MyEventsScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="Calendar" component={SettingsScreen} options={({ navigation }) => ({
+                  gestureEnabled: false,
+                  gestureDirection: 'vertical',
+                  cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
+                  headerTintColor: '#000',
+                  headerBackTitle: 'Go Back', // Change the back button text
+                  headerBackTitleVisible: true, // Ensures the back button text is visible
+                  headerRight: () => (
+                    <View style={{ display: 'flex', flexDirection: 'row' }}>
+                      <Pressable
+                        onPress={() => navigation.goBack()} // Navigate to the Search screen
+                        style={{ marginRight: 15 }}
+                      >
+                        <Ionicons name="close-outline" size={24} color="black" />
+                      </Pressable>
+                    </View>
+                  ),
+                })} />
+                <Stack.Screen name="CalendarEvent" component={CalendarEventScreen} options={({ navigation }) => ({
                   gestureEnabled: false,
                   gestureDirection: 'vertical',
                   cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
