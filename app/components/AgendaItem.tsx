@@ -1,5 +1,5 @@
 import isEmpty from 'lodash/isEmpty';
-import React, {useCallback} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {StyleSheet, Alert, View, Text, TouchableOpacity, Button} from 'react-native';
 import testIDs from './testIds';
 import { useNavigation } from 'expo-router';
@@ -11,6 +11,8 @@ interface ItemProps {
 const AgendaItem = (props: ItemProps) => {
   const {item} = props;
   const navigation = useNavigation(); 
+
+
 
   const buttonPressed = useCallback(() => {
     // Alert.alert('Show me more');
@@ -31,11 +33,15 @@ const AgendaItem = (props: ItemProps) => {
     );
   }
 
+  useEffect(() => {
+    console.log('individual agenda item:', item);
+  }, [item]);  // Add `item` as a dependency
+
   return (
     <TouchableOpacity onPress={itemPressed} style={styles.item} testID={testIDs.agenda.ITEM}>
       <View>
         <Text style={styles.itemHourText}>{item.hour}</Text>
-        <Text style={styles.itemDurationText}>{item.duration}</Text>
+        <Text style={styles.itemDurationText}>{item.duration || 'Duration unavailable'}</Text>
       </View>
       <Text style={styles.itemTitleText}>{item.title}</Text>
       <View style={styles.itemButtonContainer}>
