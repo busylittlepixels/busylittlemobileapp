@@ -35,7 +35,7 @@ const AgendaItem = (props: ItemProps) => {
   }, [item]);  // Add `item` as a dependency
 
   return (
-    <TouchableOpacity onPress={itemPressed} style={styles.item} testID={testIDs.agenda.ITEM}>
+    <TouchableOpacity onPress={buttonPressed} style={styles.item} testID={testIDs.agenda.ITEM}>
       <View>
         <Text style={styles.itemHourText}>{item.hour}</Text>
         <Text style={styles.itemDurationText}>{item.duration || 'Duration unavailable'}</Text>
