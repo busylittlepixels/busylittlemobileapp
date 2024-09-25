@@ -143,10 +143,10 @@ const MySettings = ({ navigation }: any) => {
     const { data, error } = await supabase
       .from('connection_requests')
       .select(`
-                id,
-                sender:profiles!fk_sender(username, avatar_url),   
-                receiver:profiles!fk_receiver(username, avatar_url)
-            `)
+          id,
+          sender:profiles!fk_sender(username, avatar_url),   
+          receiver:profiles!fk_receiver(username, avatar_url)
+      `)
       .eq('receiver_id', user?.id)  // Fetch requests where the current user is the receiver
       .eq('status', 'pending');      // Only pending requests
 
