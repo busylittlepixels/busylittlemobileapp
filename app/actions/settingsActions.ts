@@ -1,7 +1,7 @@
 // actions/settingsActions.ts
 import { Dispatch } from 'redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { enablePublicProfile as enableProfileService } from '../services/settingsService';
+import { enablePublicProfile, enablePushNotifications } from '../services/settingsService';
 
 export const SET_PUBLIC_PROFILE = 'SET_PUBLIC_PROFILE';
 export const SET_ADVERT_PREFERENCE = 'SET_ADVERT_PREFERENCE';
@@ -23,10 +23,17 @@ export const setAdvertPreference = (showAdverts: any) => async (dispatch: Dispat
   }
 };
 
-export const setNotificationsPreference = (showNotifications: any) => async (dispatch: Dispatch) => {
+export const setNotificationsPreference = (showNotifications: any, userId: string) => async (dispatch: Dispatch) => {
+  
+  const result = await enablePushNotifications({ userId });
   try {
+  
+    if (result?.error) {
+      console.error('Error enabling public profile:', result.error);
+      return;
+    }
     // Save the preference in AsyncStorage
-    await AsyncStorage.setItem('showNotifications', JSON.stringify(showNotifications));
+    await AsyncStorage.setItem('enablePushNotifications', JSON.stringify(showNotifications));
 
     // Dispatch the action to update Redux state
     dispatch({
@@ -44,7 +51,7 @@ export const setPublicProfile = (isPublic: boolean, userId: string) => async (di
   // console.log('and the fucking user id', userId)
   try {
     // Call the service to enable/disable public profile
-    const result = await enableProfileService({ userId });
+    const result = await enablePublicProfile({ userId });
 
     if (result?.error) {
       console.error('Error enabling public profile:', result.error);

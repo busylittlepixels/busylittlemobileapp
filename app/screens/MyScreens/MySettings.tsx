@@ -81,10 +81,10 @@ const MySettings = ({ navigation }: any) => {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.auth.user);
   const showAdverts = useSelector((state: any) => state.settings.showAdverts);
-  const showNotifications = useSelector((state: any) => state.settings.showNotifications);
+  const showNotifications = useSelector((state: any) => state.settings.enablePushNotifications);
   const showPublic = useSelector((state: any) => state.settings.enablePublicProfile);
 
-  // console.log('showPublic', showPublic);
+  console.log('showNotifications', showNotifications);
 
 
   const fetchContacts = async () => {
@@ -135,7 +135,7 @@ const MySettings = ({ navigation }: any) => {
 
   const toggleNotifications = (value: boolean) => {
     // @ts-ignore
-    dispatch(setNotificationsPreference(value));
+    dispatch(setNotificationsPreference(value, user?.id));
   };
 
   // Fetch pending connection requests where the current user is the receiver
