@@ -98,7 +98,7 @@ const MySavedEventList = ({ navigation }) => {
 
   const renderSavedEventItem = ({ item }) => {
 
-        console.log('on item', item);
+        // console.log('on item', item);
 
         return (
             <Swipeable
