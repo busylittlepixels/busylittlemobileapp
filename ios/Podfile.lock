@@ -13,12 +13,16 @@ PODS:
   - EXJSONUtils (0.13.1)
   - EXManifests (0.14.3):
     - ExpoModulesCore
-  - EXNotifications (0.28.16):
+  - EXNotifications (0.28.17):
     - ExpoModulesCore
-  - Expo (51.0.32):
+  - Expo (51.0.34):
     - ExpoModulesCore
   - ExpoAsset (10.0.10):
     - ExpoModulesCore
+  - ExpoCamera (15.0.16):
+    - ExpoModulesCore
+    - ZXingObjC/OneD
+    - ZXingObjC/PDF417
   - ExpoDevice (6.0.2):
     - ExpoModulesCore
   - ExpoFileSystem (17.0.1):
@@ -58,7 +62,7 @@ PODS:
     - ExpoModulesCore
   - ExpoWebBrowser (13.0.3):
     - ExpoModulesCore
-  - EXSplashScreen (0.27.5):
+  - EXSplashScreen (0.27.6):
     - DoubleConversion
     - ExpoModulesCore
     - glog
@@ -84,7 +88,7 @@ PODS:
   - EXTaskManager (11.8.2):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (0.25.24):
+  - EXUpdates (0.25.25):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -1021,7 +1025,7 @@ PODS:
   - React-Mapbuffer (0.74.5):
     - glog
     - React-debug
-  - react-native-netinfo (11.3.2):
+  - react-native-netinfo (11.4.1):
     - React-Core
   - react-native-render-html (6.3.4):
     - React-Core
@@ -1351,6 +1355,11 @@ PODS:
     - StripeCore (= 23.26.0)
   - UMAppLoader (4.6.0)
   - Yoga (0.0.0)
+  - ZXingObjC/Core (3.6.9)
+  - ZXingObjC/OneD (3.6.9):
+    - ZXingObjC/Core
+  - ZXingObjC/PDF417 (3.6.9):
+    - ZXingObjC/Core
 
 DEPENDENCIES:
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
@@ -1364,6 +1373,7 @@ DEPENDENCIES:
   - EXNotifications (from `../node_modules/expo-notifications/ios`)
   - Expo (from `../node_modules/expo`)
   - ExpoAsset (from `../node_modules/expo-asset/ios`)
+  - ExpoCamera (from `../node_modules/expo-camera/ios`)
   - ExpoDevice (from `../node_modules/expo-device/ios`)
   - ExpoFileSystem (from `../node_modules/expo-file-system/ios`)
   - ExpoFont (from `../node_modules/expo-font/ios`)
@@ -1455,6 +1465,7 @@ SPEC REPOS:
     - StripePaymentSheet
     - StripePaymentsUI
     - StripeUICore
+    - ZXingObjC
 
 EXTERNAL SOURCES:
   boost:
@@ -1479,6 +1490,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo"
   ExpoAsset:
     :path: "../node_modules/expo-asset/ios"
+  ExpoCamera:
+    :path: "../node_modules/expo-camera/ios"
   ExpoDevice:
     :path: "../node_modules/expo-device/ios"
   ExpoFileSystem:
@@ -1639,9 +1652,10 @@ SPEC CHECKSUMS:
   EXImageLoader: ab589d67d6c5f2c33572afea9917304418566334
   EXJSONUtils: 30c17fd9cc364d722c0946a550dfbf1be92ef6a4
   EXManifests: c1fab4c3237675e7b0299ea8df0bcb14baca4f42
-  EXNotifications: b1b174716b287e161350a18de1d253aabceeea2d
-  Expo: 33132a667698a3259a4e6c0af1b4936388e5fa33
+  EXNotifications: 1177f1f3acba90ac409ac70d011dc00c75049635
+  Expo: 963ef4ae102e4f4ac114a8510d70127c44adffbf
   ExpoAsset: 323700f291684f110fb55f0d4022a3362ea9f875
+  ExpoCamera: 929be541d1c1319fcf32f9f5d9df8b97804346b5
   ExpoDevice: fc94f0e42ecdfd897e7590f2874fc64dfa7e9b1c
   ExpoFileSystem: 80bfe850b1f9922c16905822ecbf97acd711dc51
   ExpoFont: 00756e6c796d8f7ee8d211e29c8b619e75cbf238
@@ -1651,10 +1665,10 @@ SPEC CHECKSUMS:
   ExpoModulesCore: 9dce0f6e9703e0173043e0928cec54060618f815
   ExpoSystemUI: d4f065a016cae6721b324eb659cdee4d4cf0cb26
   ExpoWebBrowser: 7595ccac6938eb65b076385fd23d035db9ecdc8e
-  EXSplashScreen: 1214f27b64e691160687922f8cb862c6477be9e1
+  EXSplashScreen: 1420722e7e0a3f238a49bda1908a707ba14fe545
   EXStructuredHeaders: cb8d1f698e144f4c5547b4c4963e1552f5d2b457
   EXTaskManager: 9c3520305c3aa1b4a12a7c6d1e3f85f2779c06e9
-  EXUpdates: b082b574261e695be6fb8b368f2990cca9e3121a
+  EXUpdates: 16dc2b960941559d47e286c9b22c5d64a67e427e
   EXUpdatesInterface: 996527fd7d1a5d271eb523258d603f8f92038f24
   FBLazyVector: ac12dc084d1c8ec4cc4d7b3cf1b0ebda6dab85af
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
@@ -1684,7 +1698,7 @@ SPEC CHECKSUMS:
   React-jsitracing: 3b6060bbf5317663667e1dd93560c7943ab86ccc
   React-logger: 257858bd55f3a4e1bc0cf07ddc8fb9faba6f8c7c
   React-Mapbuffer: 6c1cacdbf40b531f549eba249e531a7d0bfd8e7f
-  react-native-netinfo: 076df4f9b07f6670acf4ce9a75aac8d34c2e2ccc
+  react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
   react-native-render-html: 984dfe2294163d04bf5fe25d7c9f122e60e05ebe
   react-native-safe-area-context: a240ad4b683349e48b1d51fed1611138d1bdad97
   React-nativeconfig: ba9a2e54e2f0882cf7882698825052793ed4c851
@@ -1728,7 +1742,8 @@ SPEC CHECKSUMS:
   StripeUICore: d6803286f1e2b80c62c320b304503c87bf65de3c
   UMAppLoader: f17a5ee8e85b536ace0fc254b447a37ed198d57e
   Yoga: 950bbfd7e6f04790fdb51149ed51df41f329fcc8
+  ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: 3bf7abb6f0b2a0d299d7b75f9162736f6ae669aa
+PODFILE CHECKSUM: 381d9d9e3c6d570b2d51549693130c6834486c96
 
 COCOAPODS: 1.15.2

@@ -57,6 +57,15 @@ target 'busylittlemobileapp' do
       :ccache_enabled => podfile_properties['apple.ccacheEnabled'] == 'true',
     )
 
+    # Disable ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES for static library targets
+    installer.pods_project.targets.each do |target|
+      if target.name.include?('React') || target.name.include?('EX')
+        target.build_configurations.each do |config|
+          config.build_settings['ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES'] = 'NO'
+        end
+      end
+    end
+
     # This is necessary for Xcode 14, because it signs resource bundles by default
     # when building for devices.
     installer.target_installation_results.pod_target_installation_results
