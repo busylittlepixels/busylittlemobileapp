@@ -16,7 +16,10 @@
     "ios": {
       "jsEngine": "jsc",
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.busylittlemobileapp"
+      "bundleIdentifier": "com.anonymous.busylittlemobileapp",
+      "entitlements": {
+          "aps-environment": "development"
+      }
     },
     "android": {
       "adaptiveIcon": {
