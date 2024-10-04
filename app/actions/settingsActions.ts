@@ -8,7 +8,7 @@ export const SET_ADVERT_PREFERENCE = 'SET_ADVERT_PREFERENCE';
 export const SET_NOTIFICATION_PREFERENCE = 'SET_NOTIFICATION_PREFERENCE';
 
 // Action to set advert preference
-export const setAdvertPreference = (showAdverts: any) => async (dispatch: Dispatch) => {
+export const setAdvertPreference = (showAdverts: boolean) => async (dispatch: Dispatch) => {
   try {
     // Save the preference in AsyncStorage
     await AsyncStorage.setItem('showAdverts', JSON.stringify(showAdverts));
@@ -23,9 +23,11 @@ export const setAdvertPreference = (showAdverts: any) => async (dispatch: Dispat
   }
 };
 
-export const setNotificationsPreference = (showNotifications: any, userId: string) => async (dispatch: Dispatch) => {
+export const setNotificationsPreference = (showNotifications: boolean, userId: string) => async (dispatch: Dispatch) => {
   
   const result = await enablePushNotifications({ userId });
+
+  console.log('enable action', result);
   try {
   
     if (result?.error) {
@@ -34,7 +36,7 @@ export const setNotificationsPreference = (showNotifications: any, userId: strin
     }
     // Save the preference in AsyncStorage
     await AsyncStorage.setItem('enablePushNotifications', JSON.stringify(showNotifications));
-
+    
     // Dispatch the action to update Redux state
     dispatch({
       type: SET_NOTIFICATION_PREFERENCE,

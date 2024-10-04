@@ -4,7 +4,6 @@ import {
     SET_ADVERT_PREFERENCE, 
     SET_NOTIFICATION_PREFERENCE
   } from '../actions/settingsActions';
-import { enablePushNotifications } from '../services/settingsService';
   
   const initialState = {
     enablePublicProfile: true,  // Default to true or false based on user preference
@@ -20,6 +19,7 @@ import { enablePushNotifications } from '../services/settingsService';
       case SET_PUBLIC_PROFILE:
         return { ...state, enablePublicProfile: action.payload };
       case SET_NOTIFICATION_PREFERENCE:
+        console.log('in reducer, set notifications', action.payload)
         return { ...state, enablePushNotifications: action.payload };
       default:
         return state;

@@ -85,6 +85,7 @@ const MySettings = ({ navigation }: any) => {
   const showPublic = useSelector((state: any) => state.settings.enablePublicProfile);
 
   console.log('showNotifications', showNotifications);
+  console.log('user deets', user)
 
 
   const fetchContacts = async () => {
@@ -135,6 +136,7 @@ const MySettings = ({ navigation }: any) => {
 
   const toggleNotifications = (value: boolean) => {
     // @ts-ignore
+    console.log('toggleNotifications', value);
     dispatch(setNotificationsPreference(value, user?.id));
   };
 

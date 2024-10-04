@@ -43,7 +43,8 @@ const enablePublicProfile = async ({ userId }: any) => {
 
 
 const enablePushNotifications = async ({ userId }: any) => {
-    // console.log('INSIDE SERVICE METHOD', userId);
+    
+    console.log('INSIDE SERVICE METHOD', userId);
 
     try {
         // Fetch the user's profile and check the enablepublicprofile field
