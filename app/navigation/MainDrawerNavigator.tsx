@@ -30,7 +30,7 @@ const CustomDrawerContent = (props:any) => {
   
   const profile_img = Asset.fromModule(require('./../assets/images/blp-splash.png')).uri;
   console.log(profile_img);
-  
+
   const dispatch = useDispatch();
   const logout = useSignOutMutation(); 
   const handleLogout = () => {
@@ -93,7 +93,7 @@ const MainDrawerNavigator = ({ navigation, route }:any) => {
   return (
     // @ts-ignore
     <Drawer.Navigator
-      initialRouteName="Home"
+      initialRouteName="Account"
       screenOptions={({ navigation }) => ({
         headerTintColor: '#000', // Color for header text and icons
         headerRight: () => (

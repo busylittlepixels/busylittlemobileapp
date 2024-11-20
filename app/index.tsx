@@ -71,11 +71,11 @@ const App = () => {
       <SafeAreaProvider>
         <SafeAreaView style={styles.safeArea}>
           <StatusBar style="dark" />
-          <Provider store={store}>
-            <NotificationProvider>
-              <AppContent />
-            </NotificationProvider>
-          </Provider>
+            <Provider store={store}>
+              <NotificationProvider>
+                <AppContent />
+              </NotificationProvider>
+            </Provider>
           <Toast />
         </SafeAreaView>
       </SafeAreaProvider>

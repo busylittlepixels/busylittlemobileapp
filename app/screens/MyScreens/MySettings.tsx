@@ -81,9 +81,9 @@ const MySettings = ({ navigation }: any) => {
 
   const dispatch = useDispatch();
   const user = useSelector(selectCurrentUser);
-  const showAdverts = useSelector((state: any) => state.settings.showAdverts);
-  const showNotifications = useSelector((state: any) => state.settings.enablePushNotifications);
-  const showPublic = useSelector((state: any) => state.settings.enablePublicProfile);
+  const showAdverts = useSelector((state: any) => state.root?.settings.showAdverts);
+  const showNotifications = useSelector((state: any) => state.root?.settings.enablePushNotifications);
+  const showPublic = useSelector((state: any) => state.root?.settings.enablePublicProfile);
 
   console.log('showNotifications', showNotifications);
   console.log('user deets', user)

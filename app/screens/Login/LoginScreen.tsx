@@ -3,11 +3,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Pressable } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectCurrentUser, useSignInMutation, useSignOutMutation } from "../../services/auth/authApi";
+import { selectCurrentUser, useSignInMutation } from "../../services/auth/authApi";
 import { setCredentials } from '../../services/auth/authSlice';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation';
 import { current } from '@reduxjs/toolkit';
+import { useNavigation } from '@react-navigation/native';
 // import { login } from '../../actions/authActions';
 
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
@@ -32,36 +33,33 @@ const LoginButton = ({ title, onPress }) => {
   );
 };
 
-const LoginScreen = ({ navigation }: Props) => {
+const LoginScreen = () => {
   
-  const user = useSelector(selectCurrentUser);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [triggerLogin, { isLoading }] = useSignInMutation();
   const dispatch = useDispatch();
+  const navigation = useNavigation();
 
+  
   const handleLogin = async () => {
     try {
       const result = await triggerLogin({ email, password }).unwrap();
+      console.log('Login Successful:', result);
   
-      // Log the result to verify the user and session data
-      console.log('Login Result:', result);
-  
-      if (result?.user && result?.session?.access_token) {
-        // Dispatch to set user in Redux
-        dispatch(setCredentials({ user: result.user, token: result.session.access_token }));
-  
-        // Navigate to the authenticated screen
-        navigation.replace('Account');
-      } else {
-        setError('Login failed. Please try again.');
-      }
+      // `setCredentials` is now handled in the `queryFn` of `signIn`, no need to dispatch manually.
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Main' }], // Navigate to the authenticated stack
+      });
     } catch (err: any) {
       console.error('Login Error:', err);
-      setError('An error occurred during login.');
+      setError(err?.data || 'An error occurred during login.');
     }
   };
+  
+  
 
   return (
     <View style={styles.container}>

@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { supabase } from '../../../supabase'; // Adjust the import path as needed
 import { RootState } from '../../store';
+import { setCredentials } from '../../services/auth/authSlice';
 
 export const authApi = createApi({
   reducerPath: 'authApi',
@@ -11,27 +12,29 @@ export const authApi = createApi({
   endpoints: (builder) => ({
     // Supabase Sign In
     signIn: builder.mutation<{ user: any; session: any }, { email: string; password: string }>({
-      queryFn: async ({ email, password }) => {
+      queryFn: async ({ email, password }, { dispatch }) => {
         try {
           // Perform sign-in with Supabase
           const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-          
-          // Handle error response
+    
           if (error) {
             return { error: { status: 400, data: error.message } };
           }
     
-          // Save user and session to Async Storage if login is successful
           if (data?.user && data?.session) {
+            // Save user and session to Async Storage
             await AsyncStorage.setItem('user', JSON.stringify(data.user));
             await AsyncStorage.setItem('access_token', data.session.access_token);
             await AsyncStorage.setItem('refresh_token', data.session.refresh_token);
+    
+            // Dispatch action to update Redux state
+            dispatch(setCredentials({ user: data.user, token: data.session.access_token }));
+    
+            return { data };
           }
     
-          // Return the data for further processing
-          return { data };
+          return { error: { status: 500, data: 'Unexpected error: No user or session found' } };
         } catch (err: any) {
-          // Handle unexpected errors
           return { error: { status: 500, data: err.message || 'An error occurred' } };
         }
       },
@@ -91,15 +94,17 @@ export const authApi = createApi({
 });
 
 // Add local selectors or utility hooks
-// @ts-ignore
-export const selectCurrentUser = (state: RootState) => state.authApi.data?.user || null;
-// @ts-ignore
-export const selectAuthLoading = (state: RootState) => state.authApi.isLoading || false;
 
 // @ts-ignore
-export const selectAuthError = (state: RootState) => state.authApi.error?.data || null;
+export const selectCurrentUser = (state: RootState) => state.root?.auth?.user || null;
 // @ts-ignore
-export const selectIsFirstLaunch = (state: RootState) => state.authApi.isFirstLaunch || false;
+export const selectAuthLoading = (state: RootState) => state.root?.auth.isLoading || false;
+// @ts-ignore
+export const selectAuthError = (state: RootState) => state.root?.auth.error || null;
+// @ts-ignore
+export const selectIsFirstLaunch = (state: RootState) => state.root?.auth.isFirstLaunch || false;
+
+
 
 // Export hooks for each API
 export const {

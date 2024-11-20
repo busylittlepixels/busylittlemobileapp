@@ -20,14 +20,11 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setCredentials: (
-      state,
-        action: PayloadAction<{ user: any; token: string }>
-      ) => {
-        state.user = action.payload.user;
-        state.token = action.payload.token;
-        state.error = null;
-      },
+    setCredentials: (state, action: PayloadAction<{ user: any; token: string }>) => {
+      state.user = action.payload.user;
+      state.token = action.payload.token;
+      state.error = null;
+    },
     clearState: (state) => {
       state.user = null;
       state.token = null;
@@ -42,7 +39,7 @@ const authSlice = createSlice({
       state.error = action.payload;
     },
     setIsFirstLaunch: (state, action: PayloadAction<boolean>) => {
-      state.isFirstLaunch = false;
+      state.isFirstLaunch = action.payload;
     },
   },
 });

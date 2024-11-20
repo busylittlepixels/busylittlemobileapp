@@ -76,7 +76,7 @@ const AccountScreen = ({ navigation, route }: any) => {
   
   
   // Access Redux state and get the user
-  const user = useSelector(selectCurrentUser);
+  const user = useSelector((state: RootState) => state?.root?.auth?.selectCurrentUser);
 
   useEffect(() => {
     if (!user || !user.id) {
@@ -89,9 +89,6 @@ const AccountScreen = ({ navigation, route }: any) => {
   }, [user, navigation]);
 
   // duh
-
-  // const state = useSelector((state: RootState) => state);
-  // console.log(state); // Check the structure of the state
   const showAdverts = useSelector((state: RootState) => state?.root?.settings?.showAdverts);
   const enablePublicProfile = useSelector((state: RootState) => state?.root?.settings?.enablePublicProfile);
   const showNotifications = useSelector((state: RootState) => state?.root?.settings?.showNotifications);
