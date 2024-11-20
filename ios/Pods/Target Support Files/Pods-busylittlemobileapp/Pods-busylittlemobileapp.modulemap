@@ -1,0 +1,6 @@
+module Pods_busylittlemobileapp {
+  umbrella header "Pods-busylittlemobileapp-umbrella.h"
+
+  export *
+  module * { export * }
+}
