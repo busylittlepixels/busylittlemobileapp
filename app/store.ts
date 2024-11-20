@@ -7,7 +7,7 @@ import { authApi } from './services/auth/authApi';
 // Ensure rootReducer is an object with key-value pairs of slices
 const store = configureStore({
   reducer: {
-    ...rootReducer, // Include all reducers from the rootReducer
+    root: rootReducer, // Include all reducers from the rootReducer
     [authApi.reducerPath]: authApi.reducer, // Add the authApi reducer under its path
   },
   middleware: (getDefaultMiddleware) =>

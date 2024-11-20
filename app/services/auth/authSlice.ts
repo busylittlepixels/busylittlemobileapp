@@ -12,7 +12,7 @@ const initialState: AuthState = {
   user: null,
   token: null,
   isLoading: false,
-  isFirstLaunch: false,
+  isFirstLaunch: true,
   error: null,
 };
 
@@ -22,12 +22,12 @@ const authSlice = createSlice({
   reducers: {
     setCredentials: (
       state,
-      action: PayloadAction<{ user: any; token: string }>
-    ) => {
-      state.user = action.payload.user;
-      state.token = action.payload.token;
-      state.error = null;
-    },
+        action: PayloadAction<{ user: any; token: string }>
+      ) => {
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        state.error = null;
+      },
     clearState: (state) => {
       state.user = null;
       state.token = null;

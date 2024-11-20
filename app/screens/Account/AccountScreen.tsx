@@ -17,6 +17,7 @@ import ArticleItem from '../../components/ArticleItem';
 import Spacer from '../../components/Spacer';
 import { toggleFavorite as toggleFavoriteService } from '../../services/favouriteService';
 import { Asset } from 'expo-asset';
+import { RootState } from '../../store'; // Adjust the path if needed
 import { enablePublicProfile } from '@/app/services/settingsService';
 import { useNotification } from '../../contexts/NotificationContext';
 import { useNavigation } from '@react-navigation/native';
@@ -88,10 +89,12 @@ const AccountScreen = ({ navigation, route }: any) => {
   }, [user, navigation]);
 
   // duh
-  const showAdverts = useSelector((state) => state.settings.showAdverts);
-  const enablePublicProfile = useSelector((state) => state.settings.enablePublicProfile);
-  const showNotifications = useSelector((state) => state.settings.showNotifications);
 
+  // const state = useSelector((state: RootState) => state);
+  // console.log(state); // Check the structure of the state
+  const showAdverts = useSelector((state: RootState) => state?.root?.settings?.showAdverts);
+  const enablePublicProfile = useSelector((state: RootState) => state?.root?.settings?.enablePublicProfile);
+  const showNotifications = useSelector((state: RootState) => state?.root?.settings?.showNotifications);
   // also duh
   const [refreshing, setRefreshing] = useState(false);
   const [tickets, setTickets] = useState([]);

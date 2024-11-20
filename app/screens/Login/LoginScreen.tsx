@@ -53,7 +53,7 @@ const LoginScreen = ({ navigation }: Props) => {
         dispatch(setCredentials({ user: result.user, token: result.session.access_token }));
   
         // Navigate to the authenticated screen
-        navigation.navigate('Account');
+        navigation.replace('Account');
       } else {
         setError('Login failed. Please try again.');
       }

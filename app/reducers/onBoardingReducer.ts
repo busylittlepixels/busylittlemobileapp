@@ -6,7 +6,7 @@ import {
   
   const initialState = {
     user: null,
-    isFirstLaunch: false, // Default to true for first launch
+    isFirstLaunch: true, // Default to true for first launch
   };
   
   const onboardingReducer = (state = initialState, action: any) => {
