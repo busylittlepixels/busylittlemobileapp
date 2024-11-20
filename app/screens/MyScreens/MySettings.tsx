@@ -84,10 +84,6 @@ const MySettings = ({ navigation }: any) => {
   const showNotifications = useSelector((state: any) => state.settings.enablePushNotifications);
   const showPublic = useSelector((state: any) => state.settings.enablePublicProfile);
 
-  console.log('showNotifications', showNotifications);
-  console.log('user deets', user)
-
-
   const fetchContacts = async () => {
     // console.log('Fetching contacts...');
     
