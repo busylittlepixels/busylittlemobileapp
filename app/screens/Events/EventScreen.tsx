@@ -3,6 +3,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Image, Platform, Pressable, Text, View, Button, Alert } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
+import { selectCurrentUser, useSignOutMutation } from "../../services/auth/authApi";
 import ParallaxScrollView from '@/app/components/ParallaxScrollView';
 import InScreenScroller from '@/app/components/InScreenScroller';
 import { ThemedText } from '@/app/components/ThemedText';
@@ -59,7 +60,7 @@ const customTransition = SharedTransition.custom((values) => {
 export default function EventScreen({ navigation, route }: any) {
   const dispatch = useDispatch();
 
-  const user = useSelector((state) => state.auth.user);
+  const user = useSelector(selectCurrentUser);
   // Extract event_image from route params
   const evntImg = route.params?.item?.event_image;
   const [isSaved, setIsSaved] = useState(route.params?.isSaved); 

@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View, Button } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { selectCurrentUser, useCompleteOnboardingMutation } from "../../services/auth/authApi";
 import Onboarding from 'react-native-onboarding-swiper';
-import { completeOnboarding } from '../../actions/onboardingActions';
+
 import OnboardingCityPills from '../../components/OnboardingCityPills'; 
 
 const OnboardingScreen = ({ navigation }:any ) => {
     const [selectedCities, setSelectedCities] = useState<string[]>([]);
-    const dispatch = useDispatch();
-    const user = useSelector((state: any) => state.auth.user);
+    const user = useSelector(selectCurrentUser);
 
     // Log the navigation prop to verify it exists
     useEffect(() => {
@@ -29,7 +29,7 @@ const OnboardingScreen = ({ navigation }:any ) => {
     const handleOnDone = async () => {
         if (user?.id) {
             // @ts-ignore
-            const updatedUser = await dispatch(completeOnboarding(user.id, selectedCities));
+            const updatedUser = useCompleteOnboardingMutation(user.id, selectedCities);
     
             if (updatedUser) {
                 console.log('Navigating to Account with user:', updatedUser);

@@ -5,6 +5,7 @@ import { Text, View, StyleSheet, Button, Pressable } from "react-native";
 import { CameraView, Camera } from "expo-camera";
 import { supabase } from '../../../supabase';
 import { useSelector } from 'react-redux';
+import { selectCurrentUser, useSignOutMutation } from "../../services/auth/authApi";
 import Toast from 'react-native-toast-message';
 
 
@@ -28,7 +29,7 @@ export default function CameraScreen() {
     const [hasPermission, setHasPermission] = useState(null);
     const [scanned, setScanned] = useState(false);
 
-    const user = useSelector((state) => state.auth.user);
+    const user = useSelector(selectCurrentUser);
 
 
 

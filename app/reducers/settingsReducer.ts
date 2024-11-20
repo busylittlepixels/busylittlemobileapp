@@ -7,7 +7,7 @@ import {
   
   const initialState = {
     enablePublicProfile: true,  // Default to true or false based on user preference
-    showAdverts: false,  // Default to true or false based on user preference
+    showAdverts: true,  // Default to true or false based on user preference
     enablePushNotifications: false, 
   };
   

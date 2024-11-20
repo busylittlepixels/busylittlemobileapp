@@ -4,13 +4,13 @@ import React, { useState, useEffect, useCallback, useImperativeHandle, forwardRe
 import { ActivityIndicator, Alert, ScrollView, View, TextInput, Text, Button, FlatList, StyleSheet, Pressable, Progress, RefreshControl, Switch, Image } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux'; // Import useSelector and useDispatch
+import { selectCurrentUser, useSignInMutation, useSignOutMutation } from "../../services/auth/authApi";
 import { supabase } from '../../../supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import Spacer from '../../components/Spacer';
 import * as ImagePicker from 'expo-image-picker'; // Import ImagePicker
-import { decode } from 'base64-arraybuffer'; // Import decode from base64-arraybuffer
-import { logout, setAdvertPreference } from '../../actions/authActions'; // Import the logout action if needed
+import { decode } from 'base64-arraybuffer'; // Import decode from base64-arraybuffer; // Import the logout action if needed
 import ImageUploader from '../../components/ImageUploader';
 
 export interface Profile {
@@ -33,7 +33,7 @@ interface UpdateProfileFormProps {
 
 const UpdateDetailsScreen = forwardRef(({ navigation }, ref) => {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.auth.user);
+  const user = useSelector(selectCurrentUser);
   const [refreshing, setRefreshing] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
 

@@ -2,11 +2,12 @@
 // NotificationSetup.tsx
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { selectCurrentUser } from "../services/auth/authApi";
 import { supabase } from '@/supabase'; // Make sure to import supabase
 import { sendPushNotification } from '../lib/utils/notificationSetup';
 
 const NotificationSetup = ({ expoPushToken }) => {
-  const user = useSelector((state) => state.auth.user);
+  const user = useSelector(selectCurrentUser);
 
   useEffect(() => {
     if (user) {

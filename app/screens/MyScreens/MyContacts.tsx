@@ -2,6 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useEffect, useState, useCallback } from "react";
 import { ScrollView, View, Text, StyleSheet, Pressable, RefreshControl } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
+import { selectCurrentUser, useSignInMutation, useSignOutMutation } from "../../services/auth/authApi";
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from "@/supabase";
 
@@ -54,7 +55,7 @@ const MyContacts = ({ navigation }:any) => {
   const [userContacts, setUserContacts] = useState([]);
 
   // @ts-ignore
-  const user = useSelector((state) => state.auth.user);
+  const user = useSelector(selectCurrentUser);
 
   const fetchContacts = async () => {
     const { data: contacts, error: contactsError } = await supabase

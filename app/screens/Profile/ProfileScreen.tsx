@@ -11,6 +11,7 @@ import MyContacts from '../MyScreens/MyContacts';
 import MessagesScreen from '../Chat/MessagesScreen';
 import { supabase } from '../../../supabase'; // Adjust path as necessary
 import { useSelector, useDispatch } from 'react-redux'; // Import useSelector and useDispatch
+import { selectCurrentUser, useSignInMutation, useSignOutMutation } from "../../services/auth/authApi";
 import { useFocusEffect } from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
@@ -18,7 +19,7 @@ const Tab = createBottomTabNavigator();
 const ProfileScreen = ({ navigation, route }:any) => {
   const updateDetailsRef = useRef(null);
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0); // Unread message count state
-  const user = useSelector((state) => state.auth.user);
+  const user = useSelector(selectCurrentUser);
   const tabsRef = useRef(null);
   const { expoPushToken, handleSendPushNotification } = route.params || {};
   

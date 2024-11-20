@@ -1,12 +1,15 @@
 // @ts-nocheck
 
 import Ionicons from '@expo/vector-icons/Ionicons';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { selectCurrentUser, selectAuthLoading, selectIsFirstLaunch } from "../services/auth/authApi";
 import { Text, View, Button, Pressable } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
+import { useNavigation } from '@react-navigation/native';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SplashScreen from '../screens/Login/SplashScreen';
 import LoginScreen from '../screens/Login/LoginScreen';
@@ -65,9 +68,22 @@ export type RootStackParamList = {
 const Stack = createStackNavigator<RootStackParamList>();
 
 const AppNavigator = () => {
-  const user = useSelector((state) => state.auth.user);
-  const loading = useSelector((state) => state.auth.loading);
-  const isFirstLaunch = useSelector((state) => state.onboarding.isFirstLaunch);
+  const user = useSelector(selectCurrentUser);
+  const loading = useSelector(selectAuthLoading);
+  const isFirstLaunch = useSelector(selectIsFirstLaunch);
+  const navigation = useNavigation();
+  
+  console.log('User:', user);
+  console.log('Loading:', loading);
+  console.log('Is First Launch:', isFirstLaunch);
+
+  useEffect(() => {
+    if (!loading) {
+        navigation.navigate('Account');
+      } else {
+        navigation.navigate('Login');
+    }
+  }, [loading, user]);
 
   if (loading) {
     return (
@@ -289,7 +305,7 @@ const AppNavigator = () => {
         ) : (
           <>
             <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
-            <Stack.Screen name="Auth" component={LoginScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="Account" component={AccountScreen} options={{ headerShown: false }} />
             <Stack.Screen name="ResetPass" component={ResetPassScreen} options={{ headerShown: false }} />
             <Stack.Screen name="SignUp" component={SignUpScreen} options={{ headerShown: false }} />
           </>

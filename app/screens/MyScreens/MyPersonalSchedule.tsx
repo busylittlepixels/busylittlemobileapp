@@ -8,6 +8,7 @@ import { getMarkedDates } from '../../components/agendaItems';
 import AgendaItem from '../../components/AgendaItem';
 import {getTheme, themeColor, lightThemeColor} from '../../components/theme';
 import { useSelector } from 'react-redux';
+import { selectCurrentUser, useSignInMutation, useSignOutMutation } from "../../services/auth/authApi";
 import { supabase } from '../../../supabase';
 
 const leftArrowIcon = require('../../assets/images/previous.png');
@@ -63,7 +64,7 @@ const formatScheduleToAgendaItems = (schedule) => {
 };
 
 const MyPersonalSchedule = (props: Props) => {
-  const user = useSelector((state) => state.auth.user);
+  const user = useSelector(selectCurrentUser);
   const [schedule, setSchedule] = useState([]);  // Initialize schedule as an empty array
   const [markedDates, setMarkedDates] = useState({});
   const [refreshing, setRefreshing] = useState(false);  // Add refreshing state

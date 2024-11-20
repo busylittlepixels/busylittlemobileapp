@@ -4,6 +4,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, ScrollView, Animated, RefreshControl, Image, Pressable, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
+import { selectCurrentUser, useSignOutMutation } from "../../services/auth/authApi";
 import { supabase } from '../../../supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
@@ -74,7 +75,7 @@ const AccountScreen = ({ navigation, route }: any) => {
   
   
   // Access Redux state and get the user
-  const user = useSelector((state) => state.auth.user);
+  const user = useSelector(selectCurrentUser);
 
   useEffect(() => {
     if (!user || !user.id) {

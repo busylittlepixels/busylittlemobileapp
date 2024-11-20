@@ -3,11 +3,12 @@ import React, { useEffect, useState, useCallback } from "react";
 import { Alert, View, Text, StyleSheet, RefreshControl, Image, FlatList, Pressable } from 'react-native';
 import { supabase } from '../../../supabase'; 
 import { useSelector } from 'react-redux'; 
+import { selectCurrentUser, useSignOutMutation } from "../../services/auth/authApi";
 import { useFocusEffect } from '@react-navigation/native';
 
 const UsersScreen = ({ navigation }: any) => {
     const [users, setUsers] = useState([]); 
-    const user = useSelector((state) => state.auth.user);
+    const user = useSelector(selectCurrentUser);
     const [refreshing, setRefreshing] = useState(false);
 
     // console.log('user', user);

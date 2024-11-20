@@ -3,6 +3,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useEffect, useState, useCallback } from "react";
 import { ScrollView, View, Text, StyleSheet, Switch, Button, Alert, Pressable, RefreshControl } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux'; // Import useSelector and useDispatch
+import { selectCurrentUser } from '../../services/auth/authApi'
 import { setPublicProfile, setAdvertPreference, setNotificationsPreference } from '../../actions/settingsActions'; // Import the action
 import { supabase } from "@/supabase";
 
@@ -79,7 +80,7 @@ const MySettings = ({ navigation }: any) => {
   const [userContacts, setUserContacts] = useState([])
 
   const dispatch = useDispatch();
-  const user = useSelector((state: any) => state.auth.user);
+  const user = useSelector(selectCurrentUser);
   const showAdverts = useSelector((state: any) => state.settings.showAdverts);
   const showNotifications = useSelector((state: any) => state.settings.enablePushNotifications);
   const showPublic = useSelector((state: any) => state.settings.enablePublicProfile);

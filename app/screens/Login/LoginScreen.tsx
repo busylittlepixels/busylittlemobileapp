@@ -1,10 +1,14 @@
 // @ts-nocheck
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Pressable } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { selectCurrentUser, useSignInMutation, useSignOutMutation } from "../../services/auth/authApi";
+import { setCredentials } from '../../services/auth/authSlice';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation';
-import { login } from '../../actions/authActions';
+import { current } from '@reduxjs/toolkit';
+// import { login } from '../../actions/authActions';
 
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
 
@@ -29,21 +33,33 @@ const LoginButton = ({ title, onPress }) => {
 };
 
 const LoginScreen = ({ navigation }: Props) => {
-  const dispatch = useDispatch();
-  const user = useSelector((state) => state.auth.user);
+  
+  const user = useSelector(selectCurrentUser);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [triggerLogin, { isLoading }] = useSignInMutation();
+  const dispatch = useDispatch();
 
   const handleLogin = async () => {
     try {
-      await dispatch(login(email, password));
-      if (!user) {
-        setError('Invalid email or password. Please try again.');
+      const result = await triggerLogin({ email, password }).unwrap();
+  
+      // Log the result to verify the user and session data
+      console.log('Login Result:', result);
+  
+      if (result?.user && result?.session?.access_token) {
+        // Dispatch to set user in Redux
+        dispatch(setCredentials({ user: result.user, token: result.session.access_token }));
+  
+        // Navigate to the authenticated screen
+        navigation.navigate('Account');
+      } else {
+        setError('Login failed. Please try again.');
       }
-    } catch (error) {
-      setError('An error occurred. Please try again.');
-      console.error(error);
+    } catch (err: any) {
+      console.error('Login Error:', err);
+      setError('An error occurred during login.');
     }
   };
 
@@ -52,7 +68,7 @@ const LoginScreen = ({ navigation }: Props) => {
       <View style={styles.loginString}>
         <Text style={styles.logoTitle}>busy</Text><Text style={styles.logoTitleHighlight}>little</Text><Text style={styles.logoTitle}>loginpage</Text>
       </View>
-     
+      
       {error && <Text style={styles.error}>{error}</Text>}
       <TextInput
         placeholder="your@email.com"
@@ -73,7 +89,7 @@ const LoginScreen = ({ navigation }: Props) => {
         autoCapitalize="none"
         clearTextOnFocus={true}
       />
-      <LoginButton title="Login" onPress={handleLogin} />
+      <LoginButton title={isLoading ? "Logging In..." : "Login"} onPress={handleLogin} />
       <View style={styles.dropLinks}>
         <Pressable onPress={() => navigation.navigate('SignUp')}>
           <Text style={styles.otherLinks}>No account? Sign Up</Text>

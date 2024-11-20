@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ScrollView, View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
+import { selectCurrentUser } from '@/app/services/auth/authApi';
 import { useFocusEffect } from '@react-navigation/native';
 import { fetchFavorites, clearFavorites } from '../../actions/favoriteActions';
 import ArticleItem from '@/app/components/ArticleItem';
@@ -57,7 +58,7 @@ const SelectFavoritesButton = ({ title, onPress }) => {
 
 const FavoritesScreen = ({ navigation, route }: any) => {
     const dispatch = useDispatch();
-    const user = useSelector((state: any) => state.auth.user);
+    const user = useSelector(selectCurrentUser); // Get user info from Redux
     const favorites = useSelector((state: any) => state.favorite.favorites);
     const [loading, setIsLoading] = useState<boolean>(false);
 

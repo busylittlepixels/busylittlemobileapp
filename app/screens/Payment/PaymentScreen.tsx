@@ -2,7 +2,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Button } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
-import { logout } from '../../actions/authActions'; // Import the correct logout action
+import { selectCurrentUser, useSignInMutation, useSignOutMutation } from "../../services/auth/authApi";
 import { CardField, useConfirmPayment } from '@stripe/stripe-react-native';
 
 const PaymentScreen = ({ navigation }: Props) => {
@@ -10,8 +10,9 @@ const PaymentScreen = ({ navigation }: Props) => {
   const { confirmPayment, loading } = useConfirmPayment();
 
   // Access the user from Redux state
-  const user = useSelector((state) => state.auth.user);
-
+  const user = useSelector(selectCurrentUser);
+  const logout = useSignOutMutation();
+  
   const handleLogout = async () => {
     await dispatch(logout()); // Dispatch the logout action
     navigation.replace('Login');

@@ -6,6 +6,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { supabase } from "@/supabase";
 import { RealtimeChannel } from "@supabase/supabase-js";
 import { useSelector } from "react-redux";
+import { selectCurrentUser, useSignOutMutation } from "../../services/auth/authApi";
 import { Swipeable } from "react-native-gesture-handler";
 
 
@@ -97,7 +98,7 @@ const markMessagesAsRead = async (userId, otherUserId) => {
 const MessagesScreen = ({ navigation }) => {
     const [conversations, setConversations] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
-    const user = useSelector((state) => state.auth.user);
+    const user = useSelector(selectCurrentUser);
     const userId = user?.id;
     const loadConversations = useCallback(async () => {
         try {

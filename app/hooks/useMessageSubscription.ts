@@ -4,12 +4,13 @@ import { useEffect } from 'react';
 import { supabase } from "@/supabase";
 import { useNotification } from '../contexts/NotificationContext';
 import { useSelector } from "react-redux";
+import { selectCurrentUser } from "../services/auth/authApi";
 import * as Updates from 'expo-updates';
 import { Image } from 'react-native';
 
 export const useMessageSubscription = () => {
   const { sendNotification } = useNotification();
-  const user = useSelector((state) => state.auth.user);
+  const user = useSelector(selectCurrentUser);
   const userId = user?.id;
 
   // Use a default icon asset

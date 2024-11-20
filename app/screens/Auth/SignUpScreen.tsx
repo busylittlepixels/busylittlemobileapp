@@ -3,7 +3,7 @@ import { View, TextInput, Button, StyleSheet, Text, Alert, Pressable } from 'rea
 import { useDispatch } from 'react-redux';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation';
-import { signUp } from '../../actions/authActions'; // Import the correct signUp action
+import { useSignInMutation } from '../../services/auth/authApi'; // Import the correct signUp action
 
 type SignUpScreenNavigationProp = StackNavigationProp<RootStackParamList, 'SignUp'>;
 
@@ -34,6 +34,7 @@ const SignUpScreen = ({ navigation }: Props) => {
   const [username, setUserName] = useState('');
   const [full_name, setFullName] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const signup = useSignInMutation(); 
 
   const validateEmail = (email: string) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

@@ -5,7 +5,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { supabase } from '../../supabase'; // Update the path as necessary
-import { logout } from '../actions/authActions';
+// import { logout } from '../actions/authActions';
+import { selectCurrentUser, useSignOutMutation } from "../services/auth/authApi";
 import AccountScreen from '../screens/Account/AccountScreen';
 import FavoritesScreen from '../screens/Favourites/FavoritesScreen';
 import CitiesScreen from '../screens/Cities/CitiesScreen';
@@ -29,11 +30,12 @@ const CustomDrawerContent = (props:any) => {
   
   const profile_img = Asset.fromModule(require('./../assets/images/blp-splash.png')).uri;
   console.log(profile_img);
+  
   const dispatch = useDispatch();
-
+  const logout = useSignOutMutation(); 
   const handleLogout = () => {
     // @ts-ignore
-    dispatch(logout());
+    dispatch(logout);
   };
 
   return (
@@ -61,7 +63,7 @@ const CustomDrawerContent = (props:any) => {
 // Main Drawer Navigator
 const MainDrawerNavigator = ({ navigation, route }:any) => {
   // @ts-ignore
-  const user = useSelector((state) => state.auth.user); // Get user info from Redux
+  const user = useSelector(selectCurrentUser); // Get user info from Redux
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0); // Unread message count
   const [loading, setLoading] = useState(true); // Loading state
 

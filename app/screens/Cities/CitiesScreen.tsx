@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, ScrollView, StyleSheet, RefreshControl } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
+import { selectCurrentUser, useSignOutMutation } from "../../services/auth/authApi";
 import { supabase } from '../../../supabase'; // Import your Supabase client instance
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CityPills from '../../components/CityPills';
@@ -11,7 +12,7 @@ const CitiesScreen = () => {
   const dispatch = useDispatch();
 
   // Access Redux state
-  const user = useSelector((state) => state.auth.user);
+  const user = useSelector(selectCurrentUser);
 
   const [cities, setCities] = useState([]);
   const [selectedCities, setSelectedCities] = useState([]);

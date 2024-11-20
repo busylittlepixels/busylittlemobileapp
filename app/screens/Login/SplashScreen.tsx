@@ -3,20 +3,19 @@ import React, { useEffect } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux'; // Using Redux for state management
+import { selectCurrentUser, selectAuthLoading, useSignInMutation, useSignOutMutation } from "../../services/auth/authApi";
 
 const SplashScreen = () => {
   const navigation = useNavigation();
-  const user = useSelector((state) => state.auth.user); // Access user state from Redux store
-  const loading = useSelector((state) => state.auth.loading); // Access loading state from Redux store
+  const user = useSelector(selectCurrentUser); // Access user state from Redux store
+  const loading = useSelector(selectAuthLoading); // Access loading state from Redux store
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (user) {
-        if (user) {
+      if (!user) {
           navigation.navigate('Account'); // Navigate to Account if user is authenticated
         } else {
           navigation.navigate('Login'); // Navigate to Login if not authenticated
-        }
       }
     }, 2000); // 2 seconds delay
 

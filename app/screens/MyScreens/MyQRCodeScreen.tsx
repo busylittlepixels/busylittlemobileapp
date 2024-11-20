@@ -5,6 +5,7 @@ import { View, Text, StyleSheet, Button, ActivityIndicator, Pressable } from 're
 import QRCode from 'react-native-qrcode-svg';
 import { supabase } from '../../../supabase';
 import { useSelector } from 'react-redux';
+import { selectCurrentUser, useSignInMutation, useSignOutMutation } from "../../services/auth/authApi";
 
 const BackButton = ({ title, onPress }:any) => (
   <Pressable
@@ -27,7 +28,7 @@ const BackButton = ({ title, onPress }:any) => (
 export default function MyQRCodeScreen({ navigation }) {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const user = useSelector((state) => state.auth.user); // Fetch current user from Redux
+  const user = useSelector(selectCurrentUser); // Fetch current user from Redux
  
 
   console.log('user', user.id); 
