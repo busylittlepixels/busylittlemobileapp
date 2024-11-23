@@ -34,7 +34,8 @@ import ChatScreen from '../screens/Chat/ChatScreen';
 import MyQRCodeScreen from '../screens/MyScreens/MyQRCodeScreen';
 import CameraScreen from '../screens/General/CameraScreen'
 import MyContacts from '../screens/MyScreens/MyContacts';
-import CalendarEventScreen from '../screens/Events/CalendarEventScreen';
+import MyPersonalSchedule from '../screens/MyScreens/MyPersonalSchedule';
+import CalendarEventScreen from '../screens/MyScreens/CalendarEventScreen';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -115,8 +116,9 @@ const AppNavigator = () => {
                   headerTintColor: '#000',
                   headerBackTitle: 'Back', // Change the back button text
                   headerBackTitleVisible: true, // Ensures the back button text is visible/>
-                  headerShown: 'false'  
+                  headerShown: true  
                 }} />
+                <Stack.Screen name="MyPersonalSchedule" component={MyPersonalSchedule} />
                 <Stack.Screen name="MyEvents" component={MyEventsScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="Calendar" component={SettingsScreen} options={({ navigation }) => ({
                   gestureEnabled: false,
@@ -137,6 +139,7 @@ const AppNavigator = () => {
                   ),
                 })} />
                 <Stack.Screen name="CalendarEvent" component={CalendarEventScreen} options={({ navigation }) => ({
+                  headerShown: true,
                   gestureEnabled: false,
                   gestureDirection: 'vertical',
                   cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
@@ -220,6 +223,7 @@ const AppNavigator = () => {
                   ),
                 })}
                 />
+                <Stack.Screen name="AgendaIrem" component={PaymentScreen} />
                 <Stack.Screen name="Payment" component={PaymentScreen} />
                 <Stack.Screen name="General" component={TabEileScreen} 
                   options={({ navigation }) => ({

@@ -6,16 +6,19 @@ import { useNavigation } from 'expo-router';
 
 interface ItemProps {
   item: any;
+  navigation: any;
 }
 
-const AgendaItem = (props: ItemProps) => {
-  const {item} = props;
-  const navigation = useNavigation(); 
-
-  const buttonPressed = useCallback(() => {
+const AgendaItem = ({ item, navigation }:ItemProps) => {
+  
+  const buttonPressed = () => {
+    console.log('Navigation object:', navigation.navigate);
+    console.log('Item to navigate with:', item);
+    console.log('Available Routes:', navigation.getState().routes);
     // @ts-ignore
-    navigation.navigate("CalendarEvent", { item })
-  }, []);
+    navigation.navigate('CalendarEvent', { item })
+    
+  };
 
   const itemPressed = useCallback(() => {
     console.log('item detail:', item)

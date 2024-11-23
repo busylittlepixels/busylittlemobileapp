@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, {useRef, useEffect, useCallback, useState} from 'react';
+import React, {useRef, useEffect, useCallback, useState, useMemo} from 'react';
 import {StyleSheet, RefreshControl} from 'react-native';
 import {ExpandableCalendar, AgendaList, CalendarProvider, WeekCalendar} from 'react-native-calendars';
 import testIDs from '../../components/testIds';
@@ -9,6 +9,7 @@ import AgendaItem from '../../components/AgendaItem';
 import {getTheme, themeColor, lightThemeColor} from '../../components/theme';
 import { useSelector } from 'react-redux';
 import { supabase } from '../../../supabase';
+import { useNavigation } from '@react-navigation/native';
 
 const leftArrowIcon = require('../../assets/images/previous.png');
 const rightArrowIcon = require('../../assets/images/next.png');
@@ -28,16 +29,16 @@ const formatScheduleToAgendaItems = (schedule) => {
 
   const agendaMap = schedule.reduce((acc, event) => {
     console.log('agendamap', event)
-    const rawStartDate = event.events.start_date;
-    const parsedDate = new Date(rawStartDate);
-    console.log('Raw start_date:', rawStartDate);
+    const rawStartDate = new Date(event.events.start_date);
+    const parsedDate = rawStartDate;
+    console.log('Raw parsed:', parsedDate);
     // Check if the date is valid
     if (isNaN(parsedDate)) {
       console.error('Invalid Date:', rawStartDate);  // Log the invalid date for debugging
       return acc;  // Skip this event if date is invalid
     }
 
-    const eventDate = parsedDate.toLocaleDateString();
+    const eventDate = parsedDate;
     const eventStartTime = parsedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     
     const eventData = {
@@ -67,8 +68,9 @@ const MyPersonalSchedule = (props: Props) => {
   const [schedule, setSchedule] = useState([]);  // Initialize schedule as an empty array
   const [markedDates, setMarkedDates] = useState({});
   const [refreshing, setRefreshing] = useState(false);  // Add refreshing state
-  const defaultDate = new Date().toISOString().split('T')[0]; // Get today's date
-
+  const defaultDate = new Date().toISOString().split('T')[0];
+  const navigation = useNavigation(); 
+  
   const fetchUserSchedule = useCallback(async () => {
     if (!user || !user.id) return;
 
@@ -107,7 +109,7 @@ const MyPersonalSchedule = (props: Props) => {
 
   const renderItem = useCallback(({ item }: any) => {
     console.log('item in render item', item)
-    return <AgendaItem item={item} />;
+    return <AgendaItem navigation={navigation} item={item} />;
   }, []);
 
   useEffect(() => {
@@ -116,16 +118,20 @@ const MyPersonalSchedule = (props: Props) => {
 
   useEffect(() => {
     if (schedule.length > 0) {
-      setMarkedDates(getMarkedDates(schedule));
+      const dates = getMarkedDates(schedule);
+      console.log('Marked Dates:', dates); // Debug output
+      setMarkedDates(dates);
     }
   }, [schedule]);
 
-  const agendaItems = formatScheduleToAgendaItems(schedule);
-  const ITEMS: any[] = agendaItems.length > 0 ? agendaItems : [{ title: defaultDate, data: [] }];
+  const agendaItemsArray = formatScheduleToAgendaItems(schedule);
+  const ITEMS: any[] = agendaItemsArray.length > 0 ? agendaItemsArray : [{ title: defaultDate, data: [] }];
+
+  console.log('schedule items?', ITEMS);
 
   return (
     <CalendarProvider
-      date={ITEMS[0]?.title || defaultDate} // Use defaultDate if ITEMS[0] is undefined
+      date={ITEMS[0]?.title || [] } // Use defaultDate if ITEMS[0] is undefined
       onDateChanged={onDateChanged}
       onMonthChange={onMonthChange}
       showTodayButton
