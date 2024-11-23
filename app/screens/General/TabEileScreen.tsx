@@ -16,7 +16,7 @@ const ITEM_HEIGHT = height * 0.5;
 
 const TabEileScreen = ({ navigation, route }:any) => {
 
-  console.log('def', route.params);
+  // console.log('def', route.params);
 
   useEffect(() => {
     navigation.setOptions({ title: route.params?.item?.name });
@@ -40,7 +40,7 @@ const TabEileScreen = ({ navigation, route }:any) => {
   }, [navigation]);
 
   const { item } = route.params;
-  console.log('tab eile, rud eile', item.uri);
+  // console.log('tab eile, rud eile', item.uri);
   return (
     <View style={{ flex: 1, backgroundColor: '#0f0f0f' }}>
       <ParallaxScrollView

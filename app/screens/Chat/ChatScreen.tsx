@@ -34,6 +34,9 @@ const AtttachmentButton = ({ icon, onPress }) => {
   );
 };
 
+
+
+
 const ChatScreen = ({ navigation, route }) => {
   const { senderId, receiverId } = route.params;
   const [messages, setMessages] = useState([]);
@@ -42,19 +45,33 @@ const ChatScreen = ({ navigation, route }) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
 
+  const navigateToUserProfile = () => {
+    console.log('params', route.params.otherUserEmail)
+    navigation.navigate('FriendProfile', route.params.sender_id)
+    navigation.navigate('FriendProfile', { user: { id: route.params.senderId, name: route.params.otherUserName, full_name: route.params.otherUserName, avatar: route.params.otherUserAvatar, email: route.params.otherUserEmail }  });
+  }
+
   useEffect(() => {
     navigation.setOptions({ 
       headerTitle: () => (
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
-          <Image
+        <View style={{ flexDirection: 'row', height: 60, alignItems: 'center', gap: 2, paddingVertical: '5px' }}>
+          <Pressable
+              onPress={navigateToUserProfile}
+            >
+            <Image
               source={{ uri: route.params?.otherUserAvatar || 'https://via.placeholder.com/50' }} // Fallback to a placeholder if no avatar
-              style={{ width: 30, height: 30, borderRadius: 20, paddingVertical: 10, marginRight:5 }} // Style for the avatar image
-          />
+              style={{ width: 30, height: 50, borderRadius: 20, paddingVertical: 10, marginRight:5 }} // Style for the avatar image
+            />
+          </Pressable>
+          
           <Text style={{ fontWeight: 'bold' }}>{route.params?.otherUserName}</Text>
         </View>
     ),
   });
   }, [navigation]);
+
+
+ 
 
   const handleAttachment = (icon) =>{
     console.log('icon: ' + icon + ' clicked');
@@ -195,7 +212,7 @@ const ChatScreen = ({ navigation, route }) => {
         <View style={styles.inputContainer}>
           <View style={{ flexDirection: 'row', paddingHorizontal: 8, gap: 4 }}>
             <AtttachmentButton onPress={() => handleAttachment('camera')} icon={'camera'}/>
-            <AtttachmentButton onPress={() =>handleAttachment('attachment')} icon={'attach'}/>
+            <AtttachmentButton onPress={() => handleAttachment('attachment')} icon={'attach'}/>
           </View>
           <TextInput
             style={styles.input}

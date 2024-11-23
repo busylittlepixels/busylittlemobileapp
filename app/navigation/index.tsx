@@ -270,6 +270,7 @@ const AppNavigator = () => {
                   ),
                 })} />
                 <Stack.Screen name="Chat" component={ChatScreen} options={({ navigation }) => ({
+                  headerShown: true,
                   // gestureEnabled: false,
                   // gestureDirection: 'horizontal',
                   // cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation

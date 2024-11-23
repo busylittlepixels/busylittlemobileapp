@@ -16,8 +16,8 @@ const fetchUserConversations = async (userId) => {
         .select(
             `
             *,
-            sender_profile:profiles!messages_sender_id_fkey(full_name, avatar_url),
-            receiver_profile:profiles!messages_receiver_id_fkey(full_name, avatar_url)
+            sender_profile:profiles!messages_sender_id_fkey(full_name, avatar_url, email),
+            receiver_profile:profiles!messages_receiver_id_fkey(full_name, avatar_url, email)
         `
         )
         .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
@@ -125,13 +125,14 @@ const MessagesScreen = ({ navigation }) => {
         setRefreshing(false);
     }, [loadConversations]);
 
-    const handleChatPress = (receiverId, otherUserName, otherUserAvatar) => {
+    const handleChatPress = (receiverId, otherUserName, otherUserAvatar, otherUserEmail) => {
         markMessagesAsRead(userId, receiverId);
         navigation.navigate("Chat", {
             senderId: userId,
             receiverId,
             otherUserName,
             otherUserAvatar,
+            otherUserEmail,
         });
     };
 
@@ -175,11 +176,14 @@ const MessagesScreen = ({ navigation }) => {
             : item.sender_profile;
         const otherUserName = otherUserProfile?.full_name || "Unknown User";
         const otherUserAvatar = otherUserProfile?.avatar_url;
+        const otherUserEmail = otherUserProfile?.email;
 
         const lastMessage = item.message || "No messages yet";
         const lastSenderName = item.sender_id === userId ? "You" : otherUserProfile?.full_name;
         const lastMessagePreview = `${lastSenderName}: ${lastMessage}`;
         const unreadCount = item.unreadCount;
+
+        console.log('otherUserProfile', otherUserProfile)
 
         return (
             <Swipeable
@@ -189,7 +193,7 @@ const MessagesScreen = ({ navigation }) => {
             >
                 <Pressable
                     onPress={() =>
-                        handleChatPress(otherUserId, otherUserName, otherUserAvatar)
+                        handleChatPress(otherUserId, otherUserName, otherUserAvatar, otherUserEmail)
                     }
                 >
                     <View style={styles.conversationItem}>
