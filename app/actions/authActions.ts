@@ -2,13 +2,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Dispatch } from 'redux';
 import { authService } from '../services/authService';
-import { complete } from '../services/completeOnboardingService'; // Import the service
 
 // Action Types
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
 export const SIGNUP_SUCCESS = 'SIGNUP_SUCCESS';
 export const SET_LOADING = 'SET_LOADING';
+export const SET_USER = 'SET_USER';
 
 // Action Creators
 export const login = (email: string, password: string) => async (dispatch: Dispatch) => {
@@ -54,5 +54,21 @@ export const logout = () => async (dispatch: Dispatch) => {
     dispatch({ type: LOGOUT_SUCCESS });
   } catch (error) {
     console.error('Error logging out:', error);
+  }
+};
+
+export const restoreUser = () => async (dispatch: Dispatch) => {
+  dispatch({ type: SET_LOADING, payload: true });
+
+  try {
+    const userData = await AsyncStorage.getItem('user');
+    if (userData) {
+      const user = JSON.parse(userData);
+      dispatch({ type: SET_USER, payload: user }); // Update Redux with the restored user
+    }
+  } catch (error) {
+    console.error('Error restoring user:', error);
+  } finally {
+    dispatch({ type: SET_LOADING, payload: false });
   }
 };

@@ -11,14 +11,14 @@ import Foundation
 /// Conform your Error to this protocol to override the parameters that get logged when you either:
 /// 1. Use `ErrorAnalytic` to send error analytics.
 /// 2. Build your own `Analytic` and use `serializeForV1Analytics`.
-protocol AnalyticLoggableError: Error {
+@_spi(STP) public protocol AnalyticLoggableError: Error {
     /// The value used for `"error_type"` in the analytics payload.
     /// The default implementation uses `Error.extractErrorType`
-    var errorType: String { get }
+    var analyticsErrorType: String { get }
 
     /// The value used for `"error_code"` in the analytics payload.
     /// The default implementation uses `Error.errorCode`
-    var errorCode: String { get }
+    var analyticsErrorCode: String { get }
 
     /// Additional, non-PII/PDE details about the error.
     /// If non-empty, this is sent as the value for `"error_details"` in the analytics payload.
@@ -26,12 +26,12 @@ protocol AnalyticLoggableError: Error {
 }
 
 // MARK: Default implementation
-extension AnalyticLoggableError {
-    var errorType: String {
+@_spi(STP) extension AnalyticLoggableError {
+    var analyticsErrorType: String {
         Self.extractErrorType(from: self)
     }
 
-    var errorCode: String {
+    var analyticsErrorCode: String {
         Self.extractErrorCode(from: self)
     }
 
@@ -44,21 +44,6 @@ extension AnalyticLoggableError where Self: Error {}
 
 // MARK: - Error extension methods that serialize errors for analytics logging
 @_spi(STP) extension Error {
-    /// This is like `serializeForV2Logging` but returns a single String instead of a dict.
-    /// TODO(MOBILESDK-1547) I don't think pattern is very good but it's here to share between PaymentSheet and STPPaymentContext. Please rethink before spreading its usage.
-    public func makeSafeLoggingString() -> String {
-        let error = self as NSError
-        if error.domain == STPError.stripeDomain, let code = STPErrorCode(rawValue: error.code) {
-            // An error from our networking layer
-            return code.description
-        } else {
-            // Default behavior for other errors.
-            // Note: For Swift Error enums, `domain` is the type name and `code` is the case index
-            // e.g. `LinkURLGeneratorError.noPublishableKey` -> "StripePaymentSheet.LinkURLGeneratorError, 1"
-            return "\(error.domain), \(error.code)"
-        }
-    }
-
     /// Serialize an Error for logging to q.stripe.com and the `sdk.analytics_events` table
     ///
     /// It sends the following fields:
@@ -71,14 +56,14 @@ extension AnalyticLoggableError where Self: Error {}
     public func serializeForV1Analytics() -> [String: Any] {
         let errorType: String = {
             if let analyticLoggableError = self as? AnalyticLoggableError {
-                analyticLoggableError.errorType
+                analyticLoggableError.analyticsErrorType
             } else {
                 Self.extractErrorType(from: self)
             }
         }()
         let errorCode: String = {
             if let analyticLoggableError = self as? AnalyticLoggableError {
-                analyticLoggableError.errorCode
+                analyticLoggableError.analyticsErrorCode
             } else {
                 Self.extractErrorCode(from: self)
             }
@@ -87,7 +72,9 @@ extension AnalyticLoggableError where Self: Error {}
             "error_type": errorType,
             "error_code": errorCode,
         ]
-        if let analyticLoggableError = self as? AnalyticLoggableError {
+        params["request_id"] = Self.extractStripeAPIRequestID(from: self)
+
+        if let analyticLoggableError = self as? AnalyticLoggableError, !analyticLoggableError.additionalNonPIIErrorDetails.isEmpty {
             params["error_details"] = analyticLoggableError.additionalNonPIIErrorDetails
         }
         return params
@@ -137,6 +124,17 @@ extension AnalyticLoggableError where Self: Error {}
         } else {
             // Default: Cast to Error and use the code.
             return String((error as NSError).code)
+        }
+    }
+
+    static func extractStripeAPIRequestID(from error: Error) -> String? {
+        let error = error as NSError
+        if error.domain == STPError.stripeDomain {
+            return error.userInfo[STPError.stripeRequestIDKey] as? String
+        } else if let error = error as? StripeCore.StripeError, case let .apiError(apiError) = error {
+            return apiError.requestID
+        } else {
+            return nil
         }
     }
 }

@@ -4,6 +4,7 @@ import {
   LOGOUT_SUCCESS,
   SIGNUP_SUCCESS,
   SET_LOADING,
+  SET_USER
 } from '../actions/authActions';
 
 const initialState = {
@@ -21,6 +22,8 @@ const authReducer = (state = initialState, action: any) => {
       return { ...state, loading: false };
     case SET_LOADING:
       return { ...state, loading: action.payload };
+    case SET_USER:
+      return { ...state, user: action.payload };
     default:
       return state;
   }

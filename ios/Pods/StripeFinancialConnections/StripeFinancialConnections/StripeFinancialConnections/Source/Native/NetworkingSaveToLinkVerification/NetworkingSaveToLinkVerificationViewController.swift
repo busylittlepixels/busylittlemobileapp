@@ -11,9 +11,14 @@ import Foundation
 import UIKit
 
 protocol NetworkingSaveToLinkVerificationViewControllerDelegate: AnyObject {
+    func networkingSaveToLinkVerificationViewController(
+        _ viewController: NetworkingSaveToLinkVerificationViewController,
+        didReceiveConsumerPublishableKey consumerPublishableKey: String
+    )
     func networkingSaveToLinkVerificationViewControllerDidFinish(
         _ viewController: NetworkingSaveToLinkVerificationViewController,
-        saveToLinkWithStripeSucceeded: Bool?
+        saveToLinkWithStripeSucceeded: Bool?,
+        customSuccessPaneMessage: String?
     )
     func networkingSaveToLinkVerificationViewController(
         _ viewController: NetworkingSaveToLinkVerificationViewController,
@@ -27,7 +32,7 @@ final class NetworkingSaveToLinkVerificationViewController: UIViewController {
     weak var delegate: NetworkingSaveToLinkVerificationViewControllerDelegate?
 
     private lazy var loadingView: SpinnerView = {
-        return SpinnerView()
+        return SpinnerView(theme: dataSource.manifest.theme)
     }()
     private lazy var otpView: NetworkingOTPView = {
         let otpView = NetworkingOTPView(dataSource: dataSource.networkingOTPDataSource)
@@ -79,10 +84,12 @@ final class NetworkingSaveToLinkVerificationViewController: UIViewController {
                             .log(eventName: "click.not_now", pane: .networkingSaveToLinkVerification)
                         self.delegate?.networkingSaveToLinkVerificationViewControllerDidFinish(
                             self,
-                            saveToLinkWithStripeSucceeded: nil
+                            saveToLinkWithStripeSucceeded: nil,
+                            customSuccessPaneMessage: nil
                         )
                     }
-                ) : nil
+                ) : nil,
+                theme: dataSource.manifest.theme
             ).footerView
         )
         paneLayoutView.addTo(view: view)
@@ -99,7 +106,8 @@ final class NetworkingSaveToLinkVerificationViewController: UIViewController {
     }
 
     private func markLinkVerified(
-        saveToLinkSucceeded: Bool
+        saveToLinkSucceeded: Bool,
+        customSuccessPaneMessage: String?
     ) {
         dataSource.markLinkVerified()
             .observe { [weak self] result in
@@ -108,7 +116,8 @@ final class NetworkingSaveToLinkVerificationViewController: UIViewController {
                 case .success:
                     self.delegate?.networkingSaveToLinkVerificationViewControllerDidFinish(
                         self,
-                        saveToLinkWithStripeSucceeded: saveToLinkSucceeded
+                        saveToLinkWithStripeSucceeded: saveToLinkSucceeded,
+                        customSuccessPaneMessage: customSuccessPaneMessage
                     )
                 case .failure(let error):
                     self.delegate?.networkingSaveToLinkVerificationViewController(
@@ -141,6 +150,10 @@ extension NetworkingSaveToLinkVerificationViewController: NetworkingOTPViewDeleg
         showContent(redactedPhoneNumber: consumerSession.redactedFormattedPhoneNumber)
     }
 
+    func networkingOTPView(_ view: NetworkingOTPView, didGetConsumerPublishableKey consumerPublishableKey: String) {
+        delegate?.networkingSaveToLinkVerificationViewController(self, didReceiveConsumerPublishableKey: consumerPublishableKey)
+    }
+
     func networkingOTPView(_ view: NetworkingOTPView, didFailToStartVerification error: Error) {
         showLoadingView(false)
         dataSource.analyticsClient.log(
@@ -168,8 +181,10 @@ extension NetworkingSaveToLinkVerificationViewController: NetworkingOTPViewDeleg
             .observe { [weak self] result in
                 guard let self else { return }
                 let saveToLinkSucceeded: Bool
+                let customSuccessPaneMessage: String?
                 switch result {
-                case .success:
+                case .success(let _customSuccessPaneMessage):
+                    customSuccessPaneMessage = _customSuccessPaneMessage
                     self.dataSource
                         .analyticsClient
                         .log(
@@ -178,6 +193,7 @@ extension NetworkingSaveToLinkVerificationViewController: NetworkingOTPViewDeleg
                         )
                     saveToLinkSucceeded = true
                 case .failure(let error):
+                    customSuccessPaneMessage = nil
                     self.dataSource
                         .analyticsClient
                         .log(
@@ -194,7 +210,10 @@ extension NetworkingSaveToLinkVerificationViewController: NetworkingOTPViewDeleg
                     saveToLinkSucceeded = false
                 }
 
-                self.markLinkVerified(saveToLinkSucceeded: saveToLinkSucceeded)
+                self.markLinkVerified(
+                    saveToLinkSucceeded: saveToLinkSucceeded,
+                    customSuccessPaneMessage: customSuccessPaneMessage
+                )
             }
     }
 

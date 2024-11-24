@@ -12,7 +12,11 @@ import SafariServices
 import UIKit
 
 protocol ConsentViewControllerDelegate: AnyObject {
-    func consentViewControllerDidSelectManuallyVerify(_ viewController: ConsentViewController)
+    func consentViewController(
+        _ viewController: ConsentViewController,
+        didRequestNextPane nextPane: FinancialConnectionsSessionManifest.NextPane,
+        nextPaneOrDrawerOnSecondaryCta: String?
+    )
     func consentViewController(
         _ viewController: ConsentViewController,
         didConsentWithManifest manifest: FinancialConnectionsSessionManifest
@@ -30,7 +34,7 @@ class ConsentViewController: UIViewController {
             boldFont: .heading(.extraLarge),
             linkFont: .heading(.extraLarge),
             textColor: .textDefault,
-            alignCenter: true
+            alignment: .center
         )
         titleLabel.setText(
             dataSource.consent.title,
@@ -48,6 +52,7 @@ class ConsentViewController: UIViewController {
             aboveCtaText: dataSource.consent.aboveCta,
             ctaText: dataSource.consent.cta,
             belowCtaText: dataSource.consent.belowCta,
+            theme: dataSource.manifest.theme,
             didSelectAgree: { [weak self] in
                 self?.didSelectAgree()
             },
@@ -84,7 +89,11 @@ class ConsentViewController: UIViewController {
                     trailing: 24
                 )
                 if let merchantLogo = dataSource.merchantLogo {
-                    let consentLogoView = ConsentLogoView(merchantLogo: merchantLogo)
+                    let showsAnimatedDots = dataSource.manifest.isLinkWithStripe != true
+                    let consentLogoView = ConsentLogoView(
+                        merchantLogo: merchantLogo,
+                        showsAnimatedDots: showsAnimatedDots
+                    )
                     self.consentLogoView = consentLogoView
                     verticalStackView.addArrangedSubview(consentLogoView)
                 }
@@ -104,12 +113,25 @@ class ConsentViewController: UIViewController {
         paneLayoutView.addTo(view: view)
 
         dataSource.analyticsClient.logPaneLoaded(pane: .consent)
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appWillEnterForeground),
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil
+        )
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // this fixes an issue where presenting a UIViewController
         // on top of ConsentViewController would stop the dot animation
+        consentLogoView?.animateDots()
+    }
+
+    @objc private func appWillEnterForeground() {
+        // Fixes an issue where the dot animation was stopped when the app
+        // was backgrounded, then reopened.
         consentLogoView?.animateDots()
     }
 
@@ -145,26 +167,60 @@ class ConsentViewController: UIViewController {
             url: url,
             pane: .consent,
             analyticsClient: dataSource.analyticsClient,
-            handleStripeScheme: { urlHost in
-                if urlHost == "manual-entry" {
-                    delegate?.consentViewControllerDidSelectManuallyVerify(self)
-                } else if urlHost == "data-access-notice" {
-                    let dataAccessNoticeViewController = DataAccessNoticeViewController(
-                        dataAccessNotice: dataSource.consent.dataAccessNotice,
-                        didSelectUrl: { [weak self] url in
-                            self?.didSelectURLInTextFromBackend(url)
-                        }
+            handleURL: { urlHost, nextPaneOrDrawerOnSecondaryCta in
+                guard let urlHost, let address = StripeSchemeAddress(rawValue: urlHost) else {
+                    self.dataSource
+                        .analyticsClient
+                        .logUnexpectedError(
+                            FinancialConnectionsSheetError.unknown(
+                                debugDescription: "Unknown Stripe-scheme URL detected: \(urlHost ?? "nil")."
+                            ),
+                            errorName: "ConsentStripeURLError",
+                            pane: .consent
+                        )
+                    return
+                }
+
+                switch address {
+                case .manualEntry:
+                    delegate?.consentViewController(
+                        self,
+                        didRequestNextPane: .manualEntry,
+                        nextPaneOrDrawerOnSecondaryCta: nextPaneOrDrawerOnSecondaryCta
                     )
-                    dataAccessNoticeViewController.present(on: self)
-                } else if urlHost == "legal-details-notice" {
+                case .dataAccessNotice:
+                    if let dataAccessNotice = dataSource.consent.dataAccessNotice {
+                        let dataAccessNoticeViewController = DataAccessNoticeViewController(
+                            dataAccessNotice: dataAccessNotice,
+                            theme: dataSource.manifest.theme,
+                            didSelectUrl: { [weak self] url in
+                                self?.didSelectURLInTextFromBackend(url)
+                            }
+                        )
+                        dataAccessNoticeViewController.present(on: self)
+                    }
+                case .legalDatailsNotice:
                     let legalDetailsNoticeModel = dataSource.consent.legalDetailsNotice
                     let legalDetailsNoticeViewController = LegalDetailsNoticeViewController(
                         legalDetailsNotice: legalDetailsNoticeModel,
+                        theme: dataSource.manifest.theme,
                         didSelectUrl: { [weak self] url in
                             self?.didSelectURLInTextFromBackend(url)
                         }
                     )
                     legalDetailsNoticeViewController.present(on: self)
+                case .linkAccountPicker:
+                    delegate?.consentViewController(
+                        self,
+                        didRequestNextPane: .linkAccountPicker,
+                        nextPaneOrDrawerOnSecondaryCta: nextPaneOrDrawerOnSecondaryCta
+                    )
+                case .linkLogin:
+                    delegate?.consentViewController(
+                        self,
+                        didRequestNextPane: .networkingLinkLoginWarmup,
+                        nextPaneOrDrawerOnSecondaryCta: nextPaneOrDrawerOnSecondaryCta
+                    )
                 }
             }
         )

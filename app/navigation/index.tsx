@@ -70,6 +70,8 @@ const AppNavigator = () => {
   const loading = useSelector((state) => state.auth.loading);
   const isFirstLaunch = useSelector((state) => state.onboarding.isFirstLaunch);
 
+  console.log('launch user', user?.id);
+
   if (loading) {
     return (
       <NavigationContainer independent>
@@ -88,7 +90,7 @@ const AppNavigator = () => {
         {user ? (
           <>
             {isFirstLaunch ? (
-              <Stack.Screen name="Onboarding">
+              <Stack.Screen name="Onboarding" options={{ headerShown: true}}>
                 {() => <OnboardingScreen />}
               </Stack.Screen>
             ) : (

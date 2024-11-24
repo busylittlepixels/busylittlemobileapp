@@ -13,6 +13,8 @@ import UIKit
 extension LinkInlineSignupView {
 
     final class CheckboxElement: Element {
+        let collectsUserInput: Bool = true
+
         weak var delegate: ElementDelegate?
 
         private let merchantName: String
@@ -58,6 +60,17 @@ extension LinkInlineSignupView {
         init(merchantName: String, appearance: PaymentSheet.Appearance) {
             self.merchantName = merchantName
             self.appearance = appearance
+        }
+        
+        func setUserInteraction(isUserInteractionEnabled: Bool) {
+            self.checkboxButton.isEnabled = isUserInteractionEnabled
+            if isUserInteractionEnabled {
+                self.checkboxButton.alpha = 1.0
+            }
+            else {
+                self.checkboxButton.alpha = 0.6
+            }
+            
         }
 
         @objc func didToggleCheckbox() {

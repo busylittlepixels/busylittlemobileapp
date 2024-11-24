@@ -26,7 +26,7 @@ extension PaymentOption {
         case .new(let confirmParams):
             return confirmParams.makeIcon(updateImageHandler: updateImageHandler)
         case .link:
-            return Image.pm_type_link.makeImage()
+            return Image.link_logo.makeImage()
         case .external(let paymentMethod, _):
             return PaymentSheet.PaymentMethodType.external(paymentMethod).makeImage(
                 forDarkBackground: traitCollection?.isDarkMode ?? false,
@@ -36,7 +36,7 @@ extension PaymentOption {
     }
 
     /// Returns an image to display inside a cell representing the given payment option in the saved PM collection view
-    func makeSavedPaymentMethodCellImage(for view: UIView) -> UIImage {
+    func makeSavedPaymentMethodCellImage() -> UIImage {
         switch self {
         case .applePay:
             return Image.carousel_applepay.makeImage(template: false)
@@ -46,7 +46,7 @@ extension PaymentOption {
             assertionFailure("This shouldn't be called - we don't show new PMs in the saved PM collection view")
             return UIImage()
         case .link:
-            return Image.carousel_link.makeImage(template: false)
+            return Image.link_logo.makeImage()
         case .external:
             assertionFailure("This shouldn't be called - we don't show EPMs in the saved PM collection view")
             return UIImage()
@@ -55,14 +55,20 @@ extension PaymentOption {
 }
 
 extension STPPaymentMethod {
+    /// Returns the first non-unknown card brand, prioritizing the card's preferred network brand > display brand > brand
+    func calculateCardBrandToDisplay() -> STPCardBrand {
+        guard let card else { return .unknown }
+        let preferredDisplayBrand = card.networks?.preferred?.toCardBrand
+        let displayBrand = card.displayBrand?.toCardBrand
+        return [preferredDisplayBrand, displayBrand, card.brand].compactMap { $0 }.first {
+            $0 != .unknown
+        } ?? .unknown
+    }
+
     func makeIcon() -> UIImage {
         switch type {
         case .card:
-            guard let card = card else {
-                return STPImageLibrary.unknownCardCardImage()
-            }
-
-            return STPImageLibrary.cardBrandImage(for: card.preferredDisplayBrand)
+            return STPImageLibrary.cardBrandImage(for: calculateCardBrandToDisplay())
         case .USBankAccount:
             return PaymentSheetImageLibrary.bankIcon(
                 for: PaymentSheetImageLibrary.bankIconCode(for: usBankAccount?.bankName)
@@ -82,8 +88,7 @@ extension STPPaymentMethod {
     func makeSavedPaymentMethodCellImage() -> UIImage {
         switch type {
         case .card:
-            let cardBrand = card?.preferredDisplayBrand ?? .unknown
-            return cardBrand.makeSavedPaymentMethodCellImage()
+            return calculateCardBrandToDisplay().makeSavedPaymentMethodCellImage()
         case .USBankAccount:
             return PaymentSheetImageLibrary.bankIcon(
                 for: PaymentSheetImageLibrary.bankIconCode(for: usBankAccount?.bankName)
@@ -91,7 +96,24 @@ extension STPPaymentMethod {
         case .SEPADebit:
             return Image.carousel_sepa.makeImage().withRenderingMode(.alwaysOriginal)
         case .link:
-            return Image.carousel_link.makeImage().withRenderingMode(.alwaysOriginal)
+            return Image.link_logo.makeImage().withRenderingMode(.alwaysOriginal)
+        default:
+            assertionFailure("\(type) not supported for saved PMs")
+            return makeIcon()
+        }
+    }
+
+    /// Returns an image to display inside a row representing the given payment option in the saved PM row view
+    func makeSavedPaymentMethodRowImage() -> UIImage {
+        switch type {
+        case .card:
+            return STPImageLibrary.unpaddedCardBrandImage(for: calculateCardBrandToDisplay())
+        case .USBankAccount:
+            return PaymentSheetImageLibrary.bankIcon(
+                for: PaymentSheetImageLibrary.bankIconCode(for: usBankAccount?.bankName)
+            )
+        case .SEPADebit:
+            return Image.pm_type_sepa.makeImage().withRenderingMode(.alwaysOriginal)
         default:
             assertionFailure("\(type) not supported for saved PMs")
             return makeIcon()
@@ -99,7 +121,7 @@ extension STPPaymentMethod {
     }
 }
 
-extension STPPaymentMethodParams {
+ extension STPPaymentMethodParams {
     func makeIcon(updateHandler: DownloadManager.UpdateImageHandler?) -> UIImage {
         switch type {
         case .card:
@@ -120,7 +142,7 @@ extension STPPaymentMethodParams {
             return PaymentSheet.PaymentMethodType.stripe(type).makeImage(updateHandler: updateHandler)
         }
     }
-}
+ }
 
 extension STPPaymentMethodType {
 
@@ -128,7 +150,7 @@ extension STPPaymentMethodType {
     /// light/dark agnostic icons
     var iconRequiresTinting: Bool {
         switch self {
-        case .card, .AUBECSDebit, .USBankAccount, .linkInstantDebit, .konbini, .boleto:
+        case .card, .AUBECSDebit, .USBankAccount, .konbini, .boleto:
             return true
         default:
             return false
@@ -162,7 +184,7 @@ extension STPPaymentMethodType {
                 return .pm_type_paypal
             case .AUBECSDebit:
                 return .pm_type_aubecsdebit
-            case .USBankAccount, .linkInstantDebit:
+            case .USBankAccount:
                 return .pm_type_us_bank
             case .UPI:
                 return .pm_type_upi

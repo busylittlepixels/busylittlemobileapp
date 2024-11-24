@@ -17,6 +17,7 @@ protocol NetworkingOTPViewDelegate: AnyObject {
 
     func networkingOTPViewWillStartVerification(_ view: NetworkingOTPView)
     func networkingOTPView(_ view: NetworkingOTPView, didStartVerification consumerSession: ConsumerSessionData)
+    func networkingOTPView(_ view: NetworkingOTPView, didGetConsumerPublishableKey consumerPublishableKey: String)
     func networkingOTPView(_ view: NetworkingOTPView, didFailToStartVerification error: Error)
 
     func networkingOTPViewWillConfirmVerification(_ view: NetworkingOTPView)
@@ -30,15 +31,27 @@ protocol NetworkingOTPViewDelegate: AnyObject {
 
 final class NetworkingOTPView: UIView {
 
+    enum TestModeValues {
+        static let otp = "000000"
+    }
+
     private let dataSource: NetworkingOTPDataSource
     weak var delegate: NetworkingOTPViewDelegate?
 
     private lazy var verticalStackView: UIStackView = {
-        let otpVerticalStackView = UIStackView(
-            arrangedSubviews: [
-                otpTextField,
-            ]
-        )
+        let otpVerticalStackView = UIStackView()
+
+        if dataSource.isTestMode {
+            let testModeBanner = TestModeAutofillBannerView(
+                context: .otp,
+                theme: dataSource.theme,
+                didTapAutofill: applyTestModeValue
+            )
+            otpVerticalStackView.addArrangedSubview(testModeBanner)
+        }
+
+        otpVerticalStackView.addArrangedSubview(otpTextField)
+
         otpVerticalStackView.axis = .vertical
         otpVerticalStackView.spacing = 16
         return otpVerticalStackView
@@ -54,9 +67,8 @@ final class NetworkingOTPView: UIView {
             ),
             theme: theme
         )
-        otpTextField.tintColor = .textBrand
+        otpTextField.tintColor = dataSource.theme.primaryColor
         otpTextField.addTarget(self, action: #selector(otpTextFieldDidChange), for: .valueChanged)
-        otpTextField.tintColor = .textActionPrimaryFocused
         return otpTextField
     }()
     private lazy var theme: ElementsUITheme = {
@@ -97,7 +109,7 @@ final class NetworkingOTPView: UIView {
 
         if show {
             let activityIndicator = ActivityIndicator(size: .medium)
-            activityIndicator.color = .iconActionPrimary
+            activityIndicator.color = dataSource.theme.primaryColor
             activityIndicator.startAnimating()
             let loadingView = UIStackView(
                 arrangedSubviews: [activityIndicator]
@@ -125,7 +137,7 @@ final class NetworkingOTPView: UIView {
                 linkFont: .label(.medium),
                 textColor: .textFeedbackCritical,
                 linkColor: .textFeedbackCritical,
-                alignCenter: true
+                alignment: .center
             )
             errorLabel.setText(errorText)
             let errorView = UIStackView(
@@ -151,6 +163,9 @@ final class NetworkingOTPView: UIView {
                 switch result {
                 case .success(let lookupConsumerSessionResponse):
                     if lookupConsumerSessionResponse.exists {
+                        if let consumerPublishableKey = lookupConsumerSessionResponse.publishableKey {
+                            self.delegate?.networkingOTPView(self, didGetConsumerPublishableKey: consumerPublishableKey)
+                        }
                         self.startVerification()
                     } else {
                         self.delegate?.networkingOTPViewConsumerNotFound(self)
@@ -224,4 +239,54 @@ final class NetworkingOTPView: UIView {
                 }
             }
     }
+
+    private func applyTestModeValue() {
+        otpTextField.value = TestModeValues.otp
+        otpTextFieldDidChange()
+    }
 }
+
+#if DEBUG
+
+import SwiftUI
+
+private struct NetowrkingOTPViewRepresentable: UIViewRepresentable {
+    let theme: FinancialConnectionsTheme
+
+    func makeUIView(context: Context) -> NetworkingOTPView {
+        NetworkingOTPView(dataSource: NetworkingOTPDataSourceImplementation(
+            otpType: "",
+            emailAddress: "",
+            customEmailType: nil,
+            connectionsMerchantName: nil,
+            pane: .networkingLinkVerification,
+            consumerSession: nil,
+            apiClient: FinancialConnectionsAPIClient(apiClient: .shared),
+            clientSecret: "",
+            analyticsClient: FinancialConnectionsAnalyticsClient(),
+            isTestMode: false,
+            theme: theme
+        ))
+    }
+
+    func updateUIView(_ uiView: NetworkingOTPView, context: Context) {
+        uiView.otpTextField.value = "123"
+        uiView.otpTextField.becomeFirstResponder()
+    }
+}
+
+struct NetowrkingOTPView_Previews: PreviewProvider {
+    static var previews: some View {
+        NetowrkingOTPViewRepresentable(theme: .light)
+            .frame(height: 58)
+            .padding()
+            .previewDisplayName("Light theme")
+
+        NetowrkingOTPViewRepresentable(theme: .linkLight)
+            .frame(height: 58)
+            .padding()
+            .previewDisplayName("Link Light theme")
+    }
+}
+
+#endif

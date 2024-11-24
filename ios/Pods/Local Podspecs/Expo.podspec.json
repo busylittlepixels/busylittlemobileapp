@@ -1,15 +1,15 @@
 {
   "name": "Expo",
-  "version": "51.0.34",
+  "version": "52.0.11",
   "summary": "The Expo SDK",
   "description": "The Expo SDK",
   "license": "MIT",
   "authors": "Expo",
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "platforms": {
-    "ios": "13.4",
+    "ios": "15.1",
     "osx": "10.15",
-    "tvos": "13.4"
+    "tvos": "15.1"
   },
   "source": {
     "git": "https://github.com/expo/expo.git"
@@ -21,5 +21,8 @@
 
     ]
   },
-  "source_files": "ios/**/*.{h,m,swift}"
+  "source_files": "ios/**/*.{h,m,swift}",
+  "user_target_xcconfig": {
+    "HEADER_SEARCH_PATHS": "\"${PODS_CONFIGURATION_BUILD_DIR}/Expo/Swift Compatibility Header\""
+  }
 }

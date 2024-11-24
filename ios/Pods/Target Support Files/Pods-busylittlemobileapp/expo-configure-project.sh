@@ -46,5 +46,6 @@ with_node \
   --eval "require(require.resolve('expo-modules-autolinking', { paths: [require.resolve('expo/package.json')] }))(process.argv.slice(1))" \
   generate-modules-provider  \
   --target "/Users/ronanoleary/code/busylittlemobileapp/ios/Pods/Target Support Files/Pods-busylittlemobileapp/ExpoModulesProvider.swift" \
+  --entitlement "/Users/ronanoleary/code/busylittlemobileapp/ios/busylittlemobileapp/busylittlemobileapp.entitlements" \
   --platform "apple" \
-  --packages "expo-application" "expo-asset" "expo-camera" "expo-constants" "expo-device" "expo-eas-client" "expo-file-system" "expo-font" "expo-image-picker" "expo-keep-awake" "expo-router" "expo-system-ui" "expo-updates" "expo-web-browser"
+  --packages "expo" "expo-application" "expo-asset" "expo-camera" "expo-constants" "expo-device" "expo-eas-client" "expo-file-system" "expo-font" "expo-image-picker" "expo-keep-awake" "expo-linking" "expo-router" "expo-splash-screen" "expo-system-ui" "expo-updates" "expo-web-browser"

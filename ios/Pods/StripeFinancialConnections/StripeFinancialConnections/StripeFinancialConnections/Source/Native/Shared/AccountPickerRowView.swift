@@ -11,12 +11,13 @@ import UIKit
 
 final class AccountPickerRowView: UIView {
 
+    private let theme: FinancialConnectionsTheme
     private let didSelect: () -> Void
     private var isSelected: Bool = false {
         didSet {
             layer.cornerRadius = 12
             if isSelected {
-                layer.borderColor = UIColor.textActionPrimaryFocused.cgColor
+                layer.borderColor = theme.borderColor.cgColor
                 layer.borderWidth = 2
                 let shadowWidthOffset: CGFloat = 0
                 layer.shadowPath = CGPath(
@@ -52,7 +53,7 @@ final class AccountPickerRowView: UIView {
         return InstitutionIconView()
     }()
     private lazy var checkboxView: CheckboxView = {
-        let selectionView = CheckboxView()
+        let selectionView = CheckboxView(theme: theme)
         selectionView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             selectionView.widthAnchor.constraint(equalToConstant: 16),
@@ -66,15 +67,18 @@ final class AccountPickerRowView: UIView {
 
     init(
         isDisabled: Bool,
+        isFaded: Bool,
+        theme: FinancialConnectionsTheme,
         didSelect: @escaping () -> Void
     ) {
+        self.theme = theme
         self.didSelect = didSelect
         super.init(frame: .zero)
 
         // necessary so the shadow does not appear under text
         backgroundColor = .customBackgroundColor
 
-        if isDisabled {
+        if isFaded {
             horizontalStackView.alpha = 0.25
         }
         addAndPinSubviewToSafeArea(horizontalStackView)
@@ -108,6 +112,7 @@ final class AccountPickerRowView: UIView {
         institutionIconUrl: String? = nil,
         title: String,
         subtitle: String?,
+        underlineSubtitle: Bool = false,
         balanceString: String? = nil,
         isSelected: Bool
     ) {
@@ -124,6 +129,7 @@ final class AccountPickerRowView: UIView {
         labelView.set(
             title: title,
             subtitle: subtitle,
+            underlineSubtitle: underlineSubtitle,
             balanceString: balanceString
         )
         set(isSelected: isSelected)
@@ -165,6 +171,8 @@ private struct AccountPickerRowViewUIViewRepresentable: UIViewRepresentable {
     let balanceString: String?
     let isSelected: Bool
     let isDisabled: Bool
+    let isFaded: Bool
+    let theme: FinancialConnectionsTheme
 
     init(
         institutionIconUrl: String? = nil,
@@ -172,7 +180,9 @@ private struct AccountPickerRowViewUIViewRepresentable: UIViewRepresentable {
         subtitle: String?,
         balanceString: String?,
         isSelected: Bool,
-        isDisabled: Bool
+        isDisabled: Bool,
+        isFaded: Bool,
+        theme: FinancialConnectionsTheme = .light
     ) {
         self.institutionIconUrl = institutionIconUrl
         self.title = title
@@ -180,11 +190,15 @@ private struct AccountPickerRowViewUIViewRepresentable: UIViewRepresentable {
         self.balanceString = balanceString
         self.isSelected = isSelected
         self.isDisabled = isDisabled
+        self.isFaded = isFaded
+        self.theme = theme
     }
 
     func makeUIView(context: Context) -> AccountPickerRowView {
         let view = AccountPickerRowView(
             isDisabled: isDisabled,
+            isFaded: isFaded,
+            theme: theme,
             didSelect: {}
         )
         view.set(
@@ -222,35 +236,49 @@ struct AccountPickerRowView_Previews: PreviewProvider {
                         subtitle: "••••6789",
                         balanceString: nil,
                         isSelected: true,
-                        isDisabled: false
+                        isDisabled: false,
+                        isFaded: false
                     ).frame(height: 88)
                     AccountPickerRowViewUIViewRepresentable(
                         title: "Joint Checking Very Long Name To Truncate",
                         subtitle: "••••6789",
                         balanceString: nil,
                         isSelected: true,
-                        isDisabled: false
+                        isDisabled: false,
+                        isFaded: false
+                    ).frame(height: 76)
+                    AccountPickerRowViewUIViewRepresentable(
+                        title: "Link Light Theme",
+                        subtitle: "••••6789",
+                        balanceString: nil,
+                        isSelected: true,
+                        isDisabled: false,
+                        isFaded: false,
+                        theme: .linkLight
                     ).frame(height: 76)
                     AccountPickerRowViewUIViewRepresentable(
                         title: "Joint Checking Very Long Name To Truncate",
                         subtitle: "••••6789",
                         balanceString: "$3285.53",
                         isSelected: false,
-                        isDisabled: false
+                        isDisabled: false,
+                        isFaded: false
                     ).frame(height: 76)
                     AccountPickerRowViewUIViewRepresentable(
                         title: "Joint Checking",
                         subtitle: nil,
                         balanceString: "$3285.53",
                         isSelected: false,
-                        isDisabled: false
+                        isDisabled: false,
+                        isFaded: false
                     ).frame(height: 76)
                     AccountPickerRowViewUIViewRepresentable(
                         title: "Joint Checking",
                         subtitle: "Not available",
                         balanceString: nil,
                         isSelected: false,
-                        isDisabled: true
+                        isDisabled: true,
+                        isFaded: true
                     ).frame(height: 76)
                 }.padding()
             }

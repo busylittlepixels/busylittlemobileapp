@@ -283,6 +283,10 @@ extension STPPaymentHandlerErrorCode: CustomStringConvertible {
             return "timedOutErrorCode"
         case .unsupportedAuthenticationErrorCode:
             return "unsupportedAuthenticationErrorCode"
+        case .unexpectedErrorCode:
+            return "unexpectedErrorCode"
+        case .missingReturnURL:
+            return "missingReturnURL"
         }
     }
 }
@@ -501,8 +505,6 @@ extension STPPaymentMethodType: CustomStringConvertible {
             return "klarna"
         case .link:
             return "link"
-        case .linkInstantDebit:
-            return "linkInstantDebit"
         case .netBanking:
             return "netBanking"
         case .payPal:
@@ -521,9 +523,11 @@ extension STPPaymentMethodType: CustomStringConvertible {
             return "swish"
         case .twint:
             return "TWINT"
-        case .paynow, .zip, .revolutPay, .mobilePay, .amazonPay, .alma, .konbini, .promptPay:
+        case .paynow, .zip, .revolutPay, .mobilePay, .amazonPay, .alma, .konbini, .promptPay, .sunbit, .billie, .satispay:
             // `description` is the value used when this type is converted to a string for debugging purposes, just use the display name.
             return displayName
+        case .multibanco:
+            return "multibanco"
         }
     }
 }

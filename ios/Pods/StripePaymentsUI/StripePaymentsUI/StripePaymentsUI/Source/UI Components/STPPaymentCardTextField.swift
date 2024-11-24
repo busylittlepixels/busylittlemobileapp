@@ -601,7 +601,9 @@ open class STPPaymentCardTextField: UIControl, UIKeyInput, STPFormTextFieldDeleg
         }
         let postalCodeRequested = viewModel.postalCodeRequested
         viewModel = STPPaymentCardTextFieldViewModel(brandUpdateHandler: { [weak self] in
-            self?.updateImage(for: .number)
+            guard let self else { return }
+            self.updateImage(for: .number)
+            self.onChange()
         })
         viewModel.postalCodeRequested = postalCodeRequested
         onChange()
@@ -727,7 +729,9 @@ open class STPPaymentCardTextField: UIControl, UIKeyInput, STPFormTextFieldDeleg
 
     @objc internal lazy var viewModel: STPPaymentCardTextFieldViewModel = {
         STPPaymentCardTextFieldViewModel(brandUpdateHandler: { [weak self] in
-            self?.updateImage(for: .number)
+            guard let self else { return }
+            self.updateImage(for: .number)
+            onChange()
         })
     }()
 
@@ -2401,6 +2405,17 @@ open class STPPaymentCardTextField: UIControl, UIKeyInput, STPFormTextFieldDeleg
             return
         }
         self.preferredNetworks = preferredNetworks.map { STPCardBrand(rawValue: $0.intValue) ?? .unknown }
+    }
+
+    /// The account (if any) for which the funds of the intent are intended.
+    /// The Stripe account ID (if any) which is the business of record.
+    /// See [use cases](https://docs.stripe.com/connect/charges#on_behalf_of) to determine if this option is relevant for your integration.
+    /// This should match the [on_behalf_of](https://docs.stripe.com/api/payment_intents/create#create_payment_intent-on_behalf_of)
+    /// provided on the Intent used when confirming payment.
+    public var onBehalfOf: String? {
+        didSet {
+            viewModel.cbcController.onBehalfOf = onBehalfOf
+        }
     }
 }
 

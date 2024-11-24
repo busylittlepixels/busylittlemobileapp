@@ -39,6 +39,12 @@ protocol CustomerSavedPaymentMethodsCollectionViewControllerDelegate: AnyObject 
 /// For internal SDK use only
 @objc(STP_Internal_SavedPaymentMethodsCollectionViewController)
 class CustomerSavedPaymentMethodsCollectionViewController: UIViewController {
+    enum Error: Swift.Error {
+        case didSelectRemoveOnInvalidItem
+        case didSelectEditOnInvalidItem
+        case removedInvalidItemWithUpdateCardFlow
+        case unableToDequeueReusableCell
+    }
     // MARK: - Types
     // TODO (cleanup) Replace this with didSelectX delegate methods. Turn this into a private ViewModel class
     /**
@@ -74,6 +80,7 @@ class CustomerSavedPaymentMethodsCollectionViewController: UIViewController {
     struct Configuration {
         let showApplePay: Bool
         let allowsRemovalOfLastSavedPaymentMethod: Bool
+        let paymentMethodRemove: Bool
         let isTestMode: Bool
     }
 
@@ -85,11 +92,13 @@ class CustomerSavedPaymentMethodsCollectionViewController: UIViewController {
             return false
         case 1:
             // If there's exactly one PM, customer can only edit if configuration allows removal or if that single PM is editable
-            return configuration.allowsRemovalOfLastSavedPaymentMethod || viewModels.contains(where: {
+            return (configuration.paymentMethodRemove && configuration.allowsRemovalOfLastSavedPaymentMethod) || viewModels.contains(where: {
                 $0.isCoBrandedCard && cbcEligible
             })
         default:
-            return true
+            return configuration.paymentMethodRemove || viewModels.contains(where: {
+                $0.isCoBrandedCard && cbcEligible
+            })
         }
     }
 
@@ -135,7 +144,6 @@ class CustomerSavedPaymentMethodsCollectionViewController: UIViewController {
     // MARK: - Internal Properties
     let configuration: Configuration
     let savedPaymentMethodsConfiguration: CustomerSheet.Configuration
-    let customerAdapter: CustomerAdapter
     let cbcEligible: Bool
 
     var selectedPaymentOption: PaymentOption? {
@@ -228,7 +236,6 @@ class CustomerSavedPaymentMethodsCollectionViewController: UIViewController {
         selectedPaymentMethodOption: CustomerPaymentOption?,
         mostRecentlyAddedPaymentMethod: CustomerPaymentOption?,
         savedPaymentMethodsConfiguration: CustomerSheet.Configuration,
-        customerAdapter: CustomerAdapter,
         configuration: Configuration,
         appearance: PaymentSheet.Appearance,
         cbcEligible: Bool,
@@ -238,7 +245,6 @@ class CustomerSavedPaymentMethodsCollectionViewController: UIViewController {
         self.originalSelectedSavedPaymentMethod = selectedPaymentMethodOption
         self.savedPaymentMethodsConfiguration = savedPaymentMethodsConfiguration
         self.configuration = configuration
-        self.customerAdapter = customerAdapter
         self.appearance = appearance
         self.cbcEligible = cbcEligible
         self.delegate = delegate
@@ -371,12 +377,16 @@ extension CustomerSavedPaymentMethodsCollectionViewController: UICollectionViewD
                     .reuseIdentifier, for: indexPath)
                 as? SavedPaymentMethodCollectionView.PaymentOptionCell
         else {
-            assertionFailure()
+            let errorAnalytic = ErrorAnalytic(event: .unexpectedCustomerSheetError,
+                                              error: Error.unableToDequeueReusableCell)
+            STPAnalyticsClient.sharedClient.log(analytic: errorAnalytic)
+            stpAssertionFailure()
             return UICollectionViewCell()
         }
 
         cell.setViewModel(viewModel.toSavedPaymentOptionsViewControllerSelection(),
-                          cbcEligible: cbcEligible)
+                          cbcEligible: cbcEligible,
+                          allowsPaymentMethodRemoval: configuration.paymentMethodRemove)
         cell.delegate = self
         cell.isRemovingPaymentMethods = self.collectionView.isRemovingPaymentMethods
         cell.appearance = appearance
@@ -414,16 +424,18 @@ extension CustomerSavedPaymentMethodsCollectionViewController: PaymentOptionCell
         guard let indexPath = collectionView.indexPath(for: paymentOptionCell),
               case .saved(let paymentMethod) = viewModels[indexPath.row]
         else {
-            assertionFailure()
+            let errorAnalytic = ErrorAnalytic(event: .unexpectedCustomerSheetError,
+                                              error: Error.didSelectEditOnInvalidItem)
+            STPAnalyticsClient.sharedClient.log(analytic: errorAnalytic)
+            stpAssertionFailure()
             return
         }
 
-        let editVc = UpdateCardViewController(paymentOptionCell: paymentOptionCell,
-                                              paymentMethod: paymentMethod,
+        let editVc = UpdateCardViewController(paymentMethod: paymentMethod,
                                               removeSavedPaymentMethodMessage: savedPaymentMethodsConfiguration.removeSavedPaymentMethodMessage,
                                               appearance: appearance,
                                               hostedSurface: .customerSheet,
-                                              canRemoveCard: savedPaymentMethods.count > 1 || configuration.allowsRemovalOfLastSavedPaymentMethod,
+                                              canRemoveCard: configuration.paymentMethodRemove && (savedPaymentMethods.count > 1 || configuration.allowsRemovalOfLastSavedPaymentMethod),
                                               isTestMode: configuration.isTestMode)
         editVc.delegate = self
         self.bottomSheetController?.pushContentViewController(editVc)
@@ -435,7 +447,10 @@ extension CustomerSavedPaymentMethodsCollectionViewController: PaymentOptionCell
         guard let indexPath = collectionView.indexPath(for: paymentOptionCell),
               case .saved(let paymentMethod) = viewModels[indexPath.row]
         else {
-            assertionFailure("Please file an issue with reproduction steps at https://github.com/stripe/stripe-ios")
+            let errorAnalytic = ErrorAnalytic(event: .unexpectedCustomerSheetError,
+                                              error: Error.didSelectRemoveOnInvalidItem)
+            STPAnalyticsClient.sharedClient.log(analytic: errorAnalytic)
+            stpAssertionFailure()
             return
         }
         let alert = UIAlertAction(
@@ -504,35 +519,40 @@ extension CustomerSavedPaymentMethodsCollectionViewController: PaymentOptionCell
 // MARK: - UpdateCardViewControllerDelegate
 /// :nodoc:
 extension CustomerSavedPaymentMethodsCollectionViewController: UpdateCardViewControllerDelegate {
-    func didUpdate(paymentOptionCell: SavedPaymentMethodCollectionView.PaymentOptionCell,
+    func didUpdate(viewController: UpdateCardViewController,
+                   paymentMethod: STPPaymentMethod,
                    updateParams: StripePayments.STPPaymentMethodUpdateParams) async throws {
-        guard let indexPath = collectionView.indexPath(for: paymentOptionCell),
-              case .saved = viewModels[indexPath.row],
+        guard let row = viewModels.firstIndex(where: { $0.toSavedPaymentOptionsViewControllerSelection().savedPaymentMethod?.stripeId == paymentMethod.stripeId }),
               let delegate = delegate
         else {
-            assertionFailure()
+            stpAssertionFailure()
             throw CustomerSheetError.unknown(debugDescription: NSError.stp_unexpectedErrorMessage())
         }
 
-        let viewModel = viewModels[indexPath.row]
+        let viewModel = viewModels[row]
         let updatedPaymentMethod = try await delegate.didSelectUpdate(viewController: self,
                                                     paymentMethodSelection: viewModel,
                                                     updateParams: updateParams)
 
         let updatedViewModel: Selection = .saved(paymentMethod: updatedPaymentMethod)
-        viewModels[indexPath.row] = updatedViewModel
+        viewModels[row] = updatedViewModel
         collectionView.reloadData()
+        _ = viewController.bottomSheetController?.popContentViewController()
     }
 
-    func didRemove(paymentOptionCell: SavedPaymentMethodCollectionView.PaymentOptionCell) {
-        guard let indexPath = collectionView.indexPath(for: paymentOptionCell),
-              case .saved(let paymentMethod) = viewModels[indexPath.row]
+    func didRemove(viewController: UpdateCardViewController,
+                   paymentMethod: STPPaymentMethod) {
+        guard let row = viewModels.firstIndex(where: { $0.toSavedPaymentOptionsViewControllerSelection().savedPaymentMethod?.stripeId == paymentMethod.stripeId })
         else {
-            assertionFailure("Please file an issue with reproduction steps at https://github.com/stripe/stripe-ios")
+            let errorAnalytic = ErrorAnalytic(event: .unexpectedCustomerSheetError,
+                                              error: Error.removedInvalidItemWithUpdateCardFlow)
+            STPAnalyticsClient.sharedClient.log(analytic: errorAnalytic)
+            stpAssertionFailure()
             return
         }
 
-        removePaymentMethod(indexPath: indexPath, paymentMethod: paymentMethod)
+        removePaymentMethod(indexPath: IndexPath(row: row, section: 0), paymentMethod: paymentMethod)
+        _ = viewController.bottomSheetController?.popContentViewController()
     }
 
 }

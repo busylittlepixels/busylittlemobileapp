@@ -1,6 +1,6 @@
 {
   "name": "stripe-react-native",
-  "version": "0.37.2",
+  "version": "0.38.6",
   "summary": "Stripe SDK for React Native",
   "homepage": "https://github.com/stripe/stripe-react-native/#readme",
   "license": "MIT",
@@ -10,7 +10,7 @@
   },
   "source": {
     "git": "https://github.com/stripe/stripe-react-native.git",
-    "tag": "0.37.2"
+    "tag": "0.38.6"
   },
   "source_files": "ios/**/*.{h,m,mm,swift}",
   "exclude_files": "ios/Tests/",
@@ -19,22 +19,22 @@
 
     ],
     "Stripe": [
-      "~> 23.26.0"
+      "~> 23.28.0"
     ],
     "StripePaymentSheet": [
-      "~> 23.26.0"
+      "~> 23.28.0"
     ],
     "StripePayments": [
-      "~> 23.26.0"
+      "~> 23.28.0"
     ],
     "StripePaymentsUI": [
-      "~> 23.26.0"
+      "~> 23.28.0"
     ],
     "StripeApplePay": [
-      "~> 23.26.0"
+      "~> 23.28.0"
     ],
     "StripeFinancialConnections": [
-      "~> 23.26.0"
+      "~> 23.28.0"
     ]
   },
   "testspecs": [

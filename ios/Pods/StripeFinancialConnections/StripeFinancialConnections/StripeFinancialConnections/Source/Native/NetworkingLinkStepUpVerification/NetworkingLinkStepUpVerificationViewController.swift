@@ -13,7 +13,14 @@ import UIKit
 protocol NetworkingLinkStepUpVerificationViewControllerDelegate: AnyObject {
     func networkingLinkStepUpVerificationViewController(
         _ viewController: NetworkingLinkStepUpVerificationViewController,
-        didCompleteVerificationWithInstitution institution: FinancialConnectionsInstitution
+        didReceiveConsumerPublishableKey consumerPublishableKey: String
+    )
+    func networkingLinkStepUpVerificationViewController(
+        _ viewController: NetworkingLinkStepUpVerificationViewController,
+        didCompleteVerificationWithInstitution institution: FinancialConnectionsInstitution?,
+        nextPane: FinancialConnectionsSessionManifest.NextPane,
+        customSuccessPaneCaption: String?,
+        customSuccessPaneSubCaption: String?
     )
     func networkingLinkStepUpVerificationViewController(
         _ viewController: NetworkingLinkStepUpVerificationViewController,
@@ -30,10 +37,11 @@ final class NetworkingLinkStepUpVerificationViewController: UIViewController {
     weak var delegate: NetworkingLinkStepUpVerificationViewControllerDelegate?
 
     private lazy var fullScreenLoadingView: UIView = {
-        return SpinnerView()
+        return SpinnerView(theme: dataSource.manifest.theme)
     }()
     private lazy var bodyView: NetworkingLinkStepUpVerificationBodyView = {
         let bodyView = NetworkingLinkStepUpVerificationBodyView(
+            theme: dataSource.manifest.theme,
             otpView: otpView,
             didSelectResendCode: { [weak self] in
                 self?.didSelectResendCode()
@@ -131,6 +139,10 @@ final class NetworkingLinkStepUpVerificationViewController: UIViewController {
 
 extension NetworkingLinkStepUpVerificationViewController: NetworkingOTPViewDelegate {
 
+    func networkingOTPView(_ view: NetworkingOTPView, didGetConsumerPublishableKey consumerPublishableKey: String) {
+        delegate?.networkingLinkStepUpVerificationViewController(self, didReceiveConsumerPublishableKey: consumerPublishableKey)
+    }
+
     func networkingOTPViewWillStartConsumerLookup(_ view: NetworkingOTPView) {
         if !didShowContent {
             showFullScreenLoadingView(true)
@@ -209,7 +221,7 @@ extension NetworkingLinkStepUpVerificationViewController: NetworkingOTPViewDeleg
                         .observe { [weak self] result in
                             guard let self = self else { return }
                             switch result {
-                            case .success(let institutionList):
+                            case .success(let response):
                                 self.dataSource
                                     .analyticsClient
                                     .log(
@@ -217,16 +229,16 @@ extension NetworkingLinkStepUpVerificationViewController: NetworkingOTPViewDeleg
                                         pane: .networkingLinkStepUpVerification
                                     )
 
-                                if let institution = institutionList.data.first {
-                                    self.delegate?.networkingLinkStepUpVerificationViewController(
-                                        self,
-                                        didCompleteVerificationWithInstitution: institution
-                                    )
-                                } else {
-                                    // this shouldn't happen, but in case it does, we navigate to `institutionPicker` so user
-                                    // could still have a chance at successfully connecting their account
-                                    self.delegate?.networkingLinkStepUpVerificationViewControllerEncounteredSoftError(self)
-                                }
+                                let nextPane = response.nextPane ?? .success
+                                let successPane = response.displayText?.text?.succcessPane
+                                self.delegate?.networkingLinkStepUpVerificationViewController(
+                                    self,
+                                    // networking manual entry will not return an institution
+                                    didCompleteVerificationWithInstitution: response.data.first,
+                                    nextPane: nextPane,
+                                    customSuccessPaneCaption: successPane?.caption,
+                                    customSuccessPaneSubCaption: successPane?.subCaption
+                                )
 
                                 // only hide loading view after animation
                                 // to next screen has completed

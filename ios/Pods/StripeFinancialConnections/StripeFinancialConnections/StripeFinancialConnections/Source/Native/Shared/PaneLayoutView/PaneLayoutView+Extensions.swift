@@ -17,6 +17,7 @@ extension PaneLayoutView {
         iconView: UIView?,
         title: String?,
         subtitle: String?,
+        headerAlignment: UIStackView.Alignment = .leading,
         contentView: UIView?,
         isSheet: Bool = false
     ) -> UIView {
@@ -27,6 +28,7 @@ extension PaneLayoutView {
             let headerView = createHeaderView(
                 iconView: iconView,
                 title: title,
+                alignment: headerAlignment,
                 isSheet: isSheet
             )
             verticalStackView.addArrangedSubview(headerView)
@@ -45,12 +47,13 @@ extension PaneLayoutView {
     static func createHeaderView(
         iconView: UIView?,
         title: String?,
+        alignment: UIStackView.Alignment = .leading,
         isSheet: Bool = false
     ) -> UIView {
         let headerStackView = HitTestStackView()
         headerStackView.axis = .vertical
         headerStackView.spacing = 16
-        headerStackView.alignment = .leading
+        headerStackView.alignment = alignment
         if let iconView = iconView {
             headerStackView.addArrangedSubview(iconView)
         }
@@ -145,6 +148,8 @@ extension PaneLayoutView {
         primaryButtonConfiguration: PaneLayoutView.ButtonConfiguration?,
         secondaryButtonConfiguration: PaneLayoutView.ButtonConfiguration? = nil,
         topText: String? = nil,
+        theme: FinancialConnectionsTheme,
+        bottomText: String? = nil,
         didSelectURL: ((URL) -> Void)? = nil
     ) -> (footerView: UIView?, primaryButton: StripeUICore.Button?, secondaryButton: StripeUICore.Button?) {
         guard
@@ -165,7 +170,7 @@ extension PaneLayoutView {
                 boldFont: .label(.smallEmphasized),
                 linkFont: .label(.small),
                 textColor: .textDefault,
-                alignCenter: true
+                alignment: .center
             )
             topTextLabel.setText(
                 topText,
@@ -177,7 +182,7 @@ extension PaneLayoutView {
 
         var primaryButtonReference: StripeUICore.Button?
         if let primaryButtonConfiguration = primaryButtonConfiguration {
-            let primaryButton = Button.primary()
+            let primaryButton = Button.primary(theme: theme)
             primaryButtonReference = primaryButton
             primaryButton.title = primaryButtonConfiguration.title
             primaryButton.accessibilityIdentifier = primaryButtonConfiguration.accessibilityIdentifier
@@ -211,6 +216,24 @@ extension PaneLayoutView {
             footerStackView.addArrangedSubview(secondaryButton)
         }
 
+        if let bottomText {
+            let bottomTextLabel = AttributedTextView(
+                font: .label(.small),
+                boldFont: .label(.smallEmphasized),
+                linkFont: .label(.small),
+                textColor: .textDefault,
+                alignment: .center
+            )
+            bottomTextLabel.setText(
+                bottomText,
+                action: didSelectURL ?? { _ in }
+            )
+            if let lastView = footerStackView.arrangedSubviews.last {
+                footerStackView.setCustomSpacing(24, after: lastView)
+            }
+            footerStackView.addArrangedSubview(bottomTextLabel)
+        }
+
         let paddingStackView = HitTestStackView(
             arrangedSubviews: [
                 footerStackView
@@ -218,9 +241,9 @@ extension PaneLayoutView {
         )
         paddingStackView.isLayoutMarginsRelativeArrangement = true
         paddingStackView.directionalLayoutMargins = NSDirectionalEdgeInsets(
-            top: 16,
+            top: Constants.Layout.defaultVerticalPadding,
             leading: Constants.Layout.defaultHorizontalMargin,
-            bottom: 16,
+            bottom: Constants.Layout.defaultVerticalPadding,
             trailing: Constants.Layout.defaultHorizontalMargin
         )
         return (paddingStackView, primaryButtonReference, secondaryButtonReference)
