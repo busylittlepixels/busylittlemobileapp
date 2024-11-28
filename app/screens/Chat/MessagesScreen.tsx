@@ -1,5 +1,6 @@
 // MessagesScreen.tsx
 // @ts-nocheck
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, FlatList, Pressable, StyleSheet, RefreshControl, ActivityIndicator, Alert, Image } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
@@ -99,24 +100,51 @@ const MessagesScreen = ({ navigation }) => {
     const [refreshing, setRefreshing] = useState(false);
     const user = useSelector((state) => state.auth.user);
     const userId = user?.id;
-    const loadConversations = useCallback(async () => {
+
+    
+    const isUserLoggedIn = async () => {
         try {
-            const data = await fetchUserConversations(userId);
-            setConversations(data);
+            const userData = await AsyncStorage.getItem('user');
+            return userData !== null;
         } catch (error) {
-            console.error("Error loading conversations:", error);
+            console.error("Error checking user in AsyncStorage:", error);
+            return false;
+        }
+    };
+
+    const loadConversations = useCallback(async () => {
+        if (userId) {
+            try {
+                const data = await fetchUserConversations(userId);
+                setConversations(data);
+            } catch (error) {
+                console.error("Error loading conversations:", error);
+            }
+        } else {
+            console.log("No user ID found. Skipping conversation load.");
         }
     }, [userId]);
 
+    // Check and load conversations only if the user is logged in
     useEffect(() => {
-        loadConversations();
-    }, [loadConversations]);
+        const checkAndLoadConversations = async () => {
+            const userLoggedIn = await isUserLoggedIn();
+            if (userLoggedIn && userId) {
+                await loadConversations();
+            } else {
+                console.log("No user is logged in. Skipping conversation load.");
+            }
+        };
+
+        checkAndLoadConversations();
+    }, [userId, loadConversations]);
 
     useFocusEffect(
         useCallback(() => {
-            loadConversations();
-            markMessagesAsRead(userId);
-        }, [loadConversations, userId])
+            if (userId) {
+                markMessagesAsRead(userId);
+            }
+        }, [userId])
     );
 
     const onRefresh = useCallback(async () => {
