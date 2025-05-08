@@ -5,7 +5,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Text, View, Button, Pressable } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, NavigationIndependentTree } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SplashScreen from '../screens/Login/SplashScreen';
@@ -74,235 +74,239 @@ const AppNavigator = () => {
 
   if (loading) {
     return (
-      <NavigationContainer independent>
-        <Stack.Navigator>
-          <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <NavigationIndependentTree>
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </NavigationIndependentTree>
     );
   }
 
   return (
-    <NavigationContainer independent>
-      <Stack.Navigator screenOptions={{
-        headerShown: true,
-      }}>
-        {user ? (
-          <>
-            {isFirstLaunch ? (
-              <Stack.Screen name="Onboarding" options={{ headerShown: true}}>
-                {() => <OnboardingScreen />}
-              </Stack.Screen>
-            ) : (
-              <>
-                {/* <Stack.Screen name="Account" component={MainDrawerNavigator} options={{ headerShown: false }} /> */}
-                <Stack.Screen name="Account"
-                  component={MainDrawerNavigator}
-                  options={({ route }) => ({
-                    headerShown: false, 
-                    gestureEnabled: true, // Enable gesture for swipe back
-                    cardStyleInterpolator: route.params?.fromCities
-                      ? CardStyleInterpolators.forHorizontalIOS
-                      : undefined, // Apply left-to-right transition only if navigating from CitiesScreen
-                    gestureDirection: route.params?.fromCities ? 'horizontal-inverted' : 'horizontal', // Slide from left if coming from CitiesScreen
+    <NavigationIndependentTree>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{
+          headerShown: true,
+        }}>
+          {user ? (
+            <>
+              {isFirstLaunch ? (
+                <Stack.Screen name="Onboarding" options={{ headerShown: true}}>
+                  {() => <OnboardingScreen />}
+                </Stack.Screen>
+              ) : (
+                <>
+                  {/* <Stack.Screen name="Account" component={MainDrawerNavigator} options={{ headerShown: false }} /> */}
+                  <Stack.Screen name="Account"
+                    component={MainDrawerNavigator}
+                    options={({ route }) => ({
+                      headerShown: false, 
+                      gestureEnabled: true, // Enable gesture for swipe back
+                      cardStyleInterpolator: route.params?.fromCities
+                        ? CardStyleInterpolators.forHorizontalIOS
+                        : undefined, // Apply left-to-right transition only if navigating from CitiesScreen
+                      gestureDirection: route.params?.fromCities ? 'horizontal-inverted' : 'horizontal', // Slide from left if coming from CitiesScreen
+                    })}
+                  />
+                  <Stack.Screen name="Profile" 
+                    component={ProfileScreen} 
+                    options={{ headerTintColor: '#000', headerShown: true, headerBackTitle: 'Back', headerBackTitleVisible: true }} 
+                  />
+                  <Stack.Screen name="Event" component={EventScreen} options={{ 
+                    gestureEnabled: false,
+                    // gestureDirection: 'vertical',
+                    // cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
+                    headerTintColor: '#000',
+                    headerBackTitle: 'Back', // Change the back button text
+                    headerBackTitleVisible: true, // Ensures the back button text is visible/>
+                    headerShown: true  
+                  }} />
+                  <Stack.Screen name="MyPersonalSchedule" component={MyPersonalSchedule} />
+                  <Stack.Screen name="MyEvents" component={MyEventsScreen} options={{ headerShown: false }} />
+                  <Stack.Screen name="Calendar" component={SettingsScreen} options={({ navigation }) => ({
+                    gestureEnabled: false,
+                    gestureDirection: 'vertical',
+                    cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
+                    headerTintColor: '#000',
+                    headerBackTitle: 'Go Back', // Change the back button text
+                    headerBackTitleVisible: true, // Ensures the back button text is visible
+                    headerRight: () => (
+                      <View style={{ display: 'flex', flexDirection: 'row' }}>
+                        <Pressable
+                          onPress={() => navigation.goBack()} // Navigate to the Search screen
+                          style={{ marginRight: 15 }}
+                        >
+                          <Ionicons name="close-outline" size={24} color="black" />
+                        </Pressable>
+                      </View>
+                    ),
+                  })} />
+                  <Stack.Screen name="CalendarEvent" component={CalendarEventScreen} options={({ navigation }) => ({
+                    headerShown: true,
+                    gestureEnabled: false,
+                    gestureDirection: 'vertical',
+                    cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
+                    headerTintColor: '#000',
+                    headerBackTitle: 'Go Back', // Change the back button text
+                    headerBackTitleVisible: true, // Ensures the back button text is visible
+                    headerRight: () => (
+                      <View style={{ display: 'flex', flexDirection: 'row' }}>
+                        <Pressable
+                          onPress={() => navigation.goBack()} // Navigate to the Search screen
+                          style={{ marginRight: 15 }}
+                        >
+                          <Ionicons name="close-outline" size={24} color="black" />
+                        </Pressable>
+                      </View>
+                    ),
+                  })} />
+                  <Stack.Screen name="Article" component={ArticleScreen} options={{ headerTintColor: '#000', headerShown: true, headerBackTitle: 'Back', headerBackTitleVisible: true }} />
+                  <Stack.Screen name="Cities" component={CitiesScreen} options={{ headerShown: false }} />
+                  <Stack.Screen name="City" component={CityScreen} options={{ headerTintColor: '#000', headerShown: true, headerBackTitle: 'Back', headerBackTitleVisible: true }} />
+                  <Stack.Screen name="Search" component={SearchScreen} options={({ navigation }) => ({
+                    gestureEnabled: false,
+                    gestureDirection: 'vertical',
+                    cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
+                    headerTintColor: '#000',  
+                    headerRight: () => (
+                      <View style={{ display: 'flex', flexDirection: 'row' }}>
+                        <Pressable
+                          onPress={() => navigation.goBack()} // Navigate to the Search screen
+                          style={{ marginRight: 15 }}
+                        >
+                          <Ionicons name="close-outline" size={24} color="black" />
+                        </Pressable>
+                      </View>
+                    ),
+                  })} />
+                  <Stack.Screen name="UpdateDetails" component={UpdateDetailsScreen} options={{ headerShown: true }} />
+                  <Stack.Screen name="Camera" component={CameraScreen} options={({ navigation }) => ({
+                    gestureEnabled: false,
+                    gestureDirection: 'vertical',
+                    cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
+                    headerTintColor: '#000',
+                    headerBackTitle: 'Back', // Change the back button text
+                    headerBackTitleVisible: true, // Ensures the back button text is visible
+                    headerRight: () => (
+                      <View style={{ display: 'flex', flexDirection: 'row' }}>
+                        <Pressable
+                          onPress={() => navigation.navigate('Profile', { screen: 'MyContacts' })} // Navigate to the Profile screen
+                          style={{ marginRight: 15 }}
+                        >
+                          <Ionicons name="people-outline" size={24} color="black" />
+                        </Pressable>
+                      </View>
+                    ),
+                  })} />
+                  <Stack.Screen name="MyQR" component={MyQRCodeScreen} options={({ navigation }) => ({
+                    gestureEnabled: false,
+                    gestureDirection: 'vertical',
+                    cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
+                    headerTintColor: '#000',
+                    headerBackTitle: 'Back', // Change the back button text
+                    headerBackTitleVisible: true, // Ensures the back button text is visible/>
+                    headerShown: 'false'
+                  })} />
+                  <Stack.Screen name="MyContacts" component={MyContacts} options={({ navigation }) => ({
+                    gestureEnabled: false,
+                    gestureDirection: 'vertical',
+                    cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
+                    headerTintColor: '#000',
+                    headerBackTitle: 'Back', // Change the back button text
+                    headerBackTitleVisible: true, // Ensures the back button text is visible
+                    headerRight: () => (
+                      <View style={{ display: 'flex', flexDirection: 'row' }}>
+                        <Pressable
+                          onPress={() => navigation.navigate('Camera')} // Navigate to the Profile screen
+                          style={{ marginRight: 15 }}
+                        >
+                          <Ionicons name="camera-outline" size={24} color="black" />
+                        </Pressable>
+                      </View>
+                    ),
                   })}
-                />
-                <Stack.Screen name="Profile" 
-                  component={ProfileScreen} 
-                  options={{ headerTintColor: '#000', headerShown: true, headerBackTitle: 'Back', headerBackTitleVisible: true }} 
-                />
-                <Stack.Screen name="Event" component={EventScreen} options={{ 
-                  gestureEnabled: false,
-                  // gestureDirection: 'vertical',
-                  // cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
-                  headerTintColor: '#000',
-                  headerBackTitle: 'Back', // Change the back button text
-                  headerBackTitleVisible: true, // Ensures the back button text is visible/>
-                  headerShown: true  
-                }} />
-                <Stack.Screen name="MyPersonalSchedule" component={MyPersonalSchedule} />
-                <Stack.Screen name="MyEvents" component={MyEventsScreen} options={{ headerShown: false }} />
-                <Stack.Screen name="Calendar" component={SettingsScreen} options={({ navigation }) => ({
-                  gestureEnabled: false,
-                  gestureDirection: 'vertical',
-                  cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
-                  headerTintColor: '#000',
-                  headerBackTitle: 'Go Back', // Change the back button text
-                  headerBackTitleVisible: true, // Ensures the back button text is visible
-                  headerRight: () => (
-                    <View style={{ display: 'flex', flexDirection: 'row' }}>
-                      <Pressable
-                        onPress={() => navigation.goBack()} // Navigate to the Search screen
-                        style={{ marginRight: 15 }}
-                      >
-                        <Ionicons name="close-outline" size={24} color="black" />
-                      </Pressable>
-                    </View>
-                  ),
-                })} />
-                <Stack.Screen name="CalendarEvent" component={CalendarEventScreen} options={({ navigation }) => ({
-                  headerShown: true,
-                  gestureEnabled: false,
-                  gestureDirection: 'vertical',
-                  cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
-                  headerTintColor: '#000',
-                  headerBackTitle: 'Go Back', // Change the back button text
-                  headerBackTitleVisible: true, // Ensures the back button text is visible
-                  headerRight: () => (
-                    <View style={{ display: 'flex', flexDirection: 'row' }}>
-                      <Pressable
-                        onPress={() => navigation.goBack()} // Navigate to the Search screen
-                        style={{ marginRight: 15 }}
-                      >
-                        <Ionicons name="close-outline" size={24} color="black" />
-                      </Pressable>
-                    </View>
-                  ),
-                })} />
-                <Stack.Screen name="Article" component={ArticleScreen} options={{ headerTintColor: '#000', headerShown: true, headerBackTitle: 'Back', headerBackTitleVisible: true }} />
-                <Stack.Screen name="Cities" component={CitiesScreen} options={{ headerShown: false }} />
-                <Stack.Screen name="City" component={CityScreen} options={{ headerTintColor: '#000', headerShown: true, headerBackTitle: 'Back', headerBackTitleVisible: true }} />
-                <Stack.Screen name="Search" component={SearchScreen} options={({ navigation }) => ({
-                  gestureEnabled: false,
-                  gestureDirection: 'vertical',
-                  cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
-                  headerTintColor: '#000',  
-                  headerRight: () => (
-                    <View style={{ display: 'flex', flexDirection: 'row' }}>
-                      <Pressable
-                        onPress={() => navigation.goBack()} // Navigate to the Search screen
-                        style={{ marginRight: 15 }}
-                      >
-                        <Ionicons name="close-outline" size={24} color="black" />
-                      </Pressable>
-                    </View>
-                  ),
-                })} />
-                <Stack.Screen name="UpdateDetails" component={UpdateDetailsScreen} options={{ headerShown: true }} />
-                <Stack.Screen name="Camera" component={CameraScreen} options={({ navigation }) => ({
-                  gestureEnabled: false,
-                  gestureDirection: 'vertical',
-                  cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
-                  headerTintColor: '#000',
-                  headerBackTitle: 'Back', // Change the back button text
-                  headerBackTitleVisible: true, // Ensures the back button text is visible
-                  headerRight: () => (
-                    <View style={{ display: 'flex', flexDirection: 'row' }}>
-                      <Pressable
-                        onPress={() => navigation.navigate('Profile', { screen: 'MyContacts' })} // Navigate to the Profile screen
-                        style={{ marginRight: 15 }}
-                      >
-                        <Ionicons name="people-outline" size={24} color="black" />
-                      </Pressable>
-                    </View>
-                  ),
-                })} />
-                <Stack.Screen name="MyQR" component={MyQRCodeScreen} options={({ navigation }) => ({
-                  gestureEnabled: false,
-                  gestureDirection: 'vertical',
-                  cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
-                  headerTintColor: '#000',
-                  headerBackTitle: 'Back', // Change the back button text
-                  headerBackTitleVisible: true, // Ensures the back button text is visible/>
-                  headerShown: 'false'
-                })} />
-                <Stack.Screen name="MyContacts" component={MyContacts} options={({ navigation }) => ({
-                  gestureEnabled: false,
-                  gestureDirection: 'vertical',
-                  cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
-                  headerTintColor: '#000',
-                  headerBackTitle: 'Back', // Change the back button text
-                  headerBackTitleVisible: true, // Ensures the back button text is visible
-                  headerRight: () => (
-                    <View style={{ display: 'flex', flexDirection: 'row' }}>
-                      <Pressable
-                        onPress={() => navigation.navigate('Camera')} // Navigate to the Profile screen
-                        style={{ marginRight: 15 }}
-                      >
-                        <Ionicons name="camera-outline" size={24} color="black" />
-                      </Pressable>
-                    </View>
-                  ),
-                })}
-                />
-                <Stack.Screen name="AgendaIrem" component={PaymentScreen} />
-                <Stack.Screen name="Payment" component={PaymentScreen} />
-                <Stack.Screen name="General" component={TabEileScreen} 
-                  options={({ navigation }) => ({
-                  gestureEnabled: false,
-                  gestureDirection: 'vertical',
-                  cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
-                  headerTintColor: '#000',
-                  headerBackTitle: 'Back', // Change the back button text
-                  headerBackTitleVisible: true, // Ensures the back button text is visible
-                  headerRight: () => (
-                    <View style={{ display: 'flex', flexDirection: 'row' }}>
-                      <Pressable
-                        onPress={() => navigation.navigate('Profile')} // Navigate to the Profile screen
-                        style={{ marginRight: 15 }}
-                      >
-                        <Ionicons name="person-outline" size={24} color="black" />
-                      </Pressable>
-                      <Pressable
-                        onPress={() => navigation.navigate('Search')} // Navigate to the Search screen
-                        style={{ marginRight: 15 }}
-                      >
-                        <Ionicons name="search-outline" size={24} color="black" />
-                      </Pressable>
-                    </View>
-                  ),
-                })} />
-                <Stack.Screen name="FriendProfile" component={FriendProfileScreen} options={({ navigation }) => ({
-                  gestureEnabled: false,
-                  gestureDirection: 'horizontal',
-                  cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
-                  headerTintColor: '#000',
-                  headerTitle: 'Contact Info',
-                  headerBackTitle: 'Back', // Change the back button text
-                  headerBackTitleVisible: true, // Ensures the back button text is visible
-                  headerRight: () => (
-                    <View style={{ display: 'flex', flexDirection: 'row' }}>
-                      <Pressable
-                        onPress={() => navigation.goBack()} 
-                        style={{ marginRight: 15 }}
-                      >
-                        <Ionicons name="close-outline" size={24} color="black" />
-                      </Pressable>
-                    </View>
-                  ),
-                })} />
-                <Stack.Screen name="Chat" component={ChatScreen} options={({ navigation }) => ({
-                  headerShown: true,
-                  // gestureEnabled: false,
-                  // gestureDirection: 'horizontal',
-                  // cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
-                  headerTintColor: '#000',
-                  headerBackTitle: 'Back', // Change the back button text
-                  headerBackTitleVisible: true, // Ensures the back button text is visible
-                  headerRight: () => (
-                    <View style={{ display: 'flex', flexDirection: 'row' }}>
-                      <Pressable
-                        onPress={() => navigation.goBack()}
-                        style={{ marginRight: 15 }}
-                      >
-                        <Ionicons name="close-outline" size={24} color="black" />
-                      </Pressable>
-                    </View>
-                  ),
-                })} />
-              </>
-            )}
-          </>
-        ) : (
-          <>
-            <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
-            <Stack.Screen name="Auth" component={LoginScreen} options={{ headerShown: false }} />
-            <Stack.Screen name="ResetPass" component={ResetPassScreen} options={{ headerShown: false }} />
-            <Stack.Screen name="SignUp" component={SignUpScreen} options={{ headerShown: false }} />
-          </>
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+                  />
+                  <Stack.Screen name="AgendaIrem" component={PaymentScreen} />
+                  <Stack.Screen name="Payment" component={PaymentScreen} />
+                  <Stack.Screen name="General" component={TabEileScreen} 
+                    options={({ navigation }) => ({
+                    gestureEnabled: false,
+                    gestureDirection: 'vertical',
+                    cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
+                    headerTintColor: '#000',
+                    headerBackTitle: 'Back', // Change the back button text
+                    headerBackTitleVisible: true, // Ensures the back button text is visible
+                    headerRight: () => (
+                      <View style={{ display: 'flex', flexDirection: 'row' }}>
+                        <Pressable
+                          onPress={() => navigation.navigate('Profile')} // Navigate to the Profile screen
+                          style={{ marginRight: 15 }}
+                        >
+                          <Ionicons name="person-outline" size={24} color="black" />
+                        </Pressable>
+                        <Pressable
+                          onPress={() => navigation.navigate('Search')} // Navigate to the Search screen
+                          style={{ marginRight: 15 }}
+                        >
+                          <Ionicons name="search-outline" size={24} color="black" />
+                        </Pressable>
+                      </View>
+                    ),
+                  })} />
+                  <Stack.Screen name="FriendProfile" component={FriendProfileScreen} options={({ navigation }) => ({
+                    gestureEnabled: false,
+                    gestureDirection: 'horizontal',
+                    cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
+                    headerTintColor: '#000',
+                    headerTitle: 'Contact Info',
+                    headerBackTitle: 'Back', // Change the back button text
+                    headerBackTitleVisible: true, // Ensures the back button text is visible
+                    headerRight: () => (
+                      <View style={{ display: 'flex', flexDirection: 'row' }}>
+                        <Pressable
+                          onPress={() => navigation.goBack()} 
+                          style={{ marginRight: 15 }}
+                        >
+                          <Ionicons name="close-outline" size={24} color="black" />
+                        </Pressable>
+                      </View>
+                    ),
+                  })} />
+                  <Stack.Screen name="Chat" component={ChatScreen} options={({ navigation }) => ({
+                    headerShown: true,
+                    // gestureEnabled: false,
+                    // gestureDirection: 'horizontal',
+                    // cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Custom modal animation
+                    headerTintColor: '#000',
+                    headerBackTitle: 'Back', // Change the back button text
+                    headerBackTitleVisible: true, // Ensures the back button text is visible
+                    headerRight: () => (
+                      <View style={{ display: 'flex', flexDirection: 'row' }}>
+                        <Pressable
+                          onPress={() => navigation.goBack()}
+                          style={{ marginRight: 15 }}
+                        >
+                          <Ionicons name="close-outline" size={24} color="black" />
+                        </Pressable>
+                      </View>
+                    ),
+                  })} />
+                </>
+              )}
+            </>
+          ) : (
+            <>
+              <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+              <Stack.Screen name="Auth" component={LoginScreen} options={{ headerShown: false }} />
+              <Stack.Screen name="ResetPass" component={ResetPassScreen} options={{ headerShown: false }} />
+              <Stack.Screen name="SignUp" component={SignUpScreen} options={{ headerShown: false }} />
+            </>
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </NavigationIndependentTree>
   )
 };
 

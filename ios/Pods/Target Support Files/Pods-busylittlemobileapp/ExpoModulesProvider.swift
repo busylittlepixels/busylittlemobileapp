@@ -18,15 +18,21 @@ import ExpoFont
 import ExpoImagePicker
 import ExpoKeepAwake
 import ExpoLinking
+import EXNotifications
 import ExpoHead
 import ExpoSplashScreen
 import ExpoSystemUI
 import EXUpdates
 import ExpoWebBrowser
+#if EXPO_CONFIGURATION_DEBUG
+import EXDevLauncher
+import EXDevMenu
+#endif
 
 @objc(ExpoModulesProvider)
 public class ExpoModulesProvider: ModulesProvider {
   public override func getModuleClasses() -> [AnyModule.Type] {
+    #if EXPO_CONFIGURATION_DEBUG
     return [
       ExpoFetchModule.self,
       ApplicationModule.self,
@@ -38,30 +44,101 @@ public class ExpoModulesProvider: ModulesProvider {
       FileSystemModule.self,
       FileSystemNextModule.self,
       FontLoaderModule.self,
+      FontUtilsModule.self,
       ImagePickerModule.self,
       KeepAwakeModule.self,
       ExpoLinkingModule.self,
+      BackgroundModule.self,
+      BadgeModule.self,
+      CategoriesModule.self,
+      EmitterModule.self,
+      HandlerModule.self,
+      PermissionsModule.self,
+      PresentationModule.self,
+      PushTokenModule.self,
+      SchedulerModule.self,
+      ServerRegistrationModule.self,
+      ExpoHeadModule.self,
+      SplashScreenModule.self,
+      ExpoSystemUIModule.self,
+      UpdatesModule.self,
+      WebBrowserModule.self,
+      DevLauncherInternal.self,
+      DevLauncherAuth.self,
+      RNCSafeAreaProviderManager.self,
+      DevMenuModule.self,
+      DevMenuInternalModule.self,
+      DevMenuPreferences.self,
+      RNCSafeAreaProviderManager.self
+    ]
+    #else
+    return [
+      ExpoFetchModule.self,
+      ApplicationModule.self,
+      AssetModule.self,
+      CameraViewModule.self,
+      ConstantsModule.self,
+      DeviceModule.self,
+      EASClientModule.self,
+      FileSystemModule.self,
+      FileSystemNextModule.self,
+      FontLoaderModule.self,
+      FontUtilsModule.self,
+      ImagePickerModule.self,
+      KeepAwakeModule.self,
+      ExpoLinkingModule.self,
+      BackgroundModule.self,
+      BadgeModule.self,
+      CategoriesModule.self,
+      EmitterModule.self,
+      HandlerModule.self,
+      PermissionsModule.self,
+      PresentationModule.self,
+      PushTokenModule.self,
+      SchedulerModule.self,
+      ServerRegistrationModule.self,
       ExpoHeadModule.self,
       SplashScreenModule.self,
       ExpoSystemUIModule.self,
       UpdatesModule.self,
       WebBrowserModule.self
     ]
+    #endif
   }
 
   public override func getAppDelegateSubscribers() -> [ExpoAppDelegateSubscriber.Type] {
+    #if EXPO_CONFIGURATION_DEBUG
     return [
       FileSystemBackgroundSessionHandler.self,
       LinkingAppDelegateSubscriber.self,
+      NotificationsAppDelegateSubscriber.self,
+      ExpoHeadAppDelegateSubscriber.self,
+      SplashScreenAppDelegateSubscriber.self,
+      ExpoDevLauncherAppDelegateSubscriber.self
+    ]
+    #else
+    return [
+      FileSystemBackgroundSessionHandler.self,
+      LinkingAppDelegateSubscriber.self,
+      NotificationsAppDelegateSubscriber.self,
       ExpoHeadAppDelegateSubscriber.self,
       SplashScreenAppDelegateSubscriber.self
     ]
+    #endif
   }
 
   public override func getReactDelegateHandlers() -> [ExpoReactDelegateHandlerTupleType] {
+    #if EXPO_CONFIGURATION_DEBUG
+    return [
+      (packageName: "expo-updates", handler: ExpoUpdatesReactDelegateHandler.self),
+      (packageName: "expo-dev-launcher", handler: ExpoDevLauncherReactDelegateHandler.self),
+      (packageName: "expo-dev-menu", handler: ExpoDevMenuReactDelegateHandler.self)
+    ]
+    #else
     return [
       (packageName: "expo-updates", handler: ExpoUpdatesReactDelegateHandler.self)
     ]
+    #endif
   }
 
   public override func getAppCodeSignEntitlements() -> AppCodeSignEntitlements {

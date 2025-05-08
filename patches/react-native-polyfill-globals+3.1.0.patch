@@ -1,0 +1,61 @@
+diff --git a/node_modules/react-native-polyfill-globals/src/base64.js b/node_modules/react-native-polyfill-globals/src/base64.js
+index ef63624..fc6b9c1 100644
+--- a/node_modules/react-native-polyfill-globals/src/base64.js
++++ b/node_modules/react-native-polyfill-globals/src/base64.js
+@@ -1,8 +1,8 @@
+ import { polyfillGlobal } from 'react-native/Libraries/Utilities/PolyfillFunctions';
++import { decode, encode } from 'base-64';
+ 
+ export const polyfill = () => {
+-    const { decode, encode } = require('base-64');
+-
++    // Use directly imported base-64 functions
+     polyfillGlobal('atob', () => decode);
+     polyfillGlobal('btoa', () => encode);
+ }; 
+\ No newline at end of file
+diff --git a/node_modules/react-native-polyfill-globals/src/fetch.js b/node_modules/react-native-polyfill-globals/src/fetch.js
+index a2703a6..fab6fab 100644
+--- a/node_modules/react-native-polyfill-globals/src/fetch.js
++++ b/node_modules/react-native-polyfill-globals/src/fetch.js
+@@ -1,8 +1,8 @@
+ import { polyfillGlobal } from 'react-native/Libraries/Utilities/PolyfillFunctions';
++import { fetch, Headers, Request, Response } from 'react-native-fetch-api';
+ 
+ export const polyfill = () => {
+-    const { fetch, Headers, Request, Response } = require('react-native-fetch-api');
+-
++    // Use directly imported fetch API instead of requiring
+     polyfillGlobal('fetch', () => fetch);
+     polyfillGlobal('Headers', () => Headers);
+     polyfillGlobal('Request', () => Request);
+diff --git a/node_modules/react-native-polyfill-globals/src/readable-stream.js b/node_modules/react-native-polyfill-globals/src/readable-stream.js
+index 0cc879a..8d5c307 100644
+--- a/node_modules/react-native-polyfill-globals/src/readable-stream.js
++++ b/node_modules/react-native-polyfill-globals/src/readable-stream.js
+@@ -1,7 +1,7 @@
+ import { polyfillGlobal } from 'react-native/Libraries/Utilities/PolyfillFunctions';
++import { ReadableStream } from 'web-streams-polyfill';
+ 
+ export const polyfill = () => {
+-    const { ReadableStream } = require('web-streams-polyfill/ponyfill/es6');
+-
++    // Use directly imported ReadableStream instead of requiring from specific path
+     polyfillGlobal('ReadableStream', () => ReadableStream);
+ }; 
+\ No newline at end of file
+diff --git a/node_modules/react-native-polyfill-globals/src/text-encoder.js b/node_modules/react-native-polyfill-globals/src/text-encoder.js
+new file mode 100644
+index 0000000..27aad67
+--- /dev/null
++++ b/node_modules/react-native-polyfill-globals/src/text-encoder.js
+@@ -0,0 +1,8 @@
++import { polyfillGlobal } from 'react-native/Libraries/Utilities/PolyfillFunctions';
++import { TextEncoder, TextDecoder } from 'text-encoding';
++
++export const polyfill = () => {
++    // Use directly imported TextEncoder and TextDecoder
++    polyfillGlobal('TextEncoder', () => TextEncoder);
++    polyfillGlobal('TextDecoder', () => TextDecoder);
++}; 
+\ No newline at end of file

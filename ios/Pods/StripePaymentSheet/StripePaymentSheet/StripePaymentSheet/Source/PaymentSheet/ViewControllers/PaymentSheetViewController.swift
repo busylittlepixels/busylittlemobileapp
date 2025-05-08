@@ -46,6 +46,7 @@ class PaymentSheetViewController: UIViewController, PaymentSheetViewControllerPr
     }
     let intent: Intent
     let elementsSession: STPElementsSession
+    let loadResult: PaymentSheetLoader.LoadResult
     let formCache: PaymentMethodFormCache = .init()
     let analyticsHelper: PaymentSheetAnalyticsHelper
 
@@ -71,6 +72,7 @@ class PaymentSheetViewController: UIViewController, PaymentSheetViewControllerPr
             intent: intent,
             elementsSession: elementsSession,
             configuration: configuration,
+            paymentMethodTypes: loadResult.paymentMethodTypes,
             formCache: formCache,
             analyticsHelper: analyticsHelper,
             delegate: self
@@ -153,6 +155,7 @@ class PaymentSheetViewController: UIViewController, PaymentSheetViewControllerPr
         // Only call loadResult.intent.cvcRecollectionEnabled once per load
         let isCVCRecollectionEnabled = loadResult.intent.cvcRecollectionEnabled
 
+        self.loadResult = loadResult
         self.intent = loadResult.intent
         self.elementsSession = loadResult.elementsSession
         self.configuration = configuration
@@ -170,13 +173,17 @@ class PaymentSheetViewController: UIViewController, PaymentSheetViewControllerPr
                 merchantDisplayName: configuration.merchantDisplayName,
                 isCVCRecollectionEnabled: isCVCRecollectionEnabled,
                 isTestMode: configuration.apiClient.isTestmode,
-                allowsRemovalOfLastSavedPaymentMethod: configuration.allowsRemovalOfLastSavedPaymentMethod,
-                allowsRemovalOfPaymentMethods: loadResult.elementsSession.allowsRemovalOfPaymentMethodsForPaymentSheet()
+                allowsRemovalOfLastSavedPaymentMethod: elementsSession.paymentMethodRemoveLast(configuration: configuration),
+                allowsRemovalOfPaymentMethods: loadResult.elementsSession.allowsRemovalOfPaymentMethodsForPaymentSheet(),
+                allowsSetAsDefaultPM: elementsSession.paymentMethodSetAsDefaultForPaymentSheet,
+                allowsUpdatePaymentMethod: elementsSession.paymentMethodUpdateForPaymentSheet
             ),
             paymentSheetConfiguration: configuration,
             intent: intent,
             appearance: configuration.appearance,
-            cbcEligible: elementsSession.isCardBrandChoiceEligible
+            elementsSession: elementsSession,
+            cbcEligible: elementsSession.isCardBrandChoiceEligible,
+            analyticsHelper: analyticsHelper
         )
 
         if loadResult.savedPaymentMethods.isEmpty {
@@ -379,8 +386,8 @@ class PaymentSheetViewController: UIViewController, PaymentSheetViewControllerPr
     }
 
     func buyButtonEnabledForSavedPayments() -> ConfirmButton.Status {
-        if savedPaymentOptionsViewController.selectedPaymentOptionIntentConfirmParamsRequired &&
-            savedPaymentOptionsViewController.selectedPaymentOptionIntentConfirmParams == nil {
+        if savedPaymentOptionsViewController.isRemovingPaymentMethods || (savedPaymentOptionsViewController.selectedPaymentOptionIntentConfirmParamsRequired &&
+            savedPaymentOptionsViewController.selectedPaymentOptionIntentConfirmParams == nil) {
             return .disabled
         }
         return .enabled
@@ -528,15 +535,24 @@ extension PaymentSheetViewController: SavedPaymentOptionsViewControllerDelegate 
         updateUI()
     }
 
-    func didSelectUpdate(viewController: SavedPaymentOptionsViewController,
-                         paymentMethodSelection: SavedPaymentOptionsViewController.Selection,
-                         updateParams: STPPaymentMethodUpdateParams) async throws -> STPPaymentMethod {
+    func didSelectUpdateCardBrand(viewController: SavedPaymentOptionsViewController,
+                                  paymentMethodSelection: SavedPaymentOptionsViewController.Selection,
+                                  updateParams: STPPaymentMethodUpdateParams) async throws -> STPPaymentMethod {
         guard case .saved(let paymentMethod) = paymentMethodSelection else {
             throw PaymentSheetError.unknown(debugDescription: "Failed to read payment method from payment method selection")
         }
 
         return try await savedPaymentMethodManager.update(paymentMethod: paymentMethod,
                                                                   with: updateParams)
+    }
+
+    func didSelectUpdateDefault(viewController: SavedPaymentOptionsViewController,
+                                paymentMethodSelection: SavedPaymentOptionsViewController.Selection) async throws -> STPCustomer {
+        guard case .saved(let paymentMethod) = paymentMethodSelection else {
+            throw PaymentSheetError.unknown(debugDescription: "Failed to read payment method from payment method selection")
+        }
+
+        return try await savedPaymentMethodManager.setAsDefaultPaymentMethod(defaultPaymentMethodId: paymentMethod.stripeId)
     }
 
     func didUpdateSelection(
@@ -560,6 +576,7 @@ extension PaymentSheetViewController: SavedPaymentOptionsViewControllerDelegate 
         }
 
         savedPaymentMethodManager.detach(paymentMethod: paymentMethod)
+        analyticsHelper.logSavedPaymentMethodRemoved(paymentMethod: paymentMethod)
 
         if !savedPaymentOptionsViewController.canEditPaymentMethods {
             savedPaymentOptionsViewController.isRemovingPaymentMethods = false
@@ -571,6 +588,12 @@ extension PaymentSheetViewController: SavedPaymentOptionsViewControllerDelegate 
             mode = .addingNew // Switch to the "Add" screen
         }
         updateUI()
+    }
+
+    func shouldCloseSheet(_ viewController: SavedPaymentOptionsViewController) {
+        if isDismissable {
+            delegate?.paymentSheetViewControllerDidCancel(self)
+        }
     }
 
     // MARK: Helpers
@@ -602,9 +625,23 @@ extension PaymentSheetViewController: SavedPaymentOptionsViewControllerDelegate 
 // MARK: - AddPaymentMethodViewControllerDelegate
 /// :nodoc:
 extension PaymentSheetViewController: AddPaymentMethodViewControllerDelegate {
+    func getWalletHeaders() -> [String] {
+        var walletHeaders: [String] = []
+        if isApplePayEnabled {
+            walletHeaders.append("apple_pay")
+        }
+        if isLinkEnabled {
+            walletHeaders.append("link")
+        }
+        return walletHeaders
+    }
+
     func didUpdate(_ viewController: AddPaymentMethodViewController) {
         error = nil  // clear error
         updateUI()
+        if viewController.paymentOption != nil {
+            analyticsHelper.logFormCompleted(paymentMethodTypeIdentifier: viewController.selectedPaymentMethodType.identifier)
+        }
     }
 
     func updateErrorLabel(for error: Error?) {

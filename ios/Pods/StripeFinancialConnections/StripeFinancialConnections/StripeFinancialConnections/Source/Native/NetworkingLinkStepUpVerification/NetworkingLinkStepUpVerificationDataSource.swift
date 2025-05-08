@@ -22,7 +22,7 @@ final class NetworkingLinkStepUpVerificationDataSourceImplementation: Networking
 
     private(set) var consumerSession: ConsumerSessionData
     private let selectedAccountIds: [String]
-    private let apiClient: FinancialConnectionsAPIClient
+    private let apiClient: any FinancialConnectionsAPI
     private let clientSecret: String
     let manifest: FinancialConnectionsSessionManifest
     let analyticsClient: FinancialConnectionsAnalyticsClient
@@ -32,7 +32,7 @@ final class NetworkingLinkStepUpVerificationDataSourceImplementation: Networking
         consumerSession: ConsumerSessionData,
         selectedAccountIds: [String],
         manifest: FinancialConnectionsSessionManifest,
-        apiClient: FinancialConnectionsAPIClient,
+        apiClient: any FinancialConnectionsAPI,
         clientSecret: String,
         analyticsClient: FinancialConnectionsAnalyticsClient
     ) {
@@ -44,16 +44,13 @@ final class NetworkingLinkStepUpVerificationDataSourceImplementation: Networking
         self.analyticsClient = analyticsClient
         let networkingOTPDataSource = NetworkingOTPDataSourceImplementation(
             otpType: "EMAIL",
-            emailAddress: consumerSession.emailAddress,
+            manifest: manifest,
             customEmailType: "NETWORKED_CONNECTIONS_OTP_EMAIL",
             connectionsMerchantName: manifest.businessName,
             pane: .networkingLinkStepUpVerification,
-            consumerSession: nil,
+            consumerSession: consumerSession,
             apiClient: apiClient,
-            clientSecret: clientSecret,
-            analyticsClient: analyticsClient,
-            isTestMode: manifest.isTestMode,
-            theme: manifest.theme
+            analyticsClient: analyticsClient
         )
         self.networkingOTPDataSource = networkingOTPDataSource
         networkingOTPDataSource.delegate = self

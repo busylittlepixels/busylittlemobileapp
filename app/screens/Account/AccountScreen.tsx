@@ -19,6 +19,7 @@ import { Asset } from 'expo-asset';
 import { enablePublicProfile } from '@/app/services/settingsService';
 import { useNotification } from '../../contexts/NotificationContext';
 import { useNavigation } from '@react-navigation/native';
+import PolyfillTest from '../../components/PolyfillTest';
 
 const GreenDot = () => {
   return <View style={styles.greenDot} />;
@@ -253,6 +254,11 @@ const AccountScreen = ({ navigation, route }: any) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Latest:</Text>
           <HorizontalScroller />
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>EventEmitter Test:</Text>
+          <PolyfillTest />
         </View>
 
         {showAdverts && (

@@ -28,6 +28,12 @@ struct LinkURLParams: Encodable {
         case payment
         case setup
     }
+    struct CardBrandChoiceInfo: Encodable {
+        var isMerchantEligibleForCBC: Bool
+        var stripePreferredNetworks: [String]
+        var supportedCobrandedNetworks: [String: Bool]
+    }
+
     var path = "mobile_pay"
     var integrationType = "mobile"
     var paymentObject: PaymentObjectMode
@@ -43,10 +49,12 @@ struct LinkURLParams: Encodable {
     var locale: String
     var intentMode: IntentMode
     var setupFutureUsage: Bool
+    var cardBrandChoice: CardBrandChoiceInfo?
+    var linkFundingSources: [LinkSettings.FundingSource]
 }
 
 class LinkURLGenerator {
-    static func linkParams(configuration: PaymentSheet.Configuration, intent: Intent, elementsSession: STPElementsSession) throws -> LinkURLParams {
+    static func linkParams(configuration: PaymentElementConfiguration, intent: Intent, elementsSession: STPElementsSession) throws -> LinkURLParams {
         guard let publishableKey = configuration.apiClient.publishableKey ?? STPAPIClient.shared.publishableKey else {
             throw LinkURLGeneratorError.noPublishableKey
         }
@@ -83,6 +91,16 @@ class LinkURLGenerator {
 
         let intentMode: LinkURLParams.IntentMode = intent.isPaymentIntent ? .payment : .setup
 
+        let cardBrandChoiceInfo: LinkURLParams.CardBrandChoiceInfo? = {
+            guard let cardBrandChoice = elementsSession.cardBrandChoice else { return nil }
+            return LinkURLParams.CardBrandChoiceInfo(isMerchantEligibleForCBC: cardBrandChoice.eligible,
+                                                     stripePreferredNetworks: cardBrandChoice.preferredNetworks,
+                                                     supportedCobrandedNetworks: cardBrandChoice.supportedCobrandedNetworks)
+        }()
+
+        let flags = elementsSession.linkFlags.merging(elementsSession.flags) { (current, _) in current }
+        let linkFundingSources = elementsSession.linkFundingSources?.toSortedArray() ?? []
+
         return LinkURLParams(paymentObject: paymentObjectType,
                              publishableKey: publishableKey,
                              stripeAccount: configuration.apiClient.stripeAccount,
@@ -91,11 +109,13 @@ class LinkURLGenerator {
                              customerInfo: customerInfo,
                              paymentInfo: paymentInfo,
                              experiments: [:],
-                             flags: elementsSession.linkFlags,
+                             flags: flags,
                              loggerMetadata: loggerMetadata,
                              locale: Locale.current.toLanguageTag(),
                              intentMode: intentMode,
-                             setupFutureUsage: intent.isSettingUp)
+                             setupFutureUsage: intent.isSettingUp,
+                             cardBrandChoice: cardBrandChoiceInfo,
+                             linkFundingSources: linkFundingSources)
     }
 
     static func url(params: LinkURLParams) throws -> URL {
@@ -110,6 +130,15 @@ class LinkURLGenerator {
     static func url(configuration: PaymentSheet.Configuration, intent: Intent, elementsSession: STPElementsSession) throws -> URL {
         let params = try Self.linkParams(configuration: configuration, intent: intent, elementsSession: elementsSession)
         return try url(params: params)
+    }
+}
+
+// Used to get deterministic ordering for FundingSource tests
+extension Set where Element == LinkSettings.FundingSource {
+    func toSortedArray() -> [LinkSettings.FundingSource] {
+        return self.sorted { a, b in
+            a.rawValue.localizedCaseInsensitiveCompare(b.rawValue) == .orderedAscending
+        }
     }
 }
 

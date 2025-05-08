@@ -15,11 +15,21 @@ import UIKit
 extension PaymentSheetFormFactory {
     func makeCard(cardBrandChoiceEligible: Bool = false) -> PaymentMethodElement {
         let showLinkInlineSignup = showLinkInlineCardSignup
+        let defaultCheckbox: Element? = {
+            guard allowsSetAsDefaultPM else {
+                return nil
+            }
+            let defaultCheckbox = makeDefaultCheckbox()
+            return shouldDisplayDefaultCheckbox ? defaultCheckbox : SectionElement.HiddenElement(defaultCheckbox)
+        }()
         let saveCheckbox = makeSaveCheckbox(
             label: String.Localized.save_payment_details_for_future_$merchant_payments(
                 merchantDisplayName: configuration.merchantDisplayName
             )
-        )
+        ) { selected in
+            defaultCheckbox?.view.isHidden = !selected
+        }
+        defaultCheckbox?.view.isHidden = !saveCheckbox.element.isSelected
 
         // Make section titled "Contact Information" w/ phone and email if merchant requires it.
         let optionalPhoneAndEmailInformationSection: SectionElement? = {
@@ -58,7 +68,8 @@ extension PaymentSheetFormFactory {
             cardBrandChoiceEligible: cardBrandChoiceEligible,
             hostedSurface: .init(config: configuration),
             theme: theme,
-            analyticsHelper: analyticsHelper
+            analyticsHelper: analyticsHelper,
+            cardBrandFilter: configuration.cardBrandFilter
         )
 
         let billingAddressSection: PaymentMethodElementWrapper<AddressSectionElement>? = {
@@ -86,28 +97,37 @@ extension PaymentSheetFormFactory {
             cardSection,
             billingAddressSection,
             shouldDisplaySaveCheckbox ? saveCheckbox : nil,
+            defaultCheckbox,
         ]
 
-        if case .paymentSheet(let configuration) = configuration, showLinkInlineSignup {
+        if case .paymentElement(let configuration) = configuration, let accountService, showLinkInlineSignup {
             let inlineSignupElement = LinkInlineSignupElement(
                 configuration: configuration,
                 linkAccount: linkAccount,
                 country: countryCode,
-                showCheckbox: !shouldDisplaySaveCheckbox
+                showCheckbox: !shouldDisplaySaveCheckbox,
+                accountService: accountService
             )
             elements.append(inlineSignupElement)
         }
 
         let mandate: SimpleMandateElement? = {
             if isSettingUp {
-                return .init(mandateText: String(format: .Localized.by_providing_your_card_information_text, configuration.merchantDisplayName))
+                return makeMandate(mandateText: String(format: .Localized.by_providing_your_card_information_text, configuration.merchantDisplayName))
+
             }
             return nil
         }()
         elements.append(mandate)
 
+        var customSpacing: [(Element, CGFloat)] = []
+        if configuration.linkPaymentMethodsOnly {
+            customSpacing.append((cardSection, LinkUI.largeContentSpacing))
+        }
+
         return FormElement(
             elements: elements,
-            theme: theme)
+            theme: theme,
+            customSpacing: customSpacing)
     }
 }

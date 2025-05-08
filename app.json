@@ -1,6 +1,6 @@
 {
   "expo": {
-    "owner":"dangerro",
+    "owner": "dangerro",
     "name": "busylittlemobileapp",
     "slug": "busylittlemobileapp",
     "version": "1.1.1",
@@ -19,7 +19,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.busylittlemobileapp",
       "entitlements": {
-          "aps-environment": "development"
+        "aps-environment": "development"
       }
     },
     "android": {
@@ -36,7 +36,9 @@
     },
     "plugins": [
       "expo-router",
-      "expo-notifications"
+      "expo-notifications",
+      "expo-font",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true
@@ -46,6 +48,15 @@
       "color": "#ffffff",
       "androidMode": "default",
       "androidCollapsedTitle": "#{unread_notifications} new messages"
+    },
+    "updates": {
+      "enabled": true,
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/157ae5e2-48bc-4393-b3bf-fe5deb1a0980",
+      "checkAutomatically": "ON_LOAD",
+      "runtimeVersion": {
+        "policy": "sdkVersion"
+      }
     },
     "extra": {
       "router": {

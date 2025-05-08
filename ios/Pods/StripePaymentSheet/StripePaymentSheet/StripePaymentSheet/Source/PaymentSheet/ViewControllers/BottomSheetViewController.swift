@@ -32,6 +32,7 @@ class BottomSheetViewController: UIViewController, BottomSheetPresentable {
     // MARK: - Views
     lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
+        scrollView.automaticallyAdjustsScrollIndicatorInsets = false
         scrollView.delegate = self
         return scrollView
     }()
@@ -451,6 +452,7 @@ class BottomSheetViewController: UIViewController, BottomSheetPresentable {
 
     func didTapOrSwipeToDismiss() {
         contentViewController.didTapOrSwipeToDismiss()
+        STPAnalyticsClient.sharedClient.logPaymentSheetEvent(event: .paymentSheetDismissed)
     }
 }
 
@@ -477,7 +479,7 @@ extension BottomSheetViewController: UIScrollViewDelegate {
 extension BottomSheetViewController: PaymentSheetAuthenticationContext {
 
     func authenticationPresentingViewController() -> UIViewController {
-        return findTopMostPresentedViewController() ?? self
+        return findTopMostPresentedViewController()
     }
 
     func configureSafariViewController(_ viewController: SFSafariViewController) {

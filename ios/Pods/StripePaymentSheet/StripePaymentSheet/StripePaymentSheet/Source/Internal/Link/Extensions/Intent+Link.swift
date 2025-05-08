@@ -22,6 +22,10 @@ extension STPElementsSession {
         supportsLink && (linkFundingSources?.contains(.card) ?? false) || linkPassthroughModeEnabled
     }
 
+    var onlySupportsLinkBank: Bool {
+        return supportsLink && (linkFundingSources == [.bankAccount])
+    }
+
     var linkFundingSources: Set<LinkSettings.FundingSource>? {
         linkSettings?.fundingSources
     }
@@ -32,6 +36,14 @@ extension STPElementsSession {
 
     var linkPopupWebviewOption: LinkSettings.PopupWebviewOption {
         linkSettings?.popupWebviewOption ?? .shared
+    }
+
+    func shouldShowLink2FABeforePaymentSheet(for linkAccount: PaymentSheetLinkAccount) -> Bool {
+        return self.supportsLink &&
+        linkAccount.sessionState == .requiresVerification &&
+        !linkAccount.hasStartedSMSVerification &&
+        linkAccount.useMobileEndpoints &&
+        self.linkSettings?.suppress2FAModal != true
     }
 
     func countryCode(overrideCountry: String?) -> String? {
@@ -57,7 +69,7 @@ extension Intent {
             return .setup
         case .deferredIntent(let intentConfig):
             switch intentConfig.mode {
-            case .payment(let amount, let currency, _, _):
+            case .payment(let amount, let currency, _, _, _):
                 return .pay(amount: amount, currency: currency)
             case .setup:
                 return .setup

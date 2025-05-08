@@ -1,6 +1,6 @@
 {
   "name": "EXImageLoader",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "summary": "Image loader",
   "description": "Image loader",
   "license": "MIT",
@@ -14,12 +14,8 @@
   },
   "static_framework": true,
   "dependencies": {
-    "React-Core": [
-
-    ],
-    "ExpoModulesCore": [
-
-    ]
+    "React-Core": [],
+    "ExpoModulesCore": []
   },
   "pod_target_xcconfig": {
     "DEFINES_MODULE": "YES",

@@ -1,6 +1,6 @@
 {
   "name": "EXStructuredHeaders",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "summary": "Expo module implementation of a parser based on https://httpwg.org/specs/rfc8941.html",
   "description": "Expo module implementation of a parser based on https://httpwg.org/specs/rfc8941.html",
   "license": "MIT",

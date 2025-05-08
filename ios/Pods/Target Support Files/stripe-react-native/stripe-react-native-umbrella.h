@@ -10,7 +10,9 @@
 #endif
 #endif
 
-#import "StripeSdk-Bridging-Header.h"
+#import "stripe_react_native/StripeSdkEventEmitterCompat.h"
+#import "stripe_react_native/StripeSdk-Bridging-Header.h"
+#import "stripe_react_native/stripe_react_native.h"
 
 FOUNDATION_EXPORT double stripe_react_nativeVersionNumber;
 FOUNDATION_EXPORT const unsigned char stripe_react_nativeVersionString[];

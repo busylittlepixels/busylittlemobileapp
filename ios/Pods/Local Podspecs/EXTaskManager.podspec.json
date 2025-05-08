@@ -1,6 +1,6 @@
 {
   "name": "EXTaskManager",
-  "version": "12.0.3",
+  "version": "13.1.5",
   "summary": "Expo module that provides support for tasks that can run in the background.",
   "description": "Expo module that provides support for tasks that can run in the background.",
   "license": "MIT",
@@ -14,12 +14,8 @@
   },
   "static_framework": true,
   "dependencies": {
-    "ExpoModulesCore": [
-
-    ],
-    "UMAppLoader": [
-
-    ]
+    "ExpoModulesCore": [],
+    "UMAppLoader": []
   },
   "resource_bundles": {
     "ExpoTaskManager_privacy": [

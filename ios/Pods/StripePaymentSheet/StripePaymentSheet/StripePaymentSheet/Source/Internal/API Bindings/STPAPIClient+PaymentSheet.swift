@@ -15,12 +15,17 @@ extension STPAPIClient {
 
     func makeElementsSessionsParams(mode: PaymentSheet.InitializationMode,
                                     epmConfiguration: PaymentSheet.ExternalPaymentMethodConfiguration?,
+                                    cpmConfiguration: PaymentSheet.CustomPaymentMethodConfiguration?,
                                     clientDefaultPaymentMethod: String?,
                                     customerAccessProvider: PaymentSheet.CustomerAccessProvider?) -> [String: Any] {
         var parameters: [String: Any] = [
             "locale": Locale.current.toLanguageTag(),
             "external_payment_methods": epmConfiguration?.externalPaymentMethods.compactMap { $0.lowercased() } ?? [],
+            "custom_payment_methods": cpmConfiguration?.customPaymentMethods.compactMap { $0.id } ?? [],
         ]
+        if let appId = Bundle.main.bundleIdentifier {
+            parameters["mobile_app_id"] = appId
+        }
         if case .customerSession(let clientSecret) = customerAccessProvider {
             parameters["customer_session_client_secret"] = clientSecret
         }
@@ -39,7 +44,7 @@ extension STPAPIClient {
                     deferredIntent["payment_method_configuration"] = ["id": paymentMethodConfigurationId]
                 }
                 switch intentConfig.mode {
-                case .payment(let amount, let currency, let setupFutureUsage, let captureMethod):
+                case .payment(let amount, let currency, let setupFutureUsage, let captureMethod, _):
                     deferredIntent["mode"] = "payment"
                     deferredIntent["amount"] = amount
                     deferredIntent["currency"] = currency
@@ -67,13 +72,14 @@ extension STPAPIClient {
     func retrieveElementsSession(
         paymentIntentClientSecret: String,
         clientDefaultPaymentMethod: String?,
-        configuration: PaymentSheet.Configuration
+        configuration: PaymentElementConfiguration
     ) async throws -> (STPPaymentIntent, STPElementsSession) {
         let elementsSession = try await APIRequest<STPElementsSession>.getWith(
             self,
             endpoint: APIEndpointElementsSessions,
             parameters: makeElementsSessionsParams(mode: .paymentIntentClientSecret(paymentIntentClientSecret),
                                                    epmConfiguration: configuration.externalPaymentMethodConfiguration,
+                                                   cpmConfiguration: configuration.customPaymentMethodConfiguration,
                                                    clientDefaultPaymentMethod: clientDefaultPaymentMethod,
                                                    customerAccessProvider: configuration.customer?.customerAccessProvider)
         )
@@ -90,13 +96,14 @@ extension STPAPIClient {
     func retrieveElementsSession(
         setupIntentClientSecret: String,
         clientDefaultPaymentMethod: String?,
-        configuration: PaymentSheet.Configuration
+        configuration: PaymentElementConfiguration
     ) async throws -> (STPSetupIntent, STPElementsSession) {
         let elementsSession = try await APIRequest<STPElementsSession>.getWith(
             self,
             endpoint: APIEndpointElementsSessions,
             parameters: makeElementsSessionsParams(mode: .setupIntentClientSecret(setupIntentClientSecret),
                                                    epmConfiguration: configuration.externalPaymentMethodConfiguration,
+                                                   cpmConfiguration: configuration.customPaymentMethodConfiguration,
                                                    clientDefaultPaymentMethod: clientDefaultPaymentMethod,
                                                    customerAccessProvider: configuration.customer?.customerAccessProvider)
         )
@@ -113,10 +120,11 @@ extension STPAPIClient {
     func retrieveDeferredElementsSession(
         withIntentConfig intentConfig: PaymentSheet.IntentConfiguration,
         clientDefaultPaymentMethod: String?,
-        configuration: PaymentSheet.Configuration
+        configuration: PaymentElementConfiguration
     ) async throws -> STPElementsSession {
         let parameters = makeElementsSessionsParams(mode: .deferredIntent(intentConfig),
                                                     epmConfiguration: configuration.externalPaymentMethodConfiguration,
+                                                    cpmConfiguration: configuration.customPaymentMethodConfiguration,
                                                     clientDefaultPaymentMethod: clientDefaultPaymentMethod,
                                                     customerAccessProvider: configuration.customer?.customerAccessProvider)
         return try await APIRequest<STPElementsSession>.getWith(

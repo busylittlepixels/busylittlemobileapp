@@ -20,6 +20,7 @@ struct FinancialConnectionsSessionManifest: Decodable {
         case authOptions = "auth_options"
         case bankAuthRepair = "bank_auth_repair"
         case consent = "consent"
+        case idConsentContent = "id_consent_content"
         case institutionPicker = "institution_picker"
         case linkAccountPicker = "link_account_picker"
         case linkConsent = "link_consent"
@@ -80,9 +81,11 @@ struct FinancialConnectionsSessionManifest: Decodable {
     let activeAuthSession: FinancialConnectionsAuthSession?
     let activeInstitution: FinancialConnectionsInstitution?
     let allowManualEntry: Bool
+    let appVerificationEnabled: Bool?
     let assignmentEventId: String?
     let businessName: String?
     let cancelUrl: String?
+    let consentAcquiredAt: String?
     let consentRequired: Bool
     let customManualEntryHandling: Bool
     let disableLinkMoreAccounts: Bool
@@ -90,6 +93,7 @@ struct FinancialConnectionsSessionManifest: Decodable {
     let experimentAssignments: [String: String]?
     let features: [String: Bool]?
     let hostedAuthUrl: String?
+    let id: String
     let initialInstitution: FinancialConnectionsInstitution?
     let instantVerificationDisabled: Bool
     let institutionSearchDisabled: Bool
@@ -108,10 +112,10 @@ struct FinancialConnectionsSessionManifest: Decodable {
     let skipSuccessPane: Bool?
     let stepUpAuthenticationRequired: Bool?
     let successUrl: String?
+    let theme: Theme?
 
-    private let _theme: Theme?
-    var theme: FinancialConnectionsTheme {
-        FinancialConnectionsTheme(from: _theme)
+    var appearance: FinancialConnectionsAppearance {
+        FinancialConnectionsAppearance(from: theme)
     }
 
     var shouldAttachLinkedPaymentMethod: Bool {
@@ -126,6 +130,14 @@ struct FinancialConnectionsSessionManifest: Decodable {
         !livemode
     }
 
+    var verified: Bool {
+        appVerificationEnabled ?? false
+    }
+
+    var consentAcquired: Bool {
+        !consentRequired || consentAcquiredAt != nil
+    }
+
     init(
         accountholderCustomerEmailAddress: String? = nil,
         accountholderIsLinkConsumer: Bool? = nil,
@@ -135,9 +147,11 @@ struct FinancialConnectionsSessionManifest: Decodable {
         activeAuthSession: FinancialConnectionsAuthSession? = nil,
         activeInstitution: FinancialConnectionsInstitution? = nil,
         allowManualEntry: Bool,
+        appVerificationEnabled: Bool? = nil,
         assignmentEventId: String? = nil,
         businessName: String? = nil,
         cancelUrl: String? = nil,
+        consentAcquiredAt: String? = nil,
         consentRequired: Bool,
         customManualEntryHandling: Bool,
         disableLinkMoreAccounts: Bool,
@@ -145,6 +159,7 @@ struct FinancialConnectionsSessionManifest: Decodable {
         experimentAssignments: [String: String]? = nil,
         features: [String: Bool]? = nil,
         hostedAuthUrl: String? = nil,
+        id: String,
         initialInstitution: FinancialConnectionsInstitution? = nil,
         instantVerificationDisabled: Bool,
         institutionSearchDisabled: Bool,
@@ -163,7 +178,7 @@ struct FinancialConnectionsSessionManifest: Decodable {
         skipSuccessPane: Bool? = nil,
         stepUpAuthenticationRequired: Bool? = nil,
         successUrl: String? = nil,
-        _theme: FinancialConnectionsSessionManifest.Theme? = nil
+        theme: Theme? = nil
     ) {
         self.accountholderCustomerEmailAddress = accountholderCustomerEmailAddress
         self.accountholderIsLinkConsumer = accountholderIsLinkConsumer
@@ -173,16 +188,19 @@ struct FinancialConnectionsSessionManifest: Decodable {
         self.activeAuthSession = activeAuthSession
         self.activeInstitution = activeInstitution
         self.allowManualEntry = allowManualEntry
+        self.appVerificationEnabled = appVerificationEnabled
         self.assignmentEventId = assignmentEventId
         self.businessName = businessName
         self.cancelUrl = cancelUrl
         self.consentRequired = consentRequired
+        self.consentAcquiredAt = consentAcquiredAt
         self.customManualEntryHandling = customManualEntryHandling
         self.disableLinkMoreAccounts = disableLinkMoreAccounts
         self.displayText = displayText
         self.experimentAssignments = experimentAssignments
         self.features = features
         self.hostedAuthUrl = hostedAuthUrl
+        self.id = id
         self.initialInstitution = initialInstitution
         self.instantVerificationDisabled = instantVerificationDisabled
         self.institutionSearchDisabled = institutionSearchDisabled
@@ -201,48 +219,6 @@ struct FinancialConnectionsSessionManifest: Decodable {
         self.skipSuccessPane = skipSuccessPane
         self.stepUpAuthenticationRequired = stepUpAuthenticationRequired
         self.successUrl = successUrl
-        self._theme = _theme
-    }
-
-    // MARK: - Coding Keys
-
-    enum CodingKeys: String, CodingKey {
-        case accountholderCustomerEmailAddress
-        case accountholderIsLinkConsumer
-        case accountholderPhoneNumber
-        case accountholderToken
-        case accountDisconnectionMethod
-        case activeAuthSession
-        case activeInstitution
-        case allowManualEntry
-        case assignmentEventId
-        case businessName
-        case cancelUrl
-        case consentRequired
-        case customManualEntryHandling
-        case disableLinkMoreAccounts
-        case displayText
-        case experimentAssignments
-        case features
-        case hostedAuthUrl
-        case initialInstitution
-        case instantVerificationDisabled
-        case institutionSearchDisabled
-        case isEndUserFacing
-        case isLinkWithStripe
-        case isNetworkingUserFlow
-        case isStripeDirect
-        case livemode
-        case manualEntryMode
-        case manualEntryUsesMicrodeposits
-        case nextPane
-        case paymentMethodType
-        case permissions
-        case product
-        case singleAccount
-        case skipSuccessPane
-        case stepUpAuthenticationRequired
-        case successUrl
-        case _theme = "theme"
+        self.theme = theme
     }
 }

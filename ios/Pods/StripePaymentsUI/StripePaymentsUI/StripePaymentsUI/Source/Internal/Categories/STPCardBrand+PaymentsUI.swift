@@ -7,10 +7,11 @@
 
 import Foundation
 @_spi(STP) import StripeUICore
+@_spi(STP) import StripeCore
 import UIKit
 
 extension STPCardBrand {
-    func brandIconAttributedString(theme: ElementsUITheme = .default, maxWidth: CGFloat? = nil) -> NSAttributedString {
+    func brandIconAttributedString(theme: ElementsAppearance = .default, maxWidth: CGFloat? = nil) -> NSAttributedString {
         let brandImageAttachment = NSTextAttachment()
         let image: UIImage = self == .unknown ? STPImageLibrary.cardBrandChoiceImage() : STPImageLibrary.cardBrandImage(for: self)
         brandImageAttachment.image = image
@@ -26,17 +27,21 @@ extension STPCardBrand {
         return NSAttributedString(attachment: brandImageAttachment)
     }
 
-    func cardBrandItem(theme: ElementsUITheme = .default, maxWidth: CGFloat? = nil) -> DropdownFieldElement.DropdownItem {
+    func cardBrandItem(theme: ElementsAppearance = .default, isDisallowed: Bool, maxWidth: CGFloat? = nil) -> DropdownFieldElement.DropdownItem {
         let brandName = STPCardBrandUtilities.stringFrom(self) ?? ""
 
         let displayText = NSMutableAttributedString(attributedString: brandIconAttributedString(theme: theme))
         displayText.append(NSAttributedString(string: " " + brandName))
-
+        if isDisallowed {
+            displayText.append(NSAttributedString(string: " \(String.Localized.brand_not_accepted)"))
+        }
+        
         return DropdownFieldElement.DropdownItem(
             pickerDisplayName: displayText,
             labelDisplayName: brandIconAttributedString(theme: theme, maxWidth: maxWidth),
             accessibilityValue: brandName,
-            rawData: STPCardBrandUtilities.apiValue(from: self)
+            rawData: STPCardBrandUtilities.apiValue(from: self),
+            isDisabled: isDisallowed
         )
     }
 }

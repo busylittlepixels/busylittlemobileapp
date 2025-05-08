@@ -103,7 +103,11 @@ class CustomerAddPaymentMethodViewController: UIViewController {
     }()
     private lazy var paymentMethodTypesView: PaymentMethodTypeCollectionView = {
         let view = PaymentMethodTypeCollectionView(
-            paymentMethodTypes: paymentMethodTypes, appearance: configuration.appearance, delegate: self)
+            paymentMethodTypes: paymentMethodTypes,
+            appearance: configuration.appearance,
+            incentive: nil,
+            delegate: self
+        )
         return view
     }()
     private lazy var paymentMethodDetailsContainerView: DynamicHeightContainerView = {
@@ -181,7 +185,7 @@ class CustomerAddPaymentMethodViewController: UIViewController {
         guard let usBankAccountPaymentMethodElement = self.paymentMethodFormElement as? USBankAccountPaymentMethodElement else {
             return false
         }
-        let customerHasLinkedBankAccount = usBankAccountPaymentMethodElement.getLinkedBank() != nil
+        let customerHasLinkedBankAccount = usBankAccountPaymentMethodElement.linkedBank != nil
         return customerHasLinkedBankAccount
     }
 
@@ -239,12 +243,14 @@ class CustomerAddPaymentMethodViewController: UIViewController {
             addressSpecProvider: .shared,
             showLinkInlineCardSignup: false,
             linkAccount: nil,
+            accountService: nil,
             cardBrandChoiceEligible: cbcEligible,
             isPaymentIntent: false,
             isSettingUp: true,
             countryCode: nil,
             savePaymentMethodConsentBehavior: savePaymentMethodConsentBehavior,
-            analyticsHelper: .init(isCustom: false, configuration: .init()) // Just use a dummy analytics helper; we don't look at these analytics.
+            analyticsHelper: nil,
+            paymentMethodIncentive: nil
         ).make()
         formElement.delegate = self
         return formElement
@@ -279,7 +285,14 @@ extension CustomerAddPaymentMethodViewController {
             with: name,
             email: email
         )
-        let client = STPBankAccountCollector()
+        let bankAccountCollectorStyle: STPBankAccountCollectorUserInterfaceStyle = {
+            switch configuration.style {
+            case .automatic: return .automatic
+            case .alwaysLight: return .alwaysLight
+            case .alwaysDark: return .alwaysDark
+            }
+        }()
+        let client = STPBankAccountCollector(style: bankAccountCollectorStyle)
         let errorText = STPLocalizedString(
             "Something went wrong when linking your account.\nPlease try again later.",
             "Error message when an error case happens when linking your account"
@@ -305,7 +318,7 @@ extension CustomerAddPaymentMethodViewController {
                 break
             case .completed(let completedResult):
                 if case .financialConnections(let linkedBank) = completedResult {
-                    usBankAccountPaymentMethodElement.setLinkedBank(linkedBank)
+                    usBankAccountPaymentMethodElement.linkedBank = linkedBank
                 } else {
                     self.delegate?.updateErrorLabel(for: genericError)
                 }

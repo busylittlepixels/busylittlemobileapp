@@ -6,7 +6,7 @@ import AppNavigator from './navigation';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { Provider } from 'react-redux';
 import { StripeProvider } from '@stripe/stripe-react-native';
 import store from './store';
@@ -14,6 +14,7 @@ import NetInfo from '@react-native-community/netinfo';
 import { registerForPushNotificationsAsync } from './lib/utils/notificationSetup';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useMessageSubscription } from './hooks/useMessageSubscription';
+import { useSelector } from 'react-redux';
 
 const clearAsyncStorage = async () => {
   try {
@@ -66,6 +67,17 @@ const App = () => {
     };
   }, []);
 
+  const user = useSelector((state) => state.auth?.user);
+  const loading = useSelector((state) => state.auth?.loading);
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
   return (
     <StripeProvider publishableKey="your-publishable-key">
       <SafeAreaProvider>
@@ -87,6 +99,25 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: 'black',
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 18,
+    marginBottom: 20,
+    textAlign: 'center',
+    color: '#666',
   },
 });
 

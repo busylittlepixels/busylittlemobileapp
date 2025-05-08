@@ -1,6 +1,6 @@
 {
   "name": "ExpoDevice",
-  "version": "7.0.1",
+  "version": "7.1.4",
   "summary": "A universal module that gets physical information about the device running the application",
   "description": "A universal module that gets physical information about the device running the application",
   "license": "MIT",
@@ -16,9 +16,7 @@
   },
   "static_framework": true,
   "dependencies": {
-    "ExpoModulesCore": [
-
-    ]
+    "ExpoModulesCore": []
   },
   "pod_target_xcconfig": {
     "DEFINES_MODULE": "YES",

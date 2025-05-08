@@ -13,10 +13,6 @@ import UIKit
 protocol NetworkingLinkStepUpVerificationViewControllerDelegate: AnyObject {
     func networkingLinkStepUpVerificationViewController(
         _ viewController: NetworkingLinkStepUpVerificationViewController,
-        didReceiveConsumerPublishableKey consumerPublishableKey: String
-    )
-    func networkingLinkStepUpVerificationViewController(
-        _ viewController: NetworkingLinkStepUpVerificationViewController,
         didCompleteVerificationWithInstitution institution: FinancialConnectionsInstitution?,
         nextPane: FinancialConnectionsSessionManifest.NextPane,
         customSuccessPaneCaption: String?,
@@ -26,9 +22,6 @@ protocol NetworkingLinkStepUpVerificationViewControllerDelegate: AnyObject {
         _ viewController: NetworkingLinkStepUpVerificationViewController,
         didReceiveTerminalError error: Error
     )
-    func networkingLinkStepUpVerificationViewControllerEncounteredSoftError(
-        _ viewController: NetworkingLinkStepUpVerificationViewController
-    )
 }
 
 final class NetworkingLinkStepUpVerificationViewController: UIViewController {
@@ -37,11 +30,11 @@ final class NetworkingLinkStepUpVerificationViewController: UIViewController {
     weak var delegate: NetworkingLinkStepUpVerificationViewControllerDelegate?
 
     private lazy var fullScreenLoadingView: UIView = {
-        return SpinnerView(theme: dataSource.manifest.theme)
+        return SpinnerView(appearance: dataSource.manifest.appearance)
     }()
     private lazy var bodyView: NetworkingLinkStepUpVerificationBodyView = {
         let bodyView = NetworkingLinkStepUpVerificationBodyView(
-            theme: dataSource.manifest.theme,
+            appearance: dataSource.manifest.appearance,
             otpView: otpView,
             didSelectResendCode: { [weak self] in
                 self?.didSelectResendCode()
@@ -68,9 +61,9 @@ final class NetworkingLinkStepUpVerificationViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .customBackgroundColor
+        view.backgroundColor = FinancialConnectionsAppearance.Colors.background
 
-        otpView.lookupConsumerAndStartVerification()
+        otpView.startVerification()
     }
 
     private func handleFailure(error: Error, errorName: String) {
@@ -131,50 +124,13 @@ final class NetworkingLinkStepUpVerificationViewController: UIViewController {
     }
 
     private func didSelectResendCode() {
-        otpView.lookupConsumerAndStartVerification()
+        otpView.startVerification()
     }
 }
 
 // MARK: - NetworkingOTPViewDelegate
 
 extension NetworkingLinkStepUpVerificationViewController: NetworkingOTPViewDelegate {
-
-    func networkingOTPView(_ view: NetworkingOTPView, didGetConsumerPublishableKey consumerPublishableKey: String) {
-        delegate?.networkingLinkStepUpVerificationViewController(self, didReceiveConsumerPublishableKey: consumerPublishableKey)
-    }
-
-    func networkingOTPViewWillStartConsumerLookup(_ view: NetworkingOTPView) {
-        if !didShowContent {
-            showFullScreenLoadingView(true)
-        } else {
-            showSmallLoadingView(true)
-        }
-    }
-
-    func networkingOTPViewConsumerNotFound(_ view: NetworkingOTPView) {
-        // side-note: it is redundant to call `showLoadingView` & `showSmallLoadingView` because
-        // usually only one needs to be hidden, but this keeps the code simple
-        showFullScreenLoadingView(false)
-        showSmallLoadingView(false)
-
-        dataSource.analyticsClient.log(
-            eventName: "networking.verification.step_up.error",
-            parameters: [
-                "error": "ConsumerNotFoundError",
-            ],
-            pane: .networkingLinkStepUpVerification
-        )
-        delegate?.networkingLinkStepUpVerificationViewControllerEncounteredSoftError(self)
-    }
-
-    func networkingOTPView(_ view: NetworkingOTPView, didFailConsumerLookup error: Error) {
-        // side-note: it is redundant to call both (`showLoadingView` & `isResendingCode`) because
-        // only one needs to be hidden (depends on the state), but this keeps the code simple
-        showFullScreenLoadingView(false)
-        showSmallLoadingView(false)
-
-        handleFailure(error: error, errorName: "LookupConsumerSessionError")
-    }
 
     func networkingOTPViewWillStartVerification(_ view: NetworkingOTPView) {
         // no-op
