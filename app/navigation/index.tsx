@@ -74,13 +74,13 @@ const AppNavigator = () => {
 
   if (loading) {
     return (
-      <NavigationIndependentTree>
-        <NavigationContainer>
+
+        <NavigationContainer independent>
           <Stack.Navigator>
             <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }} />
           </Stack.Navigator>
         </NavigationContainer>
-      </NavigationIndependentTree>
+
     );
   }
 

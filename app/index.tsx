@@ -79,19 +79,7 @@ const App = () => {
   }
 
   return (
-    <StripeProvider publishableKey="your-publishable-key">
-      <SafeAreaProvider>
-        <SafeAreaView style={styles.safeArea}>
-          <StatusBar style="dark" />
-          <Provider store={store}>
-            <NotificationProvider>
-              <AppContent />
-            </NotificationProvider>
-          </Provider>
-          <Toast />
-        </SafeAreaView>
-      </SafeAreaProvider>
-    </StripeProvider>
+    <AppContent />
   );
 };
 

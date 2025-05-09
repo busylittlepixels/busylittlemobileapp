@@ -19,7 +19,7 @@ import { Asset } from 'expo-asset';
 import { enablePublicProfile } from '@/app/services/settingsService';
 import { useNotification } from '../../contexts/NotificationContext';
 import { useNavigation } from '@react-navigation/native';
-import PolyfillTest from '../../components/PolyfillTest';
+// import PolyfillTest from '../../components/PolyfillTest';
 
 const GreenDot = () => {
   return <View style={styles.greenDot} />;
@@ -255,11 +255,11 @@ const AccountScreen = ({ navigation, route }: any) => {
           <Text style={styles.sectionTitle}>Latest:</Text>
           <HorizontalScroller />
         </View>
-
+{/* 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>EventEmitter Test:</Text>
           <PolyfillTest />
-        </View>
+        </View> */}
 
         {showAdverts && (
           <AdBanner color={'#f00000'} image='https://placehold.co/500x100' subtitle="This is the water, and this is the well. Drink full, and descend. The horse is the white of the eyes, and dark within" />
